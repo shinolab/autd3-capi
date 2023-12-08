@@ -201,12 +201,12 @@ def capi_build(args):
         os.makedirs("bin", exist_ok=True)
         copy_dll(config, "bin")
         if config.is_windows():
-            target = "capi/target/release" if config.release else "capi/target/debug"
+            target = "target/release" if config.release else "target/debug"
             for lib in glob.glob(f"{target}/*.dll.lib"):
-                shutil.copy(lib, "cpp/lib")
+                shutil.copy(lib, "lib")
             if not config.release:
                 for pdb in glob.glob(f"{target}/*.pdb"):
-                    shutil.copy(pdb, "cpp/lib")
+                    shutil.copy(pdb, "lib")
 
 
 def capi_lint(args):
