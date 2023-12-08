@@ -1,0 +1,16 @@
+[package]
+name = "autd3capi-gain-holo"
+version = "19.0.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+autd3capi-def = { path = "../autd3capi-def", version = "19.0.0" }
+autd3-gain-holo = { version = "19.0.0" }
+
+[features]
+single_float = ["autd3capi-def/single_float", "autd3-gain-holo/single_float"]
+use_meter = ["autd3capi-def/use_meter", "autd3-gain-holo/use_meter"]
