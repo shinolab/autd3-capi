@@ -294,7 +294,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./cpp/assets_arm32.tar.gz
+          asset_path: ./assets_arm32.tar.gz
           asset_name: ${{ steps.get_version.outputs.result }}-armv7.tar.gz
           asset_content_type: application/octet-stream
 
@@ -341,7 +341,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./cpp/assets_aarch64.tar.gz
+          asset_path: ./assets_aarch64.tar.gz
           asset_name: ${{ steps.get_version.outputs.result }}-aarch64.tar.gz
           asset_content_type: application/octet-stream
 
@@ -386,7 +386,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./cpp/assets.tar.gz
+          asset_path: ./assets.tar.gz
           asset_name: ${{ steps.get_version.outputs.result }}
           asset_content_type: application/octet-stream
 
@@ -431,6 +431,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./cpp/assets.tar.gz
+          asset_path: ./assets.tar.gz
           asset_name: ${{ steps.get_version.outputs.result }}
           asset_content_type: application/octet-stream
