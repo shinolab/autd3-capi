@@ -2,3 +2,5 @@ target/
 settings.json
 .cargo
 bin/
+*.zip
+*.tar.gz
