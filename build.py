@@ -55,6 +55,7 @@ class Config:
     target: Optional[str]
     universal: bool
     no_examples: bool
+    cuda: bool
 
     def __init__(self, args):
         self._platform = platform.system()
@@ -68,8 +69,11 @@ class Config:
         self.universal = hasattr(args, "universal") and args.universal
         self.no_examples = hasattr(args, "no_examples") and args.no_examples
 
+        self.cuda = False if self.is_macos() else True
+
         if self.is_linux() and hasattr(args, "arch") and args.arch is not None:
             self.shaderc = False
+            self.cuda = False
             match args.arch:
                 case "arm32":
                     self.target = "armv7-unknown-linux-gnueabihf"
@@ -101,6 +105,9 @@ class Config:
         if features is not None:
             command.append("--features")
             command.append(features)
+        if not self.cuda:
+            command.append("--exclude")
+            command.append("autd3capi-backend-cuda")
 
         if self.is_macos() and self.universal:
             command_aarch64 = command.copy()

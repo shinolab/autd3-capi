@@ -49,6 +49,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ${{ matrix.os }}
           shaderc: true
+          cuda: true
 
       - name: Test src on ${{ matrix.os }}
         if: needs.check-src.outputs.status
@@ -120,6 +121,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           shaderc: true
+          cuda: true
 
       - name: Rust cache
         if: needs.check-src.outputs.status
