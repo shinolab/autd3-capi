@@ -57,6 +57,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: windows-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -103,6 +105,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: windows-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -148,6 +152,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -194,6 +200,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -242,6 +250,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'arm32'
+          shaderc: false
+          cuda: false
 
       - name: Get the version
         id: get_version
@@ -289,6 +299,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'aarch64'
+          shaderc: false
+          cuda: false
 
       - name: Get the version
         id: get_version
@@ -335,6 +347,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: macos-latest
+          shaderc: true
+          cuda: false
 
       - name: Get the version
         id: get_version
@@ -380,6 +394,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: macos-latest
+          shaderc: true
+          cuda: false
 
       - name: Get the version
         id: get_version
