@@ -7,9 +7,6 @@ on:
   pull_request:
     types: [opened, reopened, review_requested]
 
-env:
-  CARGO_INCREMENTAL: 0
-
 jobs:
   check-src:
     runs-on: ubuntu-latest
@@ -51,11 +48,12 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ${{ matrix.os }}
+          shaderc: true
 
       - name: Test src on ${{ matrix.os }}
         if: needs.check-src.outputs.status
         run: |
-          python3 build.py build --release
+          python3 build.py build
         shell: bash
 
   build-linux-arm32-src:
@@ -82,7 +80,7 @@ jobs:
       - name: Test src on ${{ matrix.os }}
         if: needs.check-src.outputs.status
         run: |
-          python3 build.py build --release --arch arm32
+          python3 build.py build --arch arm32
 
   build-linux-aarch64-src:
     needs: check-src
@@ -107,7 +105,7 @@ jobs:
       - name: Test src on ${{ matrix.os }}
         if: needs.check-src.outputs.status
         run: |
-          python3 build.py build --release --arch arm32
+          python3 build.py build --arch arm32
 
   lint-src:
     needs: check-src
@@ -121,7 +119,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
-          shaderc: false
+          shaderc: true
 
       - name: Rust cache
         if: needs.check-src.outputs.status
