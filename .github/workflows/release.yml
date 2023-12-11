@@ -17,30 +17,8 @@ jobs:
         cd tools/license-checker
         cargo run
 
-  build:
-    name: publish-src
-    needs: [license-check]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          os: ubuntu-latest
-          
-      - name: publish to carate.io
-        run: |
-          cd autd3capi-def
-          cargo publish --no-verify --dry-run
-          cargo publish --no-verify --token ${{ secrets.CRATEIO_TOKEN }} || true
-          cd .. && sleep 60
-          cd autd3capi-gain-holo
-          cargo publish --no-verify --dry-run
-          cargo publish --no-verify --token ${{ secrets.CRATEIO_TOKEN }} || true
-
   release:
-    needs: [build]
+    needs: [license-check]
     name: create-github-release
     runs-on: ubuntu-latest
     steps:
