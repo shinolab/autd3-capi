@@ -83,6 +83,7 @@ class Config:
                     err(f'arch "{args.arch}" is not supported.')
                     sys.exit(-1)
         else:
+            self.shaderc = True
             self.target = None
 
     def cargo_command_base(self, subcommand):
@@ -108,6 +109,10 @@ class Config:
         if not self.cuda:
             command.append("--exclude")
             command.append("autd3capi-backend-cuda")
+
+        if not self.shaderc:
+            command.append("--exclude")
+            command.append("autd3capi-link-visualizer")
 
         if self.is_macos() and self.universal:
             command_aarch64 = command.copy()
