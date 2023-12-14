@@ -4,7 +4,7 @@
  * Created Date: 29/05/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/12/2023
+ * Last Modified: 14/12/2023
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -168,17 +168,6 @@ macro_rules! take_link {
 pub struct DatagramPtr(pub ConstPtr);
 
 impl DatagramPtr {
-    pub fn new<T: DynamicDatagram>(d: T) -> Self {
-        let d: Box<Box<dyn DynamicDatagram>> = Box::new(Box::new(d));
-        Self(Box::into_raw(d) as _)
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct DatagramSpecialPtr(pub ConstPtr);
-
-impl DatagramSpecialPtr {
     pub fn new<T: DynamicDatagram>(d: T) -> Self {
         let d: Box<Box<dyn DynamicDatagram>> = Box::new(Box::new(d));
         Self(Box::into_raw(d) as _)

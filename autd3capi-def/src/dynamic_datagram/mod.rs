@@ -4,7 +4,7 @@
  * Created Date: 06/12/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 14/12/2023
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -26,9 +26,7 @@ pub use reads_fpga_info::*;
 use std::time::Duration;
 
 use autd3::prelude::*;
-use autd3_driver::{
-    datagram::Datagram, error::AUTDInternalError, fpga::SILENCER_STEP_DEFAULT, operation::Operation,
-};
+use autd3_driver::{datagram::Datagram, error::AUTDInternalError, operation::Operation};
 
 use crate::{G, M};
 
@@ -89,22 +87,6 @@ impl DynamicDatagram for Synchronize {
         Ok((
             Box::<autd3_driver::operation::SyncOp>::default(),
             Box::<autd3_driver::operation::NullOp>::default(),
-        ))
-    }
-
-    fn timeout(&self) -> Option<Duration> {
-        <Self as Datagram>::timeout(self)
-    }
-}
-
-impl DynamicDatagram for Stop {
-    fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
-        Ok((
-            Box::new(<Self as Datagram>::O1::new(
-                SILENCER_STEP_DEFAULT,
-                SILENCER_STEP_DEFAULT,
-            )),
-            Box::<autd3_driver::operation::StopOp>::default(),
         ))
     }
 

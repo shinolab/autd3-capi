@@ -4,7 +4,7 @@
  * Created Date: 11/05/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 14/12/2023
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -167,12 +167,6 @@ pub unsafe extern "C" fn AUTDDatagramClear() -> DatagramPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramStop() -> DatagramSpecialPtr {
-    DatagramSpecialPtr::new(Stop::new())
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDDatagramConfigureModDelay(
     f: ConstPtr,
     context: ConstPtr,
@@ -297,27 +291,6 @@ pub unsafe extern "C" fn AUTDControllerSend(
     }
 }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDControllerSendSpecial(
-    cnt: ControllerPtr,
-    special: DatagramSpecialPtr,
-    timeout_ns: i64,
-) -> ResultI32 {
-    if special.0.is_null() {
-        return Result::<bool, AUTDError>::Ok(false).into();
-    }
-    let timeout = if timeout_ns < 0 {
-        None
-    } else {
-        Some(Duration::from_nanos(timeout_ns as _))
-    };
-    let d = Box::from_raw(special.0 as *mut Box<dyn DynamicDatagram>);
-    cast_mut!(cnt.0, Cnt)
-        .send(DynamicDatagramPack { d, timeout })
-        .into()
-}
-
 type K = i32;
 type V = (
     Box<dyn driver::operation::Operation>,
@@ -399,41 +372,6 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
             }
         };
     }
-    ResultGroupKVMap {
-        result: GroupKVMapPtr(Box::into_raw(map) as _),
-        err_len: 0,
-        err: std::ptr::null_mut(),
-    }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDControllerGroupKVMapSetSpecial(
-    map: GroupKVMapPtr,
-    key: i32,
-    special: DatagramSpecialPtr,
-    timeout_ns: i64,
-) -> ResultGroupKVMap {
-    let timeout = if timeout_ns < 0 {
-        None
-    } else {
-        Some(Duration::from_nanos(timeout_ns as _))
-    };
-    let mut map = Box::from_raw(map.0 as *mut M);
-
-    let d = Box::from_raw(special.0 as *mut Box<dyn DynamicDatagram>);
-    let d = DynamicDatagramPack { d, timeout };
-    match d.operation() {
-        Ok((op1, op2)) => map.insert(key, (op1, op2, timeout)),
-        Err(e) => {
-            let err = e.to_string();
-            return ResultGroupKVMap {
-                result: GroupKVMapPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
-            };
-        }
-    };
     ResultGroupKVMap {
         result: GroupKVMapPtr(Box::into_raw(map) as _),
         err_len: 0,
