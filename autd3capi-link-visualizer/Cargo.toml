@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 autd3capi-def = { path = "../autd3capi-def", version = "20.0.0" }
-autd3-link-visualizer = { version = "20.0.0", features = ["plotters", "python", "gpu"] }
+autd3-link-visualizer = { version = "20.0.1", features = ["plotters", "python", "gpu"] }
 
 [features]
 single_float = ["autd3-link-visualizer/single_float"]

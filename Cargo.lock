@@ -270,11 +270,10 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-visualizer"
-version = "20.0.0"
+version = "20.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d258b947864f96b172aaa8b9cdc88c2d9b2dfb44db05a4369a920cc98d5849b0"
+checksum = "1dd2b0eafa994ee2f6fc0e5bc049126d3a255ea72186b8ec30df2f7c5ec4a286"
 dependencies = [
- "async-trait",
  "autd3-derive",
  "autd3-driver 20.0.0",
  "autd3-firmware-emulator",
