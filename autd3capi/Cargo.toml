@@ -9,7 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 autd3capi-def = { path = "../autd3capi-def" }
-autd3-driver = "19.0.0"
+autd3-driver = "20.0.2"
 
 [features]
 single_float = ["autd3capi-def/single_float", "autd3-driver/single_float"]

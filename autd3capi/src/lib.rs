@@ -4,7 +4,7 @@
  * Created Date: 11/05/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/12/2023
+ * Last Modified: 01/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -20,6 +20,7 @@ pub mod modulation;
 pub mod stm;
 
 use autd3capi_def::{autd3::prelude::*, *};
+use driver::datagram::ConfigureSilencerFixedCompletionSteps;
 use std::{ffi::c_char, time::Duration};
 
 #[derive(Debug, Clone, Copy)]
@@ -250,11 +251,35 @@ pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAInfo(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencer(
-    step_intensity: u16,
-    step_phase: u16,
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRate(
+    value_intensity: u16,
+    value_phase: u16,
 ) -> ResultDatagram {
-    Silencer::new(step_intensity, step_phase).into()
+    ConfigureSilencer::fixed_update_rate(value_intensity, value_phase).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
+    value_intensity: u16,
+    value_phase: u16,
+) -> ResultDatagram {
+    ConfigureSilencer::fixed_completion_steps(value_intensity, value_phase).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsWithStrictMode(
+    silcenr: DatagramPtr,
+    mode: bool,
+) -> DatagramPtr {
+    DatagramPtr::new(
+        Box::from_raw(
+            silcenr.0 as *mut Box<dyn DynamicDatagram>
+                as *mut Box<ConfigureSilencerFixedCompletionSteps>,
+        )
+        .with_strict_mode(mode),
+    )
 }
 
 #[no_mangle]

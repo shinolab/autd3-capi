@@ -4,7 +4,7 @@
  * Created Date: 06/12/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 14/12/2023
+ * Last Modified: 01/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -26,7 +26,11 @@ pub use reads_fpga_info::*;
 use std::time::Duration;
 
 use autd3::prelude::*;
-use autd3_driver::{datagram::Datagram, error::AUTDInternalError, operation::Operation};
+use autd3_driver::{
+    datagram::{ConfigureSilencerFixedCompletionSteps, ConfigureSilencerFixedUpdateRate, Datagram},
+    error::AUTDInternalError,
+    operation::Operation,
+};
 
 use crate::{G, M};
 
@@ -95,12 +99,29 @@ impl DynamicDatagram for Synchronize {
     }
 }
 
-impl DynamicDatagram for Silencer {
+impl DynamicDatagram for ConfigureSilencerFixedUpdateRate {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         Ok((
             Box::new(<Self as Datagram>::O1::new(
-                self.step_intensity(),
-                self.step_phase(),
+                self.update_rate_intensity(),
+                self.update_rate_phase(),
+            )),
+            Box::<autd3_driver::operation::NullOp>::default(),
+        ))
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        <Self as Datagram>::timeout(self)
+    }
+}
+
+impl DynamicDatagram for ConfigureSilencerFixedCompletionSteps {
+    fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
+        Ok((
+            Box::new(<Self as Datagram>::O1::new(
+                self.completion_steps_intensity(),
+                self.completion_steps_phase(),
+                self.strict_mode(),
             )),
             Box::<autd3_driver::operation::NullOp>::default(),
         ))
@@ -162,7 +183,7 @@ impl DynamicDatagram for GainSTM<Box<G>> {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        None
+        <Self as Datagram>::timeout(self)
     }
 }
 

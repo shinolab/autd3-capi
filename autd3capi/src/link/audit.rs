@@ -4,7 +4,7 @@
  * Created Date: 18/09/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 01/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -155,18 +155,54 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(audit: LinkPtr, idx: u32
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerStepIntensity(audit: LinkPtr, idx: u32) -> u16 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
+    audit: LinkPtr,
+    idx: u32,
+) -> u16 {
     cast!(audit.0, Box<Audit>)[idx as usize]
         .fpga()
-        .silencer_step_intensity()
+        .silencer_update_rate_intensity()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerStepPhase(audit: LinkPtr, idx: u32) -> u16 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u32) -> u16 {
     cast!(audit.0, Box<Audit>)[idx as usize]
         .fpga()
-        .silencer_step_phase()
+        .silencer_update_rate_phase()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
+    audit: LinkPtr,
+    idx: u32,
+) -> u16 {
+    cast!(audit.0, Box<Audit>)[idx as usize]
+        .fpga()
+        .silencer_completion_steps_intensity()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
+    audit: LinkPtr,
+    idx: u32,
+) -> u16 {
+    cast!(audit.0, Box<Audit>)[idx as usize]
+        .fpga()
+        .silencer_completion_steps_phase()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(
+    audit: LinkPtr,
+    idx: u32,
+) -> bool {
+    cast!(audit.0, Box<Audit>)[idx as usize]
+        .fpga()
+        .silencer_fixed_completion_steps_mode()
 }
 
 #[no_mangle]

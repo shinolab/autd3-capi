@@ -4,7 +4,7 @@
  * Created Date: 24/08/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 01/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -21,8 +21,8 @@ use autd3capi_def::*;
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsNew(freq: float) -> STMPropsPtr {
-    STMPropsPtr::new(STMProps::new(freq))
+pub unsafe extern "C" fn AUTDSTMPropsFromFreq(freq: float) -> STMPropsPtr {
+    STMPropsPtr::new(STMProps::from_freq(freq))
 }
 
 #[no_mangle]

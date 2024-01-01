@@ -4,7 +4,7 @@
  * Created Date: 23/08/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 01/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -23,9 +23,6 @@ pub unsafe extern "C" fn AUTDModulationStatic() -> ModulationPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationStaticWithIntensity(
-    m: ModulationPtr,
-    intensity: u8,
-) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Static).with_intensity(intensity))
+pub unsafe extern "C" fn AUTDModulationStaticWithIntensity(intensity: u8) -> ModulationPtr {
+    ModulationPtr::new(Static::with_intensity(intensity))
 }
