@@ -167,7 +167,7 @@ jobs:
       - name: Build project x64
         run: |
           python3 build.py build --release
-          tar -zcvf assets_x64.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets_x64.tar.gz bin lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -215,7 +215,7 @@ jobs:
       - name: Build project x64
         run: |
           python3 build.py build --release --features "use_meter single_float"
-          tar -zcvf assets_x64.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets_x64.tar.gz bin lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -265,7 +265,7 @@ jobs:
       - name: Build project arm32
         run: |
           python3 build.py build --release --arch arm32
-          tar -zcvf assets_arm32.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets_arm32.tar.gz bin lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -314,7 +314,7 @@ jobs:
       - name: Build project aarch64
         run: |
           python3 build.py build --release --arch aarch64
-          tar -zcvf assets_aarch64.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets_aarch64.tar.gz bin lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -362,7 +362,7 @@ jobs:
       - name: Build project
         run: |
           python3 build.py build --release --universal
-          tar -zcvf assets.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets.tar.gz bin lib LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:
@@ -409,7 +409,7 @@ jobs:
       - name: Build project
         run: |
           python3 build.py build --release --universal --features "use_meter single_float"
-          tar -zcvf assets.tar.gz bin LICENSE ThirdPartyNotice.txt
+          tar -zcvf assets.tar.gz bin lib LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
         with:
