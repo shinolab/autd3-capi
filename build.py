@@ -38,6 +38,31 @@ def info(msg: str):
     print("\033[92mINFO\033[0m: " + msg)
 
 
+def rm_f(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass
+
+
+def glob_norm(path, recursive):
+    return list(
+        map(lambda p: os.path.normpath(p), glob.glob(path, recursive=recursive))
+    )
+
+
+def rm_glob_f(path, exclude=None, recursive=True):
+    if exclude is not None:
+        for f in list(
+            set(glob_norm(path, recursive=recursive))
+            - set(glob_norm(exclude, recursive=recursive))
+        ):
+            rm_f(f)
+    else:
+        for f in glob.glob(path, recursive=recursive):
+            rm_f(f)
+
+
 @contextlib.contextmanager
 def working_dir(path):
     cwd = os.getcwd()
@@ -186,6 +211,8 @@ def copy_dll(config: Config, dst: str):
         target = "target/release" if config.release else "target/debug"
         for dll in glob.glob(f"{target}/*.dll"):
             shutil.copy(dll, dst)
+        for lib in glob.glob(f"{target}/*.dll.lib"):
+            shutil.copy(lib, dst)
     elif config.is_macos():
         if config.universal:
             target = (
@@ -228,6 +255,57 @@ def copy_dll(config: Config, dst: str):
             shutil.copy(lib, dst)
 
 
+def copy_lib(config: Config, dst: str):
+    if config.is_windows():
+        target = "target/release" if config.release else "target/debug"
+        for dll in glob.glob(f"{target}/*.lib"):
+            shutil.copy(dll, dst)
+        rm_glob_f(f"{dst}/*.dll.lib")
+        if not config.release:
+            for pdb in glob.glob(f"{target}/*.pdb"):
+                shutil.copy(pdb, "lib")
+    elif config.is_macos():
+        if config.universal:
+            target = (
+                "target/x86_64-apple-darwin/release"
+                if config.release
+                else "target/x86_64-apple-darwin/debug"
+            )
+            target_aarch64 = (
+                "target/aarch64-apple-darwin/release"
+                if config.release
+                else "target/aarch64-apple-darwin/debug"
+            )
+            for x64_lib in glob.glob(f"{target}/*.a"):
+                base_name = os.path.basename(x64_lib)
+                subprocess.run(
+                    [
+                        "lipo",
+                        "-create",
+                        x64_lib,
+                        f"./{target_aarch64}/{base_name}",
+                        "-output",
+                        f"./{dst}/{base_name}",
+                    ]
+                ).check_returncode()
+        else:
+            target = "target/release" if config.release else "target/debug"
+            for lib in glob.glob(f"{target}/*.a"):
+                shutil.copy(lib, dst)
+    elif config.is_linux():
+        target = ""
+        if config.target is None:
+            target = "target/release" if config.release else "target/debug"
+        else:
+            target = (
+                f"target/{config.target}/release"
+                if config.release
+                else f"target/{config.target}/debug"
+            )
+        for lib in glob.glob(f"{target}/*.a"):
+            shutil.copy(lib, dst)
+
+
 def capi_build(args):
     config = Config(args)
 
@@ -236,16 +314,10 @@ def capi_build(args):
         for command in config.cargo_build_capi_command(args.features):
             subprocess.run(command).check_returncode()
 
-        os.makedirs("lib", exist_ok=True)
         os.makedirs("bin", exist_ok=True)
         copy_dll(config, "bin")
-        if config.is_windows():
-            target = "target/release" if config.release else "target/debug"
-            for lib in glob.glob(f"{target}/*.dll.lib"):
-                shutil.copy(lib, "lib")
-            if not config.release:
-                for pdb in glob.glob(f"{target}/*.pdb"):
-                    shutil.copy(pdb, "lib")
+        os.makedirs("lib", exist_ok=True)
+        copy_lib(config, "lib")
 
 
 def capi_lint(args):

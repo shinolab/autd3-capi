@@ -11,7 +11,7 @@ readme = "README.md"
 keywords = ["autd"]
 
 [lib]
-crate-type = ["rlib", "cdylib"]
+crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
 autd3 = { default-features = false, features = ["sync"], version = "20.0.0" }
