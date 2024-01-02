@@ -5,3 +5,5 @@ bin/
 lib/
 *.zip
 *.tar.gz
+Packet.lib
+wpcap.lib
