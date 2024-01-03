@@ -4,7 +4,7 @@
  * Created Date: 22/11/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 01/12/2023
+ * Last Modified: 03/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -12,7 +12,7 @@
  */
 
 use crate::ConstPtr;
-use autd3_driver::{defined::float, error::AUTDInternalError};
+use autd3_driver::error::AUTDInternalError;
 
 #[derive(Clone, Copy, Debug)]
 #[repr(C)]
@@ -42,43 +42,53 @@ impl From<SamplingConfiguration> for autd3_driver::common::SamplingConfiguration
     }
 }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFrequencyDivision(div: u32) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfiguration::from_frequency_division(div).into()
-}
+#[cfg(feature = "export")]
+mod export {
+    use super::*;
+    use autd3_driver::defined::float;
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFrequency(f: float) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfiguration::from_frequency(f).into()
-}
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigFromFrequencyDivision(
+        div: u32,
+    ) -> ResultSamplingConfig {
+        autd3_driver::common::SamplingConfiguration::from_frequency_division(div).into()
+    }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: u64) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfiguration::from_period(std::time::Duration::from_nanos(p))
-        .into()
-}
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigFromFrequency(f: float) -> ResultSamplingConfig {
+        autd3_driver::common::SamplingConfiguration::from_frequency(f).into()
+    }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFrequencyDivision(config: SamplingConfiguration) -> u32 {
-    autd3_driver::common::SamplingConfiguration::from(config).frequency_division()
-}
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: u64) -> ResultSamplingConfig {
+        autd3_driver::common::SamplingConfiguration::from_period(std::time::Duration::from_nanos(p))
+            .into()
+    }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFrequency(config: SamplingConfiguration) -> float {
-    autd3_driver::common::SamplingConfiguration::from(config).frequency()
-}
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigFrequencyDivision(
+        config: SamplingConfiguration,
+    ) -> u32 {
+        autd3_driver::common::SamplingConfiguration::from(config).frequency_division()
+    }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigPeriod(config: SamplingConfiguration) -> u64 {
-    autd3_driver::common::SamplingConfiguration::from(config)
-        .period()
-        .as_nanos() as _
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigFrequency(config: SamplingConfiguration) -> float {
+        autd3_driver::common::SamplingConfiguration::from(config).frequency()
+    }
+
+    #[no_mangle]
+    #[must_use]
+    pub unsafe extern "C" fn AUTDSamplingConfigPeriod(config: SamplingConfiguration) -> u64 {
+        autd3_driver::common::SamplingConfiguration::from(config)
+            .period()
+            .as_nanos() as _
+    }
 }
 
 impl From<Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>>

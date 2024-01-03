@@ -18,5 +18,5 @@ resolver = "2"
 
 [profile.release]
 strip = true
-lto = true
+lto = false
 rpath = true

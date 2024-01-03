@@ -4,17 +4,14 @@
  * Created Date: 10/11/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/12/2023
+ * Last Modified: 03/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
  *
  */
 
-use std::{
-    collections::HashMap,
-    ffi::{c_char, CStr, CString},
-};
+use std::collections::HashMap;
 
 use crate::{ConstPtr, DynamicDatagram, L};
 use autd3::prelude::*;
@@ -25,12 +22,18 @@ use crate::{
     AUTD3_TRUE,
 };
 
-#[no_mangle]
-pub unsafe extern "C" fn AUTDGetErr(src: ConstPtr, dst: *mut c_char) {
-    let src = Box::from_raw(src as *mut String);
-    let c_string: CString = CString::new(src.as_str()).unwrap();
-    let c_str: &CStr = c_string.as_c_str();
-    libc::strcpy(dst, c_str.as_ptr());
+#[cfg(feature = "export")]
+mod export {
+    use super::*;
+    use std::ffi::{c_char, CStr, CString};
+
+    #[no_mangle]
+    pub unsafe extern "C" fn AUTDGetErr(src: ConstPtr, dst: *mut c_char) {
+        let src = Box::from_raw(src as *mut String);
+        let c_string: CString = CString::new(src.as_str()).unwrap();
+        let c_str: &CStr = c_string.as_c_str();
+        libc::strcpy(dst, c_str.as_ptr());
+    }
 }
 
 #[repr(C)]

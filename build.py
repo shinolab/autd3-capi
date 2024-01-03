@@ -152,12 +152,14 @@ class Config:
             command.append("--release")
         return command
 
-    def cargo_build_capi_command(self, features=None):
+    def cargo_build_capi_command(self, extra_features=None):
         command = self.cargo_command_base("build")
         command.append("--all")
-        if features is not None:
-            command.append("--features")
-            command.append(features)
+        command.append("--features")
+        features = "export "
+        if extra_features is not None:
+            features += extra_features
+        command.append(features)
         if not self.cuda:
             command.append("--exclude")
             command.append("autd3capi-backend-cuda")

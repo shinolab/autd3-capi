@@ -22,6 +22,7 @@ libc = "0.2.144"
 [features]
 single_float = ["autd3/single_float", "autd3-driver/single_float"]
 use_meter = ["autd3/use_meter", "autd3-driver/use_meter"]
+export = []
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"
