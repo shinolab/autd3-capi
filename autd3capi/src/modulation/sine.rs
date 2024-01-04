@@ -88,7 +88,7 @@ mod tests {
                     .into(),
             );
             let d1 = AUTDModulationIntoDatagram(m);
-            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
+            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), -1);
             assert_eq!(res.result, AUTD3_ERR);
         }
     }

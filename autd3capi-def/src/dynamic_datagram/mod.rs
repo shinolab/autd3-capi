@@ -4,7 +4,7 @@
  * Created Date: 06/12/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 01/01/2024
+ * Last Modified: 04/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -216,6 +216,6 @@ impl DynamicDatagram for Box<M> {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        None
+        Some(std::time::Duration::from_millis(200))
     }
 }
