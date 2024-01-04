@@ -4,7 +4,7 @@
  * Created Date: 23/08/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 08/12/2023
+ * Last Modified: 04/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -66,4 +66,30 @@ pub unsafe extern "C" fn AUTDModulationSineWithMode(
     mode: SamplingMode,
 ) -> ModulationPtr {
     ModulationPtr::new(take_mod!(m, Sine).with_mode(mode.into()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::modulation::AUTDModulationIntoDatagram;
+    use crate::tests::create_controller;
+    use crate::*;
+
+    #[test]
+    fn test_sine_with_small_freq_div() {
+        unsafe {
+            let cnt = create_controller();
+
+            let m = AUTDModulationSine(150.0);
+            let m = AUTDModulationSineWithSamplingConfig(
+                m,
+                autd3_driver::common::SamplingConfiguration::from_frequency_division(512)
+                    .unwrap()
+                    .into(),
+            );
+            let d1 = AUTDModulationIntoDatagram(m);
+            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
+            assert_eq!(res.result, AUTD3_ERR);
+        }
+    }
 }
