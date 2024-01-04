@@ -4,7 +4,7 @@
  * Created Date: 11/05/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 01/01/2024
+ * Last Modified: 04/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -427,4 +427,61 @@ pub unsafe extern "C" fn AUTDControllerGroup(
         )
         .and_then(|g| g.send())
         .into()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        geometry::AUTDGeometry,
+        link::{audit::*, AUTDLinkGet},
+        *,
+    };
+
+    pub unsafe fn create_controller() -> ControllerPtr {
+        let builder = AUTDControllerBuilder();
+        let builder = AUTDControllerBuilderAddDevice(builder, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let builder = AUTDControllerBuilderAddDevice(builder, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let link = AUTDLinkAuditIntoBuilder(AUTDLinkAudit());
+        let result = AUTDControllerOpenWith(builder, link);
+        assert_ne!(result.result.0, std::ptr::null());
+        result.result
+    }
+
+    unsafe extern "C" fn debug_0(_ptr: ConstPtr, _geometry: GeometryPtr, _idx: u32) -> u8 {
+        0
+    }
+
+    unsafe extern "C" fn debug_1(_ptr: ConstPtr, _geometry: GeometryPtr, idx: u32) -> u8 {
+        if idx == 0 {
+            10
+        } else {
+            0xFF
+        }
+    }
+
+    #[test]
+    fn test_debug_output_idx() {
+        unsafe {
+            let cnt = create_controller();
+            let geometry = AUTDGeometry(cnt);
+
+            let audit = AUTDLinkGet(cnt);
+            for i in 0..2 {
+                assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, i), 0xFF);
+            }
+
+            let d1 = AUTDDatagramConfigureDebugOutputIdx(debug_0 as _, std::ptr::null(), geometry);
+            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
+            assert_eq!(res.result, AUTD3_TRUE);
+            for i in 0..2 {
+                assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, i), 0);
+            }
+
+            let d1 = AUTDDatagramConfigureDebugOutputIdx(debug_1 as _, std::ptr::null(), geometry);
+            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
+            assert_eq!(res.result, AUTD3_TRUE);
+            assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, 0), 10);
+            assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, 1), 0xFF);
+        }
+    }
 }

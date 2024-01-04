@@ -4,7 +4,7 @@
  * Created Date: 06/12/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 06/12/2023
+ * Last Modified: 04/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -39,12 +39,12 @@ impl Operation for DynamicDebugOutIdxOp {
     fn pack(&mut self, device: &Device, tx: &mut [u8]) -> Result<usize, AUTDInternalError> {
         assert_eq!(self.remains[&device.idx()], 1);
         tx[0] = TypeTag::Debug as u8;
-        tx[2] = self.idx_map.get(&device.idx()).cloned().unwrap_or(0xFF);
-        Ok(4)
+        tx[1] = self.idx_map.get(&device.idx()).cloned().unwrap_or(0xFF);
+        Ok(2)
     }
 
     fn required_size(&self, _: &Device) -> usize {
-        4
+        2
     }
 
     fn init(&mut self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
