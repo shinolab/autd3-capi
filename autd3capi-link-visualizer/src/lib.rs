@@ -4,7 +4,7 @@
  * Created Date: 12/10/2023
  * Author: Shun Suzuki
  * -----
- * Last Modified: 11/12/2023
+ * Last Modified: 10/01/2024
  * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
  * -----
  * Copyright (c) 2023 Shun Suzuki. All rights reserved.
@@ -102,6 +102,34 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRange(
         z_range: z_min..z_max,
         resolution,
     })) as _)
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePointsLen(range: PlotRangePtr) -> u64 {
+    let range = cast!(range.0, PlotRange);
+    let n = |range: &std::ops::Range<float>, resolution: float| -> usize {
+        ((range.end - range.start) / resolution).floor() as usize + 1
+    };
+    let nx = n(&range.x_range, range.resolution);
+    let ny = n(&range.y_range, range.resolution);
+    let nz = n(&range.z_range, range.resolution);
+    (nx * ny * nz) as _
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePoints(
+    range: PlotRangePtr,
+    points: *mut float,
+) {
+    let range = cast!(range.0, PlotRange);
+    let observe_points = range.observe_points();
+    std::ptr::copy_nonoverlapping(
+        observe_points.as_ptr() as *const float,
+        points,
+        observe_points.len() * 3,
+    );
 }
 
 #[no_mangle]
