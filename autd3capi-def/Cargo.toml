@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-def"
-version = "20.0.0"
+version = "20.0.3"
 edition = "2021"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 
@@ -14,9 +14,9 @@ keywords = ["autd"]
 crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
-autd3 = { default-features = false, features = ["sync"], version = "20.0.0" }
-autd3-driver = { features = ["sync"], version = "20.0.0" }
-autd3-derive = { version = "20.0.0" }
+autd3 = { default-features = false, features = ["sync"], version = "20.0.3" }
+autd3-driver = { features = ["sync"], version = "20.0.3" }
+autd3-derive = { version = "20.0.3" }
 libc = "0.2.144"
 
 [features]
