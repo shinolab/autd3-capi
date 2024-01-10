@@ -122,7 +122,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePoints(
     range: PlotRangePtr,
     points: *mut float,
 ) {
-    let range = cast!(range.0, PlotRange);
+    let range = Box::from_raw(range.0 as *mut PlotRange);
     let observe_points = range.observe_points();
     std::ptr::copy_nonoverlapping(
         observe_points.as_ptr() as *const float,
