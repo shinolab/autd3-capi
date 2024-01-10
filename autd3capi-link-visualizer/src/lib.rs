@@ -118,7 +118,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePointsLen(range: Plot
 }
 
 #[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePoints(
     range: PlotRangePtr,
     points: *mut float,
