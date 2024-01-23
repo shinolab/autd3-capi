@@ -64,29 +64,38 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfig(
     show: bool,
     fname: *const c_char,
 ) -> ResultPyPlotConfig {
-    let cbar_position = match CStr::from_ptr(cbar_position).to_str() {
-        Ok(v) => v.to_owned(),
-        Err(e) => {
-            let err = e.to_string();
-            return ResultPyPlotConfig {
-                result: PyPlotConfigPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
-            };
-        }
-    };
+    macro_rules! to_stirng {
+        ($char:expr) => {
+            match CStr::from_ptr($char).to_str() {
+                Ok(v) => v.to_owned(),
+                Err(e) => {
+                    let err = e.to_string();
+                    return ResultPyPlotConfig {
+                        result: PyPlotConfigPtr(std::ptr::null()),
+                        err_len: err.as_bytes().len() as u32 + 1,
+                        err: Box::into_raw(Box::new(err)) as _,
+                    };
+                }
+            }
+        };
+    }
+    let cbar_position = to_stirng!(cbar_position);
+    let cbar_size = to_stirng!(cbar_size);
+    let cbar_pad = to_stirng!(cbar_pad);
+    let cmap = to_stirng!(cmap);
+    let fname = to_stirng!(fname);
     ResultPyPlotConfig {
         result: PyPlotConfigPtr(Box::into_raw(Box::new(PyPlotConfig {
             figsize: (width, height),
             dpi,
-            cbar_position: cbar_position.into(),
-            cbar_size: todo!(),
-            cbar_pad: todo!(),
+            cbar_position,
+            cbar_size,
+            cbar_pad,
             fontsize,
             ticks_step,
-            cmap: todo!(),
+            cmap,
             show,
-            fname: todo!(),
+            fname: fname.into(),
         })) as _),
         err_len: 0,
         err: std::ptr::null_mut(),

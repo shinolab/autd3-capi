@@ -21,7 +21,7 @@ pub struct LinkBuilderPtr(pub ConstPtr);
 pub struct LinkPtr(pub ConstPtr);
 
 impl LinkPtr {
-    pub fn cast<L: Link>(&self) -> &Box<L> {
+    pub fn cast<L: Link>(&self) -> &L {
         unsafe {
             (&self.inner as *const Box<dyn Link> as *const Box<L>)
                 .as_ref()
@@ -73,6 +73,7 @@ unsafe impl Send for SyncLinkBuilder {}
 unsafe impl Sync for SyncLinkBuilder {}
 
 impl SyncLinkBuilder {
+    #[allow(clippy::new_ret_no_self)]
     pub fn new<B: LinkBuilder + 'static>(builder: B) -> LinkBuilderPtr
     where
         B::L: Link,

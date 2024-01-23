@@ -72,9 +72,9 @@ pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> ResultI3
 #[no_mangle]
 pub unsafe extern "C" fn AUTDControllerDelete(mut cnt: ControllerPtr) -> ResultI32 {
     cnt.close()
-        .and_then(|r| {
+        .map(|r| {
             let _ = Box::from_raw(cnt.0 as *mut SyncController);
-            Ok(r)
+            r
         })
         .into()
 }
@@ -86,11 +86,11 @@ pub unsafe extern "C" fn AUTDControllerFPGAState(
     out: *mut i32,
 ) -> ResultI32 {
     cnt.fpga_state()
-        .and_then(|states| {
+        .map(|states| {
             states.iter().enumerate().for_each(|(i, state)| {
                 out.add(i).write(state.map_or(-1, |s| s.state() as i32));
             });
-            Result::<bool, AUTDError>::Ok(true)
+            true
         })
         .into()
 }
