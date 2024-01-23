@@ -1,16 +1,3 @@
-/*
- * File: lib.rs
- * Project: src
- * Created Date: 27/05/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 29/11/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 use std::{
@@ -54,7 +41,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkTwinCATIntoBuilder(
     twincat: LinkTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    LinkBuilderPtr::new(*Box::from_raw(twincat.0 as *mut TwinCATBuilder))
+    SyncLinkBuilder::new(*Box::from_raw(twincat.0 as *mut TwinCATBuilder))
 }
 
 #[repr(C)]
@@ -141,5 +128,5 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteTwinCATIntoBuilder(
     twincat: LinkRemoteTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    LinkBuilderPtr::new(*Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder))
+    SyncLinkBuilder::new(*Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder))
 }

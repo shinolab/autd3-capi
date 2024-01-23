@@ -1,16 +1,3 @@
-/*
- * File: lib.rs
- * Project: src
- * Created Date: 11/05/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 04/01/2024
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 pub mod gain;
@@ -19,13 +6,21 @@ pub mod link;
 pub mod modulation;
 pub mod stm;
 
-use autd3capi_def::{autd3::prelude::*, *};
-use driver::datagram::ConfigureSilencerFixedCompletionSteps;
-use std::{ffi::c_char, time::Duration};
+use std::{collections::HashMap, ffi::c_char, time::Duration};
+
+use autd3capi_def::{
+    autd3::prelude::*, driver::datagram::ConfigureSilencerFixedCompletionSteps, *,
+};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ControllerBuilderPtr(pub ConstPtr);
+
+impl ControllerBuilderPtr {
+    pub fn new(builder: SyncControllerBuilder) -> Self {
+        Self(Box::into_raw(Box::new(builder)) as _)
+    }
+}
 
 struct CallbackPtr(ConstPtr);
 unsafe impl Send for CallbackPtr {}
@@ -34,7 +29,7 @@ unsafe impl Send for CallbackPtr {}
 #[must_use]
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilder() -> ControllerBuilderPtr {
-    ControllerBuilderPtr(Box::into_raw(Box::new(Controller::builder_with())) as _)
+    ControllerBuilderPtr::new(SyncControllerBuilder::new())
 }
 
 #[no_mangle]
@@ -48,13 +43,13 @@ pub unsafe extern "C" fn AUTDControllerBuilderAddDevice(
     qy: float,
     qz: float,
 ) -> ControllerBuilderPtr {
-    ControllerBuilderPtr(Box::into_raw(Box::new(
-        Box::from_raw(builder.0 as *mut autd3::controller::builder::ControllerBuilder).add_device(
+    ControllerBuilderPtr::new(
+        Box::from_raw(builder.0 as *mut SyncControllerBuilder).add_device(
             AUTD3::new(Vector3::new(x, y, z)).with_rotation(UnitQuaternion::from_quaternion(
                 Quaternion::new(qw, qx, qy, qz),
             )),
         ),
-    )) as _)
+    )
 }
 
 #[no_mangle]
@@ -63,33 +58,39 @@ pub unsafe extern "C" fn AUTDControllerOpenWith(
     builder: ControllerBuilderPtr,
     link_builder: LinkBuilderPtr,
 ) -> ResultController {
-    let link_builder: Box<DynamicLinkBuilder> =
-        Box::from_raw(link_builder.0 as *mut DynamicLinkBuilder);
-    Box::from_raw(builder.0 as *mut autd3::controller::builder::ControllerBuilder)
-        .open_with(*link_builder)
+    let builder = Box::from_raw(builder.0 as *mut SyncControllerBuilder);
+    let link_builder = Box::from_raw(link_builder.0 as *mut SyncLinkBuilder);
+    builder.open_with(*link_builder).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> ResultI32 {
+    cnt.close().into()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDControllerDelete(mut cnt: ControllerPtr) -> ResultI32 {
+    cnt.close()
+        .and_then(|r| {
+            let _ = Box::from_raw(cnt.0 as *mut SyncController);
+            Ok(r)
+        })
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> ResultI32 {
-    cast_mut!(cnt.0, Cnt).close().into()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDControllerDelete(cnt: ControllerPtr) {
-    let mut cnt = Box::from_raw(cnt.0 as *mut Cnt);
-    let _ = cnt.close();
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDControllerFPGAInfo(cnt: ControllerPtr, out: *mut u8) -> ResultI32 {
-    cast_mut!(cnt.0, Cnt)
-        .fpga_info()
-        .map(|fpga_info| {
-            std::ptr::copy_nonoverlapping(fpga_info.as_ptr() as _, out, fpga_info.len());
-            true
+pub unsafe extern "C" fn AUTDControllerFPGAState(
+    mut cnt: ControllerPtr,
+    out: *mut i32,
+) -> ResultI32 {
+    cnt.fpga_state()
+        .and_then(|states| {
+            states.iter().enumerate().for_each(|(i, state)| {
+                out.add(i).write(state.map_or(-1, |s| s.state() as i32));
+            });
+            Result::<bool, AUTDError>::Ok(true)
         })
         .into()
 }
@@ -125,9 +126,9 @@ impl From<Result<Vec<FirmwareInfo>, AUTDError>> for ResultFirmwareInfoList {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerFirmwareInfoListPointer(
-    cnt: ControllerPtr,
+    mut cnt: ControllerPtr,
 ) -> ResultFirmwareInfoList {
-    cast_mut!(cnt.0, Cnt).firmware_infos().into()
+    cnt.firmware_infos().into()
 }
 
 #[no_mangle]
@@ -232,7 +233,7 @@ pub unsafe extern "C" fn AUTDDatagramConfigureForceFan(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAInfo(
+pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAState(
     f: ConstPtr,
     context: ConstPtr,
     geometry: GeometryPtr,
@@ -242,7 +243,7 @@ pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAInfo(
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
     >(f);
-    DatagramPtr::new(DynamicConfigureReadsFPGAInfo::new(
+    DatagramPtr::new(DynamicConfigureReadsFPGAState::new(
         geo.devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
             .collect(),
@@ -263,57 +264,48 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRate(
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
     value_intensity: u16,
     value_phase: u16,
+    strict_mode: bool,
 ) -> ResultDatagram {
-    ConfigureSilencer::fixed_completion_steps(value_intensity, value_phase).into()
+    ConfigureSilencer::fixed_completion_steps(value_intensity, value_phase)
+        .map(|s| s.with_strict_mode(strict_mode))
+        .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsWithStrictMode(
-    silcenr: DatagramPtr,
-    mode: bool,
-) -> DatagramPtr {
-    DatagramPtr::new(
-        Box::from_raw(
-            silcenr.0 as *mut Box<dyn DynamicDatagram>
-                as *mut Box<ConfigureSilencerFixedCompletionSteps>,
-        )
-        .with_strict_mode(mode),
-    )
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsDefaultStrictMode() -> bool {
+    ConfigureSilencerFixedCompletionSteps::default().strict_mode()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerSend(
-    cnt: ControllerPtr,
+    mut cnt: ControllerPtr,
     d1: DatagramPtr,
     d2: DatagramPtr,
     timeout_ns: i64,
 ) -> ResultI32 {
-    let timeout = if timeout_ns < 0 {
-        None
-    } else {
-        Some(Duration::from_nanos(timeout_ns as _))
-    };
-    if !d1.0.is_null() && !d2.0.is_null() {
-        let d1 = Box::from_raw(d1.0 as *mut Box<dyn DynamicDatagram>);
-        let d2 = Box::from_raw(d2.0 as *mut Box<dyn DynamicDatagram>);
-        cast_mut!(cnt.0, Cnt)
-            .send(DynamicDatagramPack2 { d1, d2, timeout })
-            .into()
-    } else if !d1.0.is_null() {
-        let d = Box::from_raw(d1.0 as *mut Box<dyn DynamicDatagram>);
-        cast_mut!(cnt.0, Cnt)
-            .send(DynamicDatagramPack { d, timeout })
-            .into()
-    } else if !d2.0.is_null() {
-        let d = Box::from_raw(d2.0 as *mut Box<dyn DynamicDatagram>);
-        cast_mut!(cnt.0, Cnt)
-            .send(DynamicDatagramPack { d, timeout })
-            .into()
-    } else {
-        Result::<bool, AUTDError>::Ok(false).into()
+    {
+        let timeout = if timeout_ns < 0 {
+            None
+        } else {
+            Some(Duration::from_nanos(timeout_ns as _))
+        };
+        if !d1.is_null() && !d2.is_null() {
+            let d1: Box<Box<dyn DynamicDatagram>> = d1.into();
+            let d2: Box<Box<dyn DynamicDatagram>> = d2.into();
+            cnt.send(DynamicDatagramPack2 { d1, d2, timeout })
+        } else if !d1.is_null() {
+            let d: Box<Box<dyn DynamicDatagram>> = d1.into();
+            cnt.send(DynamicDatagramPack { d, timeout })
+        } else if !d2.is_null() {
+            let d: Box<Box<dyn DynamicDatagram>> = d2.into();
+            cnt.send(DynamicDatagramPack { d, timeout })
+        } else {
+            Result::<bool, AUTDError>::Ok(false)
+        }
     }
+    .into()
 }
 
 type K = i32;
@@ -322,7 +314,6 @@ type V = (
     Box<dyn driver::operation::Operation>,
     Option<Duration>,
 );
-type M = std::collections::HashMap<K, V>;
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
@@ -335,7 +326,7 @@ pub struct ResultGroupKVMap {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerGroupCreateKVMap() -> GroupKVMapPtr {
-    GroupKVMapPtr(Box::into_raw(Box::<M>::default()) as _)
+    GroupKVMapPtr(Box::into_raw(Box::<HashMap<K, V>>::default()) as _)
 }
 
 #[no_mangle]
@@ -352,7 +343,7 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
     } else {
         Some(Duration::from_nanos(timeout_ns as _))
     };
-    let mut map = Box::from_raw(map.0 as *mut M);
+    let mut map = Box::from_raw(map.0 as *mut HashMap<K, V>);
     if !d1.0.is_null() && !d2.0.is_null() {
         let d1 = Box::from_raw(d1.0 as *mut Box<dyn DynamicDatagram>);
         let d2 = Box::from_raw(d2.0 as *mut Box<dyn DynamicDatagram>);
@@ -404,18 +395,21 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct GroupKVMapPtr(pub ConstPtr);
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerGroup(
-    cnt: ControllerPtr,
+    mut cnt: ControllerPtr,
     map: *const i32,
     kv_map: GroupKVMapPtr,
 ) -> ResultI32 {
-    let kv_map = Box::from_raw(kv_map.0 as *mut M);
-    kv_map
+    Box::from_raw(kv_map.0 as *mut HashMap<K, V>)
         .into_iter()
         .try_fold(
-            cast_mut!(cnt.0, Cnt).group(|dev| {
+            cnt.group(|dev| {
                 let k = map.add(dev.idx()).read();
                 if k < 0 {
                     None
@@ -425,7 +419,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
             }),
             |acc, (k, (op1, op2, timeout))| acc.set_boxed_op(k, op1, op2, timeout),
         )
-        .and_then(|g| g.send())
+        .and_then(|group| group.send())
         .into()
 }
 

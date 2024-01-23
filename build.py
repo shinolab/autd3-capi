@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-File: build.py
-Project: autd3
-Created Date: 16/10/2023
-Author: Shun Suzuki
------
-Last Modified: 19/10/2023
-Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
------
-Copyright (c) 2023 Shun Suzuki. All rights reserved.
-
-"""
-
 import argparse
 import contextlib
 import glob
@@ -340,6 +327,8 @@ def util_update_ver(args):
 
     with working_dir("."):
         for toml in glob.glob("./**/*/Cargo.toml", recursive=True):
+            if "tools" in toml:
+                continue
             with open(toml, "r") as f:
                 content = f.read()
                 content = re.sub(

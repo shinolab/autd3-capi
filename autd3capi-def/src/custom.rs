@@ -1,20 +1,6 @@
-/*
- * File: custom.rs
- * Project: src
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 29/11/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 use std::collections::HashMap;
 
-use autd3_derive::{Gain, Modulation};
-use autd3_driver::derive::prelude::*;
+use autd3_driver::derive::*;
 
 #[derive(Gain, Default)]
 pub struct CustomGain {

@@ -1,31 +1,28 @@
-/*
- * File: constraint.rs
- * Project: src
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 08/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
-use crate::EmissionConstraintPtr;
 use autd3_gain_holo::*;
+use autd3capi_def::ConstPtr;
+
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct EmissionConstraintPtr(pub ConstPtr);
+
+impl From<EmissionConstraint> for EmissionConstraintPtr {
+    fn from(c: EmissionConstraint) -> Self {
+        Self(Box::into_raw(Box::new(c)) as _)
+    }
+}
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintDotCare() -> EmissionConstraintPtr {
-    EmissionConstraintPtr(Box::into_raw(Box::new(EmissionConstraint::DontCare)) as _)
+    EmissionConstraint::DontCare.into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraintPtr {
-    EmissionConstraintPtr(Box::into_raw(Box::new(EmissionConstraint::Normalize)) as _)
+    EmissionConstraint::Normalize.into()
 }
 
 #[no_mangle]
@@ -46,4 +43,13 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
         min_v.into(),
         max_v.into(),
     ))) as _)
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGainHoloConstraintEq(
+    a: EmissionConstraintPtr,
+    b: EmissionConstraintPtr,
+) -> bool {
+    *Box::from_raw(a.0 as *mut EmissionConstraint) == *Box::from_raw(b.0 as *mut EmissionConstraint)
 }

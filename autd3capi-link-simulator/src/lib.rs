@@ -1,16 +1,3 @@
-/*
- * File: lib.rs
- * Project: src
- * Created Date: 27/05/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 29/11/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 use std::{
@@ -101,16 +88,17 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
 pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
     simulator: LinkSimulatorBuilderPtr,
 ) -> LinkBuilderPtr {
-    LinkBuilderPtr::new(Box::from_raw(simulator.0 as *mut SimulatorBuilder).blocking())
+    SyncLinkBuilder::new(*Box::from_raw(simulator.0 as *mut SimulatorBuilder))
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSimulatorUpdateGeometry(
-    simulator: LinkPtr,
+    mut simulator: LinkPtr,
     geometry: GeometryPtr,
 ) -> ResultI32 {
-    cast_mut!(simulator.0, Box<SimulatorSync>)
-        .update_geometry(cast!(geometry.0, Geometry))
+    simulator
+        .runtime()
+        .block_on(simulator.cast_mut::<Simulator>().update_geometry(&geometry))
         .into()
 }

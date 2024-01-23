@@ -1,19 +1,4 @@
-/*
- * File: nalgebra_backend.rs
- * Project: src
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 08/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
-
-use std::rc::Rc;
 
 use crate::BackendPtr;
 use autd3_gain_holo::*;
@@ -26,5 +11,5 @@ pub unsafe extern "C" fn AUTDNalgebraBackend() -> BackendPtr {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeleteNalgebraBackend(backend: BackendPtr) {
-    let _ = Box::from_raw(backend.0 as *mut Rc<NalgebraBackend>);
+    let _ = Box::from_raw(backend.0 as *mut std::sync::Arc<NalgebraBackend>);
 }

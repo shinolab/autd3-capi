@@ -1,42 +1,29 @@
-/*
- * File: reads_fpga_info.rs
- * Project: dynamic_datagram
- * Created Date: 06/12/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 06/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 use std::{collections::HashMap, time::Duration};
 
 use super::DynamicDatagram;
 use autd3::prelude::*;
 use autd3_driver::{
     error::AUTDInternalError,
-    operation::{ConfigureReadsFPGAInfoOp, Operation},
+    operation::{ConfigureReadsFPGAStateOp, Operation},
 };
 
-type Op = ConfigureReadsFPGAInfoOp<Box<dyn Fn(&Device) -> bool>>;
+type Op = ConfigureReadsFPGAStateOp<Box<dyn Fn(&Device) -> bool>>;
 
-pub struct DynamicConfigureReadsFPGAInfo {
+pub struct DynamicConfigureReadsFPGAState {
     map: HashMap<usize, bool>,
 }
 
-impl DynamicConfigureReadsFPGAInfo {
+impl DynamicConfigureReadsFPGAState {
     pub fn new(map: HashMap<usize, bool>) -> Self {
         Self { map }
     }
 }
 
-pub struct DynamicConfigureReadsFPGAInfoOp {
+pub struct DynamicConfigureReadsFPGAStateOp {
     op: Op,
 }
 
-impl Operation for DynamicConfigureReadsFPGAInfoOp {
+impl Operation for DynamicConfigureReadsFPGAStateOp {
     fn pack(&mut self, device: &Device, tx: &mut [u8]) -> Result<usize, AUTDInternalError> {
         self.op.pack(device, tx)
     }
@@ -58,12 +45,12 @@ impl Operation for DynamicConfigureReadsFPGAInfoOp {
     }
 }
 
-impl DynamicDatagram for DynamicConfigureReadsFPGAInfo {
+impl DynamicDatagram for DynamicConfigureReadsFPGAState {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         let map = self.map.clone();
         Ok((
-            Box::new(DynamicConfigureReadsFPGAInfoOp {
-                op: ConfigureReadsFPGAInfoOp::new(Box::new(move |dev: &Device| map[&dev.idx()])),
+            Box::new(DynamicConfigureReadsFPGAStateOp {
+                op: ConfigureReadsFPGAStateOp::new(Box::new(move |dev: &Device| map[&dev.idx()])),
             }),
             Box::<autd3_driver::operation::NullOp>::default(),
         ))
@@ -71,5 +58,21 @@ impl DynamicDatagram for DynamicConfigureReadsFPGAInfo {
 
     fn timeout(&self) -> Option<Duration> {
         Some(Duration::from_millis(200))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use autd3_driver::datagram::Datagram;
+
+    #[test]
+    fn test_dynamic_configure_reads_fpga_state() {
+        let mut datagram = DynamicConfigureReadsFPGAState::new(Default::default());
+        assert_eq!(
+            datagram.timeout(),
+            ConfigureReadsFPGAState::new(|_| false).timeout()
+        );
+        let _ = datagram.operation();
     }
 }

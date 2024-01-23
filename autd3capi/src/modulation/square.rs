@@ -1,63 +1,55 @@
-/*
- * File: square.rs
- * Project: modulation
- * Created Date: 23/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 08/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{autd3::modulation::Square, *};
+use autd3capi_def::{autd3::modulation::Square, driver::derive::ModulationProperty, *};
 
 use super::SamplingMode;
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSquare(freq: float) -> ModulationPtr {
-    ModulationPtr::new(Square::new(freq))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareWithLow(m: ModulationPtr, low: u8) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Square).with_low(low))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareWithHigh(m: ModulationPtr, high: u8) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Square).with_high(high))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareWithDuty(
-    m: ModulationPtr,
-    duty: float,
-) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Square).with_duty(duty))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareWithSamplingConfig(
-    m: ModulationPtr,
+pub unsafe extern "C" fn AUTDModulationSquare(
+    freq: float,
     config: SamplingConfiguration,
-) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Square).with_sampling_config(config.into()))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareWithMode(
-    m: ModulationPtr,
+    low: u8,
+    high: u8,
+    duty: float,
     mode: SamplingMode,
 ) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Square).with_mode(mode.into()))
+    ModulationPtr::new(
+        Square::new(freq)
+            .with_sampling_config(config.into())
+            .with_low(low)
+            .with_high(high)
+            .with_duty(duty)
+            .with_mode(mode.into()),
+    )
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareDefaultLow() -> u8 {
+    Square::new(0.0).low().value()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareDefaultHigh() -> u8 {
+    Square::new(0.0).high().value()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareDefaultDuty() -> float {
+    Square::new(0.0).duty()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareDefaultSamplingConfig() -> SamplingConfiguration {
+    Square::new(0.0).sampling_config().into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareDefaultMode() -> SamplingMode {
+    Square::new(0.0).mode().into()
 }

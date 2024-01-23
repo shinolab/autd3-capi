@@ -1,16 +1,3 @@
-/*
- * File: lib.rs
- * Project: src
- * Created Date: 27/05/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 29/11/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 use std::{
@@ -214,7 +201,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimeout(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMIntoBuilder(soem: LinkSOEMBuilderPtr) -> LinkBuilderPtr {
-    LinkBuilderPtr::new(*Box::from_raw(soem.0 as *mut SOEMBuilder))
+    SyncLinkBuilder::new(*Box::from_raw(soem.0 as *mut SOEMBuilder))
 }
 
 #[repr(C)]
@@ -284,5 +271,5 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEMWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteSOEMIntoBuilder(
     soem: LinkRemoteSOEMBuilderPtr,
 ) -> LinkBuilderPtr {
-    LinkBuilderPtr::new((*Box::from_raw(soem.0 as *mut RemoteSOEMBuilder)).blocking())
+    SyncLinkBuilder::new(*Box::from_raw(soem.0 as *mut RemoteSOEMBuilder))
 }

@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-twincat"
-version = "20.0.3"
+version = "21.0.0"
 edition = "2021"
 license = "MIT"
 
@@ -8,5 +8,5 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-def = { path = "../autd3capi-def", version = "20.0.3" }
-autd3-link-twincat = { version = "20.0.3", features = ["local", "remote"] }
+autd3capi-def = { path = "../autd3capi-def" }
+autd3-link-twincat = { version = "21.0.0", features = ["local", "remote", "async-trait"] }

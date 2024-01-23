@@ -1,19 +1,4 @@
-/*
- * File: gs.rs
- * Project: src
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 08/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
-
-use std::rc::Rc;
 
 use crate::{create_holo, BackendPtr, EmissionConstraintPtr};
 use autd3_gain_holo::*;
@@ -26,23 +11,24 @@ pub unsafe extern "C" fn AUTDGainHoloGS(
     points: *const float,
     amps: *const float,
     size: u64,
-) -> GainPtr {
-    create_holo!(GS, NalgebraBackend, backend, points, amps, size)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSWithConstraint(
-    holo: GainPtr,
+    repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
     GainPtr::new(
-        take_gain!(holo, GS<NalgebraBackend>).with_constraint(*Box::from_raw(constraint.0 as _)),
+        create_holo!(GS, NalgebraBackend, backend, points, amps, size)
+            .with_repeat(repeat as _)
+            .with_constraint(*Box::from_raw(constraint.0 as _)),
     )
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSWithRepeat(holo: GainPtr, repeat: u32) -> GainPtr {
-    GainPtr::new(take_gain!(holo, GS<NalgebraBackend>).with_repeat(repeat as _))
+pub unsafe extern "C" fn AUTDGainHoloGSDefaultConstraint() -> EmissionConstraintPtr {
+    GS::new(NalgebraBackend::new().unwrap()).constraint().into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGainHoloGSDefaultRepeat() -> u32 {
+    GS::new(NalgebraBackend::new().unwrap()).repeat() as _
 }

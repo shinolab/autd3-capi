@@ -1,16 +1,3 @@
-/*
- * File: lib.rs
- * Project: src
- * Created Date: 27/05/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 29/11/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 use std::ffi::{c_char, CStr};
@@ -21,7 +8,10 @@ use autd3_modulation_audio_file::{RawPCM, Wav};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationWav(path: *const c_char) -> ResultModulation {
+pub unsafe extern "C" fn AUTDModulationWav(
+    path: *const c_char,
+    config: SamplingConfiguration,
+) -> ResultModulation {
     let path = match CStr::from_ptr(path).to_str() {
         Ok(v) => v,
         Err(e) => {
@@ -35,7 +25,7 @@ pub unsafe extern "C" fn AUTDModulationWav(path: *const c_char) -> ResultModulat
     };
     match Wav::new(path) {
         Ok(v) => ResultModulation {
-            result: ModulationPtr::new(v),
+            result: ModulationPtr::new(v.with_sampling_config(config.into())),
             err_len: 0,
             err: std::ptr::null_mut(),
         },
@@ -52,11 +42,8 @@ pub unsafe extern "C" fn AUTDModulationWav(path: *const c_char) -> ResultModulat
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationWavWithSamplingConfig(
-    m: ModulationPtr,
-    config: SamplingConfiguration,
-) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, Wav).with_sampling_config(config.into()))
+pub unsafe extern "C" fn AUTDModulationWavDefaultSamplingConfig() -> SamplingConfiguration {
+    autd3capi_def::driver::common::SamplingConfiguration::FREQ_4K_HZ.into() // TODO
 }
 
 #[no_mangle]
@@ -64,6 +51,7 @@ pub unsafe extern "C" fn AUTDModulationWavWithSamplingConfig(
 pub unsafe extern "C" fn AUTDModulationRawPCM(
     path: *const c_char,
     sample_rate: u32,
+    config: SamplingConfiguration,
 ) -> ResultModulation {
     let path = match CStr::from_ptr(path).to_str() {
         Ok(v) => v,
@@ -78,7 +66,7 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
     };
     match RawPCM::new(path, sample_rate) {
         Ok(v) => ResultModulation {
-            result: ModulationPtr::new(v),
+            result: ModulationPtr::new(v.with_sampling_config(config.into())),
             err_len: 0,
             err: std::ptr::null_mut(),
         },
@@ -95,9 +83,6 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationRawPCMWithSamplingConfig(
-    m: ModulationPtr,
-    config: SamplingConfiguration,
-) -> ModulationPtr {
-    ModulationPtr::new(take_mod!(m, RawPCM).with_sampling_config(config.into()))
+pub unsafe extern "C" fn AUTDModulationRawPCMDefaultSamplingConfig() -> SamplingConfiguration {
+    autd3capi_def::driver::common::SamplingConfiguration::FREQ_4K_HZ.into() // TODO
 }

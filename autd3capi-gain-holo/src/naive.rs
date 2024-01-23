@@ -1,19 +1,4 @@
-/*
- * File: naive.rs
- * Project: src
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 08/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
-
-use std::rc::Rc;
 
 use crate::{create_holo, BackendPtr, EmissionConstraintPtr};
 use autd3_gain_holo::*;
@@ -26,17 +11,16 @@ pub unsafe extern "C" fn AUTDGainHoloNaive(
     points: *const float,
     amps: *const float,
     size: u64,
+    constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    create_holo!(Naive, NalgebraBackend, backend, points, amps, size)
+    GainPtr::new(
+        create_holo!(Naive, NalgebraBackend, backend, points, amps, size)
+            .with_constraint(*Box::from_raw(constraint.0 as _)),
+    )
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloNaiveWithConstraint(
-    holo: GainPtr,
-    constraint: EmissionConstraintPtr,
-) -> GainPtr {
-    GainPtr::new(
-        take_gain!(holo, Naive<NalgebraBackend>).with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+pub unsafe extern "C" fn AUTDGainHoloNaiveDefaultConstraint() -> EmissionConstraintPtr {
+    GS::new(NalgebraBackend::new().unwrap()).constraint().into()
 }

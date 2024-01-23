@@ -1,16 +1,3 @@
-/*
- * File: device.rs
- * Project: geometry
- * Created Date: 06/09/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 06/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_def::{

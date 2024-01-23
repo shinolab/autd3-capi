@@ -1,27 +1,14 @@
-/*
- * File: mod.rs
- * Project: dynamic_datagram
- * Created Date: 06/12/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 04/01/2024
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 mod debug;
 mod force_fan;
 mod mod_delay;
-mod reads_fpga_info;
+mod reads_fpga_state;
 
 pub use debug::*;
 pub use force_fan::*;
 pub use mod_delay::*;
-pub use reads_fpga_info::*;
+pub use reads_fpga_state::*;
 
 use std::time::Duration;
 
@@ -64,6 +51,9 @@ impl Datagram for DynamicDatagramPack {
     }
 }
 
+unsafe impl Send for DynamicDatagramPack {}
+unsafe impl Sync for DynamicDatagramPack {}
+
 pub struct DynamicDatagramPack2 {
     pub d1: Box<Box<dyn DynamicDatagram>>,
     pub d2: Box<Box<dyn DynamicDatagram>>,
@@ -85,6 +75,9 @@ impl Datagram for DynamicDatagramPack2 {
         self.timeout
     }
 }
+
+unsafe impl Send for DynamicDatagramPack2 {}
+unsafe impl Sync for DynamicDatagramPack2 {}
 
 impl DynamicDatagram for Synchronize {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
@@ -147,7 +140,7 @@ impl DynamicDatagram for Clear {
 
 impl DynamicDatagram for FocusSTM {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
-        let freq_div = self.sampling_config().frequency_division();
+        let freq_div = self.sampling_config()?.frequency_division();
         Ok((
             Box::new(<Self as Datagram>::O1::new(
                 self.clear(),
@@ -169,7 +162,7 @@ impl DynamicDatagram for GainSTM<Box<G>> {
         &mut self,
     ) -> Result<(Box<dyn Operation>, Box<dyn Operation>), autd3_driver::error::AUTDInternalError>
     {
-        let freq_div = self.sampling_config().frequency_division();
+        let freq_div = self.sampling_config()?.frequency_division();
         Ok((
             Box::new(<Self as Datagram>::O1::new(
                 self.clear(),

@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi"
-version = "20.0.3"
+version = "21.0.0"
 edition = "2021"
 license = "MIT"
 
@@ -8,12 +8,12 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+async-ffi = "0.5.0"
 autd3capi-def = { path = "../autd3capi-def" }
-autd3-driver = "20.0.2"
 
 [features]
-single_float = ["autd3capi-def/single_float", "autd3-driver/single_float"]
-use_meter = ["autd3capi-def/use_meter", "autd3-driver/use_meter"]
+single_float = ["autd3capi-def/single_float"]
+use_meter = ["autd3capi-def/use_meter"]
 
 [dev-dependencies]
 assert_approx_eq = "1.1.0"

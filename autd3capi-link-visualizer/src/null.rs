@@ -1,16 +1,3 @@
-/*
- * File: null.rs
- * Project: src
- * Created Date: 13/10/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 11/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 use autd3_link_visualizer::{NullBackend, NullPlotConfig, Visualizer};
 use autd3capi_def::{
     driver::acoustics::directivity::{Sphere, T4010A1},
@@ -29,7 +16,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerSphereNull(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    LinkBuilderPtr::new(builder)
+    SyncLinkBuilder::new(builder)
 }
 
 #[no_mangle]
@@ -44,7 +31,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Null(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    LinkBuilderPtr::new(builder)
+    SyncLinkBuilder::new(builder)
 }
 
 #[derive(Debug, Clone, Copy)]

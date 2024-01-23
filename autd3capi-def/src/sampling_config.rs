@@ -1,16 +1,3 @@
-/*
- * File: sampling_config.rs
- * Project: src
- * Created Date: 22/11/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 03/01/2024
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 use crate::ConstPtr;
 use autd3_driver::error::AUTDInternalError;
 

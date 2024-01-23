@@ -1,23 +1,9 @@
-/*
- * File: mod.rs
- * Project: stm
- * Created Date: 24/08/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 01/01/2024
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 #![allow(clippy::missing_safety_doc)]
 
 pub mod focus;
 pub mod gain;
 
-use autd3_driver::datagram::STMProps;
-use autd3capi_def::*;
+use autd3capi_def::{driver::datagram::STMProps, *};
 
 #[no_mangle]
 #[must_use]

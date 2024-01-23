@@ -1,16 +1,3 @@
-/*
- * File: plotters.rs
- * Project: src
- * Created Date: 12/10/2023
- * Author: Shun Suzuki
- * -----
- * Last Modified: 11/12/2023
- * Modified By: Shun Suzuki (suzuki@hapis.k.u-tokyo.ac.jp)
- * -----
- * Copyright (c) 2023 Shun Suzuki. All rights reserved.
- *
- */
-
 use std::ffi::{c_char, CStr};
 
 use autd3_link_visualizer::{ListedColorMap, PlotConfig, PlottersBackend, Visualizer};
@@ -31,7 +18,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerSpherePlotters(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    LinkBuilderPtr::new(builder)
+    SyncLinkBuilder::new(builder)
 }
 
 #[no_mangle]
@@ -46,7 +33,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Plotters(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    LinkBuilderPtr::new(builder)
+    SyncLinkBuilder::new(builder)
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -59,107 +46,6 @@ pub struct ResultPlotConfig {
     pub result: PlotConfigPtr,
     pub err_len: u32,
     pub err: ConstPtr,
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefault() -> PlotConfigPtr {
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig::default())) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithFigSize(
-    config: PlotConfigPtr,
-    width: u32,
-    height: u32,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        figsize: (width, height),
-        ..config
-    })) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithCBarSize(
-    config: PlotConfigPtr,
-    cbar_size: float,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        cbar_size,
-        ..config
-    })) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithFontSize(
-    config: PlotConfigPtr,
-    font_size: u32,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        font_size,
-        ..config
-    })) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithLabelAreaSize(
-    config: PlotConfigPtr,
-    label_area_size: u32,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        label_area_size,
-        ..config
-    })) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithMargin(
-    config: PlotConfigPtr,
-    margin: u32,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig { margin, ..config })) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithTicksStep(
-    config: PlotConfigPtr,
-    ticks_step: float,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        ticks_step,
-        ..config
-    })) as _)
 }
 
 #[repr(u8)]
@@ -179,18 +65,9 @@ pub enum CMap {
     Hell = 12,
 }
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithCMap(
-    config: PlotConfigPtr,
-    cmap: CMap,
-) -> PlotConfigPtr {
-    if config.0.is_null() {
-        return PlotConfigPtr(std::ptr::null());
-    }
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
-    PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
-        cmap: match cmap {
+impl From<CMap> for ListedColorMap {
+    fn from(value: CMap) -> Self {
+        match value {
             CMap::Jet => autd3_link_visualizer::colormap::jet(),
             CMap::Viridis => ListedColorMap::viridis(),
             CMap::Magma => ListedColorMap::magma(),
@@ -204,15 +81,22 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithCMap(
             CMap::Mist => ListedColorMap::mist(),
             CMap::Earth => ListedColorMap::earth(),
             CMap::Hell => ListedColorMap::hell(),
-        },
-        ..config
-    })) as _)
+        }
+    }
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithFName(
-    config: PlotConfigPtr,
+#[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfig(
+    width: u32,
+    height: u32,
+    cbar_size: float,
+    font_size: u32,
+    label_area_size: u32,
+    margin: u32,
+    ticks_step: float,
+    cmap: CMap,
     fname: *const c_char,
 ) -> ResultPlotConfig {
     let fname = match CStr::from_ptr(fname).to_str() {
@@ -226,13 +110,66 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigWithFName(
             };
         }
     };
-    let config = *Box::from_raw(config.0 as *mut PlotConfig);
     ResultPlotConfig {
         result: PlotConfigPtr(Box::into_raw(Box::new(PlotConfig {
+            figsize: (width, height),
+            cbar_size,
+            font_size,
+            label_area_size,
+            margin,
+            ticks_step,
+            cmap: cmap.into(),
             fname: fname.into(),
-            ..config
         })) as _),
         err_len: 0,
         err: std::ptr::null_mut(),
     }
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFigSizeWidth() -> u32 {
+    PlotConfig::default().figsize.0
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFigSizeHeight() -> u32 {
+    PlotConfig::default().figsize.1
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultCBarSize() -> float {
+    PlotConfig::default().cbar_size
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFontSize() -> u32 {
+    PlotConfig::default().font_size
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultLabelAreaSize() -> u32 {
+    PlotConfig::default().label_area_size
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultMargin() -> u32 {
+    PlotConfig::default().margin
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultTicksStep() -> float {
+    PlotConfig::default().ticks_step
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultCMap() -> CMap {
+    CMap::Jet // TODO
 }
