@@ -13,6 +13,10 @@ use crate::{impl_ptr, ConstPtr};
 #[repr(C)]
 pub struct LinkBuilderPtr(pub ConstPtr);
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct LinkPtr(pub ConstPtr);
+
 impl_ptr!(LinkPtr, SyncLink);
 
 impl LinkPtr {

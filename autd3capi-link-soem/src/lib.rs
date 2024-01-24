@@ -11,6 +11,10 @@ use autd3capi_def::*;
 
 use autd3_link_soem::{local::link_soem::*, remote::link_soem_remote::*, EthernetAdapters};
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct EthernetAdaptersPtr(pub ConstPtr);
+
 impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
 
 #[no_mangle]

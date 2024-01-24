@@ -30,6 +30,10 @@ pub enum Directivity {
 #[repr(C)]
 pub struct ConfigPtr(pub ConstPtr);
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct PlotRangePtr(pub ConstPtr);
+
 impl_ptr!(PlotRangePtr, PlotRange);
 
 macro_rules! match_visualizer {

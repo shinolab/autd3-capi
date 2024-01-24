@@ -11,10 +11,6 @@ pub use modulation::*;
 #[macro_export]
 macro_rules! impl_ptr {
     ($name:ident, $type:ty) => {
-        #[derive(Debug, Clone, Copy)]
-        #[repr(C)]
-        pub struct $name(pub ConstPtr);
-
         impl std::ops::Deref for $name {
             type Target = $type;
             fn deref(&self) -> &Self::Target {

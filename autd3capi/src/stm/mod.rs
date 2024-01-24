@@ -5,6 +5,10 @@ pub mod gain;
 
 use autd3capi_def::{driver::datagram::STMProps, *};
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct STMPropsPtr(pub ConstPtr);
+
 impl_ptr!(STMPropsPtr, STMProps);
 
 impl From<STMProps> for STMPropsPtr {
