@@ -14,11 +14,10 @@ pub unsafe extern "C" fn AUTDGainHoloGS(
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(GS, NalgebraBackend, backend, points, amps, size)
-            .with_repeat(repeat as _)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(GS, NalgebraBackend, backend, points, amps, size)
+        .with_repeat(repeat as _)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]

@@ -18,14 +18,13 @@ pub unsafe extern "C" fn AUTDModulationSine(
     phase: u8,
     mode: SamplingMode,
 ) -> ModulationPtr {
-    ModulationPtr::new(
-        Sine::new(freq)
-            .with_sampling_config(config.into())
-            .with_intensity(intensity)
-            .with_offset(offset)
-            .with_phase(Phase::new(phase))
-            .with_mode(mode.into()),
-    )
+    Sine::new(freq)
+        .with_sampling_config(config.into())
+        .with_intensity(intensity)
+        .with_offset(offset)
+        .with_phase(Phase::new(phase))
+        .with_mode(mode.into())
+        .into()
 }
 
 #[no_mangle]

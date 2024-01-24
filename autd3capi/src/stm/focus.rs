@@ -8,6 +8,8 @@ use autd3capi_def::{
     *,
 };
 
+use super::STMPropsPtr;
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFocus(
@@ -16,15 +18,15 @@ pub unsafe extern "C" fn AUTDSTMFocus(
     intensities: *const u8,
     size: u64,
 ) -> ResultDatagram {
-    FocusSTM::from_props(*Box::from_raw(props.0 as *mut STMProps))
+    FocusSTM::from_props(*take!(props, STMProps))
         .add_foci_from_iter((0..size as usize).map(|i| {
             let p = Vector3::new(
                 points.add(i * 3).read(),
                 points.add(i * 3 + 1).read(),
                 points.add(i * 3 + 2).read(),
             );
-            let intensities = *intensities.add(i);
-            (p, intensities)
+            let intensity = *intensities.add(i);
+            (p, intensity)
         }))
         .into()
 }

@@ -14,14 +14,13 @@ pub unsafe extern "C" fn AUTDModulationSquare(
     duty: float,
     mode: SamplingMode,
 ) -> ModulationPtr {
-    ModulationPtr::new(
-        Square::new(freq)
-            .with_sampling_config(config.into())
-            .with_low(low)
-            .with_high(high)
-            .with_duty(duty)
-            .with_mode(mode.into()),
-    )
+    Square::new(freq)
+        .with_sampling_config(config.into())
+        .with_low(low)
+        .with_high(high)
+        .with_duty(duty)
+        .with_mode(mode.into())
+        .into()
 }
 
 #[no_mangle]

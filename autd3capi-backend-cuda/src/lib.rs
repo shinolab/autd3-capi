@@ -27,7 +27,7 @@ pub unsafe extern "C" fn AUTDCUDABackend() -> ResultBackend {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDCUDABackendDelete(backend: BackendPtr) {
-    let _ = Box::from_raw(backend.0 as *mut std::sync::Arc<CUDABackend>);
+    let _ = take!(backend, std::sync::Arc<CUDABackend>);
 }
 
 #[no_mangle]
@@ -42,13 +42,12 @@ pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(SDP, CUDABackend, backend, points, amps, size)
-            .with_alpha(alpha)
-            .with_lambda(lambda)
-            .with_repeat(repeat as _)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(SDP, CUDABackend, backend, points, amps, size)
+        .with_alpha(alpha)
+        .with_lambda(lambda)
+        .with_repeat(repeat as _)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]
@@ -61,11 +60,10 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(GS, CUDABackend, backend, points, amps, size)
-            .with_repeat(repeat as _)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(GS, CUDABackend, backend, points, amps, size)
+        .with_repeat(repeat as _)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]
@@ -78,11 +76,10 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(GSPAT, CUDABackend, backend, points, amps, size)
-            .with_repeat(repeat as _)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(GSPAT, CUDABackend, backend, points, amps, size)
+        .with_repeat(repeat as _)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]
@@ -94,10 +91,9 @@ pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
     size: u64,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(Naive, CUDABackend, backend, points, amps, size)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(Naive, CUDABackend, backend, points, amps, size)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]
@@ -109,11 +105,10 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGreedy(
     div: u8,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(Greedy, points, amps, size)
-            .with_phase_div(div)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(Greedy, points, amps, size)
+        .with_phase_div(div)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]
@@ -131,15 +126,12 @@ pub unsafe extern "C" fn AUTDGainHoloCUDALM(
     initial_ptr: *const float,
     initial_len: u64,
 ) -> GainPtr {
-    let mut initial = vec![0.; initial_len as usize];
-    std::ptr::copy_nonoverlapping(initial_ptr, initial.as_mut_ptr(), initial_len as usize);
-    GainPtr::new(
-        create_holo!(LM, CUDABackend, backend, points, amps, size)
-            .with_eps_1(eps_1)
-            .with_eps_2(eps_2)
-            .with_tau(tau)
-            .with_k_max(k_max as _)
-            .with_initial(initial)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(LM, CUDABackend, backend, points, amps, size)
+        .with_eps_1(eps_1)
+        .with_eps_2(eps_2)
+        .with_tau(tau)
+        .with_k_max(k_max as _)
+        .with_initial(vec_from_raw!(initial_ptr, float, initial_len))
+        .with_constraint(*take!(constraint, _))
+        .into()
 }

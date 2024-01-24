@@ -30,9 +30,7 @@ pub enum Directivity {
 #[repr(C)]
 pub struct ConfigPtr(pub ConstPtr);
 
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct PlotRangePtr(pub ConstPtr);
+impl_ptr!(PlotRangePtr, PlotRange);
 
 macro_rules! match_visualizer {
     ($b:expr, $d:expr, $v: expr, $call:tt,  $( $args:expr ),*) => {
@@ -57,16 +55,16 @@ macro_rules! match_visualizer_plot {
     ($b:expr, $d:expr, $v: expr, $call:tt, $config:expr, $( $args:expr ),*) => {
         match $b {
             Backend::Plotters => match $d {
-                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, PlottersBackend>>().$call(*Box::from_raw($config.0 as *mut PlotConfig), $($args),*),
-                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, PlottersBackend>>().$call(*Box::from_raw($config.0 as *mut PlotConfig), $($args),*),
+                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, PlottersBackend>>().$call(*take!($config, PlotConfig), $($args),*),
+                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, PlottersBackend>>().$call(*take!($config, PlotConfig), $($args),*),
             },
             Backend::Python =>  match $d {
-                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, PythonBackend>>().$call(*Box::from_raw($config.0 as *mut PyPlotConfig), $($args),*),
-                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, PythonBackend>>().$call(*Box::from_raw($config.0 as *mut PyPlotConfig), $($args),*),
+                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, PythonBackend>>().$call(*take!($config, PyPlotConfig), $($args),*),
+                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, PythonBackend>>().$call(*take!($config, PyPlotConfig), $($args),*),
             },
             Backend::Null =>  match $d {
-                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, NullBackend>>().$call(*Box::from_raw($config.0 as *mut NullPlotConfig), $($args),*),
-                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, NullBackend>>().$call(*Box::from_raw($config.0 as *mut NullPlotConfig), $($args),*),
+                Directivity::Sphere =>  $v.cast::<Visualizer<Sphere, NullBackend>>().$call(*take!($config, NullPlotConfig), $($args),*),
+                Directivity::T4010A1 =>  $v.cast::<Visualizer<T4010A1, NullBackend>>().$call(*take!($config, NullPlotConfig), $($args),*),
             },
         }
     };
@@ -94,7 +92,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRange(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePointsLen(range: PlotRangePtr) -> u64 {
-    let range = cast!(range.0, PlotRange);
     let n = |range: &std::ops::Range<float>, resolution: float| -> usize {
         ((range.end - range.start) / resolution).floor() as usize + 1
     };
@@ -109,7 +106,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePoints(
     range: PlotRangePtr,
     points: *mut float,
 ) {
-    let range = Box::from_raw(range.0 as *mut PlotRange);
+    let range = take!(range, PlotRange);
     let observe_points = range.observe_points();
     std::ptr::copy_nonoverlapping(
         observe_points.as_ptr() as *const float,
@@ -204,7 +201,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcFieldOf(
         visualizer,
         calc_field_of,
         points.iter(),
-        cast!(geometry.0, Geometry),
+        &geometry,
         idx
     )
     .and_then(|m| {
@@ -231,8 +228,8 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotFieldOf(
         visualizer,
         plot_field_of,
         config,
-        *Box::from_raw(range.0 as *mut PlotRange),
-        cast!(geometry.0, Geometry),
+        *take!(range, PlotRange),
+        &geometry,
         idx
     ))
 }
@@ -254,7 +251,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhaseOf(
         visualizer,
         plot_phase_of,
         config,
-        cast!(geometry.0, Geometry),
+        &geometry,
         idx
     ))
 }

@@ -40,17 +40,21 @@ pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: float) -> float {
 #[macro_export]
 macro_rules! create_holo {
     ($type:tt, $backend_type:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {
-        $type::new(cast!($backend.0, std::sync::Arc<$backend_type>).clone()).add_foci_from_iter(
-            (0..$size as usize).map(|i| {
-                let p = Vector3::new(
-                    $points.add(i * 3).read(),
-                    $points.add(i * 3 + 1).read(),
-                    $points.add(i * 3 + 2).read(),
-                );
-                let amp = *$amps.add(i) * Pascal;
-                (p, amp)
-            }),
+        $type::new(
+            ($backend.0 as *const std::sync::Arc<$backend_type>)
+                .as_ref()
+                .unwrap()
+                .clone(),
         )
+        .add_foci_from_iter((0..$size as usize).map(|i| {
+            let p = Vector3::new(
+                $points.add(i * 3).read(),
+                $points.add(i * 3 + 1).read(),
+                $points.add(i * 3 + 2).read(),
+            );
+            let amp = *$amps.add(i) * Pascal;
+            (p, amp)
+        }))
     };
 
     ($type:tt, $points:expr, $amps:expr, $size:expr) => {

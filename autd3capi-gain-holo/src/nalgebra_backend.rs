@@ -2,6 +2,7 @@
 
 use crate::BackendPtr;
 use autd3_gain_holo::*;
+use autd3capi_def::take;
 
 #[no_mangle]
 #[must_use]
@@ -11,5 +12,5 @@ pub unsafe extern "C" fn AUTDNalgebraBackend() -> BackendPtr {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeleteNalgebraBackend(backend: BackendPtr) {
-    let _ = Box::from_raw(backend.0 as *mut std::sync::Arc<NalgebraBackend>);
+    let _ = take!(backend, std::sync::Arc<NalgebraBackend>);
 }

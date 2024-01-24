@@ -29,6 +29,28 @@ impl From<SamplingConfiguration> for autd3_driver::common::SamplingConfiguration
     }
 }
 
+impl From<Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>>
+    for ResultSamplingConfig
+{
+    fn from(r: Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>) -> Self {
+        match r {
+            Ok(result) => Self {
+                result: result.into(),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: SamplingConfiguration { div: 0 },
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
 #[cfg(feature = "export")]
 mod export {
     use super::*;
@@ -85,27 +107,5 @@ mod export {
     ) -> bool {
         autd3_driver::common::SamplingConfiguration::from(a)
             == autd3_driver::common::SamplingConfiguration::from(b)
-    }
-}
-
-impl From<Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>>
-    for ResultSamplingConfig
-{
-    fn from(r: Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>) -> Self {
-        match r {
-            Ok(result) => Self {
-                result: result.into(),
-                err_len: 0,
-                err: std::ptr::null_mut(),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: SamplingConfiguration { div: 0 },
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
-                }
-            }
-        }
     }
 }

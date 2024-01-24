@@ -64,7 +64,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
     };
     ResultLinkSimulatorBuilder {
         result: LinkSimulatorBuilderPtr::new(
-            Box::from_raw(simulator.0 as *mut SimulatorBuilder).with_server_ip(addr),
+            take!(simulator, SimulatorBuilder).with_server_ip(addr),
         ),
         err_len: 0,
         err: std::ptr::null_mut(),
@@ -78,8 +78,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
     timeout_ns: u64,
 ) -> LinkSimulatorBuilderPtr {
     LinkSimulatorBuilderPtr::new(
-        Box::from_raw(simulator.0 as *mut SimulatorBuilder)
-            .with_timeout(Duration::from_nanos(timeout_ns)),
+        take!(simulator, SimulatorBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
     )
 }
 
@@ -88,7 +87,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
 pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
     simulator: LinkSimulatorBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*Box::from_raw(simulator.0 as *mut SimulatorBuilder))
+    SyncLinkBuilder::new(*take!(simulator, SimulatorBuilder))
 }
 
 #[no_mangle]

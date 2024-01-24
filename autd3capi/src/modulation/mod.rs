@@ -8,40 +8,83 @@ pub mod square;
 pub mod r#static;
 pub mod transform;
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct ModulationCalcPtr(pub ConstPtr);
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct ResultModulationCalc {
+    pub result: ModulationCalcPtr,
+    pub result_len: u32,
+    pub freq_div: u32,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl
+    From<(
+        autd3capi_def::driver::common::SamplingConfiguration,
+        Result<Vec<EmitIntensity>, AUTDInternalError>,
+    )> for ResultModulationCalc
+{
+    fn from(
+        r: (
+            autd3capi_def::driver::common::SamplingConfiguration,
+            Result<Vec<EmitIntensity>, AUTDInternalError>,
+        ),
+    ) -> Self {
+        match r.1 {
+            Ok(v) => Self {
+                result_len: v.len() as u32,
+                freq_div: r.0.frequency_division(),
+                result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: ModulationCalcPtr(std::ptr::null()),
+                    result_len: 0,
+                    freq_div: 0,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfiguration {
-    Box::from_raw(m.0 as *mut Box<M>).sampling_config().into()
+    take!(m, Box<M>).sampling_config().into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationIntoDatagram(m: ModulationPtr) -> DatagramPtr {
-    DatagramPtr::new(*Box::from_raw(m.0 as *mut Box<M>))
+    (*take!(m, Box<M>)).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSize(m: ModulationPtr) -> ResultI32 {
-    Box::from_raw(m.0 as *mut Box<M>).len().into()
+    take!(m, Box<M>).len().into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCalc(m: ModulationPtr) -> ResultModulationCalc {
-    let m = Box::from_raw(m.0 as *mut Box<M>);
+    let m = take!(m, Box<M>);
     (m.sampling_config(), m.calc()).into()
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcGetResult(src: ModulationCalcPtr, dst: *mut u8) {
-    let src = cast!(src.0, Vec<EmitIntensity>);
+    let src = take!(src, Vec<EmitIntensity>);
     std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
-    let _ = Box::from_raw(src.0 as *mut Vec<EmitIntensity>);
 }
 
 #[repr(u8)]

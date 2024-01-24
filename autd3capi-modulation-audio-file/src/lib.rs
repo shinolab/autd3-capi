@@ -25,7 +25,7 @@ pub unsafe extern "C" fn AUTDModulationWav(
     };
     match Wav::new(path) {
         Ok(v) => ResultModulation {
-            result: ModulationPtr::new(v.with_sampling_config(config.into())),
+            result: v.with_sampling_config(config.into()).into(),
             err_len: 0,
             err: std::ptr::null_mut(),
         },
@@ -66,7 +66,7 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
     };
     match RawPCM::new(path, sample_rate) {
         Ok(v) => ResultModulation {
-            result: ModulationPtr::new(v.with_sampling_config(config.into())),
+            result: v.with_sampling_config(config.into()).into(),
             err_len: 0,
             err: std::ptr::null_mut(),
         },

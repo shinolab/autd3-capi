@@ -5,16 +5,24 @@ pub mod gain;
 
 use autd3capi_def::{driver::datagram::STMProps, *};
 
+impl_ptr!(STMPropsPtr, STMProps);
+
+impl From<STMProps> for STMPropsPtr {
+    fn from(value: STMProps) -> Self {
+        Self(Box::into_raw(Box::new(value)) as _)
+    }
+}
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsFromFreq(freq: float) -> STMPropsPtr {
-    STMPropsPtr::new(STMProps::from_freq(freq))
+    STMProps::from_freq(freq).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsFromPeriod(p: u64) -> STMPropsPtr {
-    STMPropsPtr::new(STMProps::from_period(std::time::Duration::from_nanos(p)))
+    STMProps::from_period(std::time::Duration::from_nanos(p)).into()
 }
 
 #[no_mangle]
@@ -22,43 +30,41 @@ pub unsafe extern "C" fn AUTDSTMPropsFromPeriod(p: u64) -> STMPropsPtr {
 pub unsafe extern "C" fn AUTDSTMPropsFromSamplingConfig(
     config: SamplingConfiguration,
 ) -> STMPropsPtr {
-    STMPropsPtr::new(STMProps::from_sampling_config(config.into()))
+    STMProps::from_sampling_config(config.into()).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsWithStartIdx(props: STMPropsPtr, idx: i32) -> STMPropsPtr {
-    let props = Box::from_raw(props.0 as *mut STMProps);
-    STMPropsPtr::new(if idx < 0 {
-        props.with_start_idx(None)
+    if idx < 0 {
+        take!(props, STMProps).with_start_idx(None)
     } else {
-        props.with_start_idx(Some(idx as u16))
-    })
+        take!(props, STMProps).with_start_idx(Some(idx as u16))
+    }
+    .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsWithFinishIdx(props: STMPropsPtr, idx: i32) -> STMPropsPtr {
-    let props = Box::from_raw(props.0 as *mut STMProps);
-    STMPropsPtr::new(if idx < 0 {
-        props.with_finish_idx(None)
+    if idx < 0 {
+        take!(props, STMProps).with_finish_idx(None)
     } else {
-        props.with_finish_idx(Some(idx as u16))
-    })
+        take!(props, STMProps).with_finish_idx(Some(idx as u16))
+    }
+    .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsFrequency(props: STMPropsPtr, size: u64) -> float {
-    Box::from_raw(props.0 as *mut STMProps).freq(size as usize)
+    take!(props, STMProps).freq(size as usize)
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsPeriod(props: STMPropsPtr, size: u64) -> u64 {
-    Box::from_raw(props.0 as *mut STMProps)
-        .period(size as usize)
-        .as_nanos() as _
+    take!(props, STMProps).period(size as usize).as_nanos() as _
 }
 
 #[no_mangle]
@@ -67,15 +73,13 @@ pub unsafe extern "C" fn AUTDSTMPropsSamplingConfig(
     props: STMPropsPtr,
     size: u64,
 ) -> ResultSamplingConfig {
-    Box::from_raw(props.0 as *mut STMProps)
-        .sampling_config(size as usize)
-        .into()
+    take!(props, STMProps).sampling_config(size as usize).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsStartIdx(props: STMPropsPtr) -> i32 {
-    if let Some(idx) = cast!(props.0, STMProps).start_idx() {
+    if let Some(idx) = props.start_idx() {
         idx as i32
     } else {
         -1
@@ -85,7 +89,7 @@ pub unsafe extern "C" fn AUTDSTMPropsStartIdx(props: STMPropsPtr) -> i32 {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsFinishIdx(props: STMPropsPtr) -> i32 {
-    if let Some(idx) = cast!(props.0, STMProps).finish_idx() {
+    if let Some(idx) = props.finish_idx() {
         idx as i32
     } else {
         -1

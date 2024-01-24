@@ -11,10 +11,54 @@ pub mod plane;
 pub mod trans_test;
 pub mod uniform;
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct GainCalcDrivesMapPtr(pub ConstPtr);
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct ResultGainCalcDrivesMap {
+    pub result: GainCalcDrivesMapPtr,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<HashMap<usize, Vec<autd3capi_def::driver::common::Drive>>, AUTDInternalError>>
+    for ResultGainCalcDrivesMap
+{
+    fn from(
+        r: Result<HashMap<usize, Vec<autd3capi_def::driver::common::Drive>>, AUTDInternalError>,
+    ) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: GainCalcDrivesMapPtr(Box::into_raw(Box::new(v)) as _),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: GainCalcDrivesMapPtr(std::ptr::null()),
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
+impl std::ops::Deref for GainCalcDrivesMapPtr {
+    type Target = HashMap<usize, Vec<Drive>>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { (self.0 as *mut Self::Target).as_ref().unwrap() }
+    }
+}
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainIntoDatagram(gain: GainPtr) -> DatagramPtr {
-    DatagramPtr::new(*Box::from_raw(gain.0 as *mut Box<G>))
+    (*take!(gain, Box<G>)).into()
 }
 
 #[no_mangle]
@@ -23,10 +67,7 @@ pub unsafe extern "C" fn AUTDGainCalc(
     gain: GainPtr,
     geometry: GeometryPtr,
 ) -> ResultGainCalcDrivesMap {
-    let geo = cast!(geometry.0, Geometry);
-    Box::from_raw(gain.0 as *mut Box<G>)
-        .calc(geo, GainFilter::All)
-        .into()
+    take!(gain, Box<G>).calc(&geometry, GainFilter::All).into()
 }
 
 #[no_mangle]
@@ -36,11 +77,10 @@ pub unsafe extern "C" fn AUTDGainCalcGetResult(
     idx: u32,
 ) {
     let idx = idx as usize;
-    let src = cast!(src.0, HashMap<usize, Vec<Drive>>);
     std::ptr::copy_nonoverlapping(src[&idx].as_ptr(), dst, src[&idx].len());
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDGainCalcFreeResult(src: GainCalcDrivesMapPtr) {
-    let _ = Box::from_raw(src.0 as *mut HashMap<usize, Vec<Drive>>);
+    let _ = take!(src, HashMap<usize, Vec<Drive>>);
 }

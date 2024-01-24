@@ -16,13 +16,12 @@ pub unsafe extern "C" fn AUTDGainHoloSDP(
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(SDP, NalgebraBackend, backend, points, amps, size)
-            .with_alpha(alpha)
-            .with_lambda(lambda)
-            .with_repeat(repeat as _)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(SDP, NalgebraBackend, backend, points, amps, size)
+        .with_alpha(alpha)
+        .with_lambda(lambda)
+        .with_repeat(repeat as _)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]

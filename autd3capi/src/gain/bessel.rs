@@ -12,10 +12,9 @@ pub unsafe extern "C" fn AUTDGainBessel(
     theta_z: float,
     intensity: u8,
 ) -> GainPtr {
-    GainPtr::new(
-        Bessel::new(Vector3::new(x, y, z), Vector3::new(nx, ny, nz), theta_z)
-            .with_intensity(intensity),
-    )
+    Bessel::new(Vector3::new(x, y, z), Vector3::new(nx, ny, nz), theta_z)
+        .with_intensity(intensity)
+        .into()
 }
 
 #[no_mangle]

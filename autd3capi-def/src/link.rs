@@ -1,7 +1,4 @@
-use std::{
-    ops::{Deref, DerefMut},
-    time::Duration,
-};
+use std::time::Duration;
 
 use autd3_driver::{
     cpu::{RxMessage, TxDatagram},
@@ -10,15 +7,13 @@ use autd3_driver::{
     link::{Link, LinkBuilder},
 };
 
-use crate::ConstPtr;
+use crate::{impl_ptr, ConstPtr};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct LinkBuilderPtr(pub ConstPtr);
 
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct LinkPtr(pub ConstPtr);
+impl_ptr!(LinkPtr, SyncLink);
 
 impl LinkPtr {
     pub fn cast<L: Link>(&self) -> &L {
@@ -35,20 +30,6 @@ impl LinkPtr {
                 .as_mut()
                 .unwrap()
         }
-    }
-}
-
-impl Deref for LinkPtr {
-    type Target = SyncLink;
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { (self.0 as *const SyncLink).as_ref().unwrap() }
-    }
-}
-
-impl DerefMut for LinkPtr {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        unsafe { (self.0 as *mut SyncLink).as_mut().unwrap() }
     }
 }
 

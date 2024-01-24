@@ -13,11 +13,10 @@ pub unsafe extern "C" fn AUTDGainHoloGreedy(
     div: u8,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    GainPtr::new(
-        create_holo!(Greedy, points, amps, size)
-            .with_phase_div(div)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(Greedy, points, amps, size)
+        .with_phase_div(div)
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]

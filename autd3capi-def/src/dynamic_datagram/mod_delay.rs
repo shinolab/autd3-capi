@@ -61,6 +61,6 @@ impl DynamicDatagram for DynamicConfigureModDelay {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        None
+        Some(Duration::from_millis(200))
     }
 }

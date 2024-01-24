@@ -1,5 +1,4 @@
 use autd3capi_def::{autd3::gain::TransducerTest, *};
-use driver::common::{EmitIntensity, Phase};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -19,11 +18,8 @@ pub unsafe extern "C" fn AUTDGainTransducerTest(
         _,
         unsafe extern "C" fn(ContextPtr, GeometryPtr, u32, u8, *mut Drive),
     >(f);
-    GainPtr::new(TransducerTest::new(move |dev, tr| {
-        let mut d = driver::common::Drive {
-            phase: Phase::new(0),
-            intensity: EmitIntensity::new(0),
-        };
+    TransducerTest::new(move |dev, tr| {
+        let mut d = driver::common::Drive::null();
         f(
             context,
             geometry,
@@ -32,5 +28,6 @@ pub unsafe extern "C" fn AUTDGainTransducerTest(
             &mut d as *mut _ as *mut _,
         );
         Some(d)
-    }))
+    })
+    .into()
 }

@@ -19,17 +19,14 @@ pub unsafe extern "C" fn AUTDGainHoloLM(
     initial_len: u64,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
-    let mut initial = vec![0.; initial_len as usize];
-    std::ptr::copy_nonoverlapping(initial_ptr, initial.as_mut_ptr(), initial_len as usize);
-    GainPtr::new(
-        create_holo!(LM, NalgebraBackend, backend, points, amps, size)
-            .with_eps_1(eps_1)
-            .with_eps_2(eps_2)
-            .with_tau(tau)
-            .with_k_max(k_max as _)
-            .with_initial(initial)
-            .with_constraint(*Box::from_raw(constraint.0 as _)),
-    )
+    create_holo!(LM, NalgebraBackend, backend, points, amps, size)
+        .with_eps_1(eps_1)
+        .with_eps_2(eps_2)
+        .with_tau(tau)
+        .with_k_max(k_max as _)
+        .with_initial(vec_from_raw!(initial_ptr, float, initial_len))
+        .with_constraint(*take!(constraint, _))
+        .into()
 }
 
 #[no_mangle]

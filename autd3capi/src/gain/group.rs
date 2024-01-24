@@ -4,6 +4,10 @@ use autd3capi_def::{autd3::gain::Group, driver::autd3_device::AUTD3, *};
 
 type M = HashMap<usize, Vec<i32>>;
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct GroupGainMapPtr(pub ConstPtr);
+
 #[no_mangle]
 #[must_use]
 #[allow(clippy::uninit_vec)]
@@ -30,12 +34,15 @@ pub unsafe extern "C" fn AUTDGainGroupMapSet(
     map_data: *const i32,
 ) -> GroupGainMapPtr {
     let dev_idx = dev_idx as usize;
-    let mut map = Box::from_raw(map.0 as *mut M);
-    std::ptr::copy_nonoverlapping(
-        map_data,
-        map.get_mut(&dev_idx).unwrap().as_mut_ptr(),
-        map[&dev_idx].len(),
-    );
+    let map = {
+        let mut map = take!(map, M);
+        std::ptr::copy_nonoverlapping(
+            map_data,
+            map.get_mut(&dev_idx).unwrap().as_mut_ptr(),
+            map[&dev_idx].len(),
+        );
+        map
+    };
     GroupGainMapPtr(Box::into_raw(map) as _)
 }
 
@@ -48,22 +55,20 @@ pub unsafe extern "C" fn AUTDGainGroup(
     values_ptr: *const GainPtr,
     kv_len: u32,
 ) -> GainPtr {
-    let map = Box::from_raw(map.0 as *mut M);
-    let mut keys = Vec::with_capacity(kv_len as usize);
-    keys.set_len(kv_len as usize);
-    std::ptr::copy_nonoverlapping(keys_ptr, keys.as_mut_ptr(), kv_len as usize);
-    let mut values = Vec::with_capacity(kv_len as usize);
-    values.set_len(kv_len as usize);
-    std::ptr::copy_nonoverlapping(values_ptr, values.as_mut_ptr(), kv_len as usize);
-    GainPtr::new(keys.iter().zip(values.iter()).fold(
-        Group::new(move |dev, tr| {
-            let key = map[&dev.idx()][tr.idx()];
-            if key < 0 {
-                None
-            } else {
-                Some(key)
-            }
-        }),
-        |acc, (&k, v)| acc.set(k, *Box::from_raw(v.0 as *mut Box<G>)),
-    ))
+    let map = take!(map, M);
+    vec_from_raw!(keys_ptr, i32, kv_len)
+        .iter()
+        .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
+        .fold(
+            Group::new(move |dev, tr| {
+                let key = map[&dev.idx()][tr.idx()];
+                if key < 0 {
+                    None
+                } else {
+                    Some(key)
+                }
+            }),
+            |acc, (&k, v)| acc.set(k, *take!(v, Box<G>)),
+        )
+        .into()
 }

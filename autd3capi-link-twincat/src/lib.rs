@@ -31,8 +31,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATWithTimeout(
     timeout_ns: u64,
 ) -> LinkTwinCATBuilderPtr {
     LinkTwinCATBuilderPtr::new(
-        Box::from_raw(twincat.0 as *mut TwinCATBuilder)
-            .with_timeout(Duration::from_nanos(timeout_ns)),
+        take!(twincat, TwinCATBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
     )
 }
 
@@ -41,7 +40,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkTwinCATIntoBuilder(
     twincat: LinkTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*Box::from_raw(twincat.0 as *mut TwinCATBuilder))
+    SyncLinkBuilder::new(*take!(twincat, TwinCATBuilder))
 }
 
 #[repr(C)]
@@ -94,8 +93,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithServerIP(
     addr: *const c_char,
 ) -> LinkRemoteTwinCATBuilderPtr {
     LinkRemoteTwinCATBuilderPtr::new(
-        Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder)
-            .with_server_ip(CStr::from_ptr(addr).to_str().unwrap()),
+        take!(twincat, RemoteTwinCATBuilder).with_server_ip(CStr::from_ptr(addr).to_str().unwrap()),
     )
 }
 
@@ -106,7 +104,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithClientAmsNetId(
     id: *const c_char,
 ) -> LinkRemoteTwinCATBuilderPtr {
     LinkRemoteTwinCATBuilderPtr::new(
-        Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder)
+        take!(twincat, RemoteTwinCATBuilder)
             .with_client_ams_net_id(CStr::from_ptr(id).to_str().unwrap()),
     )
 }
@@ -118,8 +116,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithTimeout(
     timeout_ns: u64,
 ) -> LinkRemoteTwinCATBuilderPtr {
     LinkRemoteTwinCATBuilderPtr::new(
-        Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder)
-            .with_timeout(Duration::from_nanos(timeout_ns)),
+        take!(twincat, RemoteTwinCATBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
     )
 }
 
@@ -128,5 +125,5 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteTwinCATIntoBuilder(
     twincat: LinkRemoteTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*Box::from_raw(twincat.0 as *mut RemoteTwinCATBuilder))
+    SyncLinkBuilder::new(*take!(twincat, RemoteTwinCATBuilder))
 }

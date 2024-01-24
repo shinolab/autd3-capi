@@ -122,3 +122,31 @@ impl SyncController {
         }
     }
 }
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct ResultController {
+    pub result: ControllerPtr,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<SyncController, AUTDError>> for ResultController {
+    fn from(r: Result<SyncController, AUTDError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: ControllerPtr(Box::into_raw(Box::new(v)) as _),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: ControllerPtr(std::ptr::null()),
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}

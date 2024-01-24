@@ -4,7 +4,7 @@ use autd3capi_def::*;
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainCustom() -> GainPtr {
-    GainPtr::new(CustomGain::default())
+    CustomGain::default().into()
 }
 
 #[no_mangle]
@@ -16,8 +16,10 @@ pub unsafe extern "C" fn AUTDGainCustomSet(
     ptr: *const Drive,
     len: u32,
 ) -> GainPtr {
-    let mut drives = Vec::<autd3capi_def::driver::common::Drive>::with_capacity(len as _);
-    drives.set_len(len as _);
-    std::ptr::copy_nonoverlapping(ptr as *const _, drives.as_mut_ptr(), len as _);
-    GainPtr::new(take_gain!(custom, CustomGain).set(dev_idx as _, drives))
+    take_gain!(custom, CustomGain)
+        .set(
+            dev_idx as _,
+            vec_from_raw!(ptr, autd3capi_def::driver::common::Drive, len),
+        )
+        .into()
 }

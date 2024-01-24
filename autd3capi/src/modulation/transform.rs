@@ -10,10 +10,12 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
     f: ConstPtr,
     context: ConstPtr,
 ) -> ModulationPtr {
-    ModulationPtr::new(
-        Box::from_raw(m.0 as *mut Box<M>).with_transform(move |i, d| {
-            let f = std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, u8) -> u8>(f);
-            EmitIntensity::new(f(context, i as u32, d.value()))
-        }),
-    )
+    take!(m, Box<M>)
+        .with_transform(move |i, d| {
+            EmitIntensity::new((std::mem::transmute::<
+                _,
+                unsafe extern "C" fn(ConstPtr, u32, u8) -> u8,
+            >(f))(context, i as u32, d.value()))
+        })
+        .into()
 }

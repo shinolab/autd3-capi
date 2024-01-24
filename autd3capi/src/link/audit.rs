@@ -25,14 +25,14 @@ pub unsafe extern "C" fn AUTDLinkAuditWithTimeout(
     timeout_ns: u64,
 ) -> LinkAuditBuilderPtr {
     LinkAuditBuilderPtr::new(
-        Box::from_raw(audit.0 as *mut AuditBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
+        take!(audit, AuditBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
     )
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIntoBuilder(audit: LinkAuditBuilderPtr) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*Box::from_raw(audit.0 as *mut AuditBuilder))
+    SyncLinkBuilder::new(*take!(audit, AuditBuilder))
 }
 
 #[no_mangle]

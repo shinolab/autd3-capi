@@ -43,13 +43,11 @@ pub unsafe extern "C" fn AUTDControllerBuilderAddDevice(
     qy: float,
     qz: float,
 ) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(
-        Box::from_raw(builder.0 as *mut SyncControllerBuilder).add_device(
-            AUTD3::new(Vector3::new(x, y, z)).with_rotation(UnitQuaternion::from_quaternion(
-                Quaternion::new(qw, qx, qy, qz),
-            )),
-        ),
-    )
+    ControllerBuilderPtr::new(take!(builder, SyncControllerBuilder).add_device(
+        AUTD3::new(Vector3::new(x, y, z)).with_rotation(UnitQuaternion::from_quaternion(
+            Quaternion::new(qw, qx, qy, qz),
+        )),
+    ))
 }
 
 #[no_mangle]
@@ -58,8 +56,8 @@ pub unsafe extern "C" fn AUTDControllerOpenWith(
     builder: ControllerBuilderPtr,
     link_builder: LinkBuilderPtr,
 ) -> ResultController {
-    let builder = Box::from_raw(builder.0 as *mut SyncControllerBuilder);
-    let link_builder = Box::from_raw(link_builder.0 as *mut SyncLinkBuilder);
+    let builder = take!(builder, SyncControllerBuilder);
+    let link_builder = take!(link_builder, SyncLinkBuilder);
     builder.open_with(*link_builder).into()
 }
 
@@ -73,7 +71,7 @@ pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> ResultI3
 pub unsafe extern "C" fn AUTDControllerDelete(mut cnt: ControllerPtr) -> ResultI32 {
     cnt.close()
         .map(|r| {
-            let _ = Box::from_raw(cnt.0 as *mut SyncController);
+            let _ = take!(cnt, SyncController);
             r
         })
         .into()
@@ -95,12 +93,24 @@ pub unsafe extern "C" fn AUTDControllerFPGAState(
         .into()
 }
 
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct FirmwareInfoListPtr(pub ConstPtr);
+
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct ResultFirmwareInfoList {
     pub result: FirmwareInfoListPtr,
     pub err_len: u32,
     pub err: ConstPtr,
+}
+
+impl std::ops::Deref for FirmwareInfoListPtr {
+    type Target = Vec<FirmwareInfo>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { (self.0 as *const Self::Target).as_ref().unwrap() }
+    }
 }
 
 impl From<Result<Vec<FirmwareInfo>, AUTDError>> for ResultFirmwareInfoList {
@@ -137,8 +147,7 @@ pub unsafe extern "C" fn AUTDControllerFirmwareInfoGet(
     idx: u32,
     info: *mut c_char,
 ) {
-    let firm_info = &cast_mut!(p_info_list.0, Vec<FirmwareInfo>)[idx as usize];
-    let info_str = std::ffi::CString::new(firm_info.to_string()).unwrap();
+    let info_str = std::ffi::CString::new(p_info_list[idx as usize].to_string()).unwrap();
     libc::strcpy(info, info_str.as_ptr());
 }
 
@@ -146,7 +155,7 @@ pub unsafe extern "C" fn AUTDControllerFirmwareInfoGet(
 pub unsafe extern "C" fn AUTDControllerFirmwareInfoListPointerDelete(
     p_info_list: FirmwareInfoListPtr,
 ) {
-    let _ = Box::from_raw(p_info_list.0 as *mut Vec<FirmwareInfo>);
+    let _ = take!(p_info_list, Vec<FirmwareInfo>);
 }
 
 #[no_mangle]
@@ -158,13 +167,13 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSynchronize() -> DatagramPtr {
-    DatagramPtr::new(Synchronize::new())
+    Synchronize::new().into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramClear() -> DatagramPtr {
-    DatagramPtr::new(Clear::new())
+    Clear::new().into()
 }
 
 #[no_mangle]
@@ -174,13 +183,13 @@ pub unsafe extern "C" fn AUTDDatagramConfigureModDelay(
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let geo = cast!(geometry.0, Geometry);
     let f = std::mem::transmute::<
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32, u8) -> u16,
     >(f);
-    DatagramPtr::new(DynamicConfigureModDelay::new(
-        geo.devices()
+    DynamicConfigureModDelay::new(
+        geometry
+            .devices()
             .flat_map(move |dev| {
                 dev.iter().map(move |tr| {
                     (
@@ -190,7 +199,8 @@ pub unsafe extern "C" fn AUTDDatagramConfigureModDelay(
                 })
             })
             .collect(),
-    ))
+    )
+    .into()
 }
 
 #[no_mangle]
@@ -200,16 +210,17 @@ pub unsafe extern "C" fn AUTDDatagramConfigureDebugOutputIdx(
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let geo = cast!(geometry.0, Geometry);
     let f = std::mem::transmute::<
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> u8,
     >(f);
-    DatagramPtr::new(DynamicConfigureDebugOutputIdx::new(
-        geo.devices()
+    DynamicConfigureDebugOutputIdx::new(
+        geometry
+            .devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
             .collect(),
-    ))
+    )
+    .into()
 }
 
 #[no_mangle]
@@ -219,16 +230,17 @@ pub unsafe extern "C" fn AUTDDatagramConfigureForceFan(
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let geo = cast!(geometry.0, Geometry);
     let f = std::mem::transmute::<
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
     >(f);
-    DatagramPtr::new(DynamicConfigureForceFan::new(
-        geo.devices()
+    DynamicConfigureForceFan::new(
+        geometry
+            .devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
             .collect(),
-    ))
+    )
+    .into()
 }
 
 #[no_mangle]
@@ -238,16 +250,17 @@ pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAState(
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let geo = cast!(geometry.0, Geometry);
     let f = std::mem::transmute::<
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
     >(f);
-    DatagramPtr::new(DynamicConfigureReadsFPGAState::new(
-        geo.devices()
+    DynamicConfigureReadsFPGAState::new(
+        geometry
+            .devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
             .collect(),
-    ))
+    )
+    .into()
 }
 
 #[no_mangle]
@@ -285,25 +298,26 @@ pub unsafe extern "C" fn AUTDControllerSend(
     d2: DatagramPtr,
     timeout_ns: i64,
 ) -> ResultI32 {
-    {
-        let timeout = if timeout_ns < 0 {
-            None
-        } else {
-            Some(Duration::from_nanos(timeout_ns as _))
-        };
-        if !d1.is_null() && !d2.is_null() {
-            let d1: Box<Box<dyn DynamicDatagram>> = d1.into();
-            let d2: Box<Box<dyn DynamicDatagram>> = d2.into();
-            cnt.send(DynamicDatagramPack2 { d1, d2, timeout })
-        } else if !d1.is_null() {
-            let d: Box<Box<dyn DynamicDatagram>> = d1.into();
-            cnt.send(DynamicDatagramPack { d, timeout })
-        } else if !d2.is_null() {
-            let d: Box<Box<dyn DynamicDatagram>> = d2.into();
-            cnt.send(DynamicDatagramPack { d, timeout })
-        } else {
-            Result::<bool, AUTDError>::Ok(false)
-        }
+    let timeout = if timeout_ns < 0 {
+        None
+    } else {
+        Some(Duration::from_nanos(timeout_ns as _))
+    };
+    match (d1.is_null(), d2.is_null()) {
+        (false, false) => cnt.send(DynamicDatagramPack2 {
+            d1: d1.into(),
+            d2: d2.into(),
+            timeout,
+        }),
+        (false, true) => cnt.send(DynamicDatagramPack {
+            d: d1.into(),
+            timeout,
+        }),
+        (true, false) => cnt.send(DynamicDatagramPack {
+            d: d2.into(),
+            timeout,
+        }),
+        (true, true) => Err(AUTDInternalError::NotSupported("No datagram".to_owned()).into()),
     }
     .into()
 }
@@ -323,6 +337,26 @@ pub struct ResultGroupKVMap {
     pub err: ConstPtr,
 }
 
+impl From<Result<Box<HashMap<K, V>>, AUTDInternalError>> for ResultGroupKVMap {
+    fn from(value: Result<Box<HashMap<K, V>>, AUTDInternalError>) -> Self {
+        match value {
+            Ok(map) => Self {
+                result: GroupKVMapPtr(Box::into_raw(map) as _),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: GroupKVMapPtr(std::ptr::null()),
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerGroupCreateKVMap() -> GroupKVMapPtr {
@@ -338,61 +372,36 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
     d2: DatagramPtr,
     timeout_ns: i64,
 ) -> ResultGroupKVMap {
+    let mut map = take!(map, HashMap<K, V>);
     let timeout = if timeout_ns < 0 {
         None
     } else {
         Some(Duration::from_nanos(timeout_ns as _))
     };
-    let mut map = Box::from_raw(map.0 as *mut HashMap<K, V>);
-    if !d1.0.is_null() && !d2.0.is_null() {
-        let d1 = Box::from_raw(d1.0 as *mut Box<dyn DynamicDatagram>);
-        let d2 = Box::from_raw(d2.0 as *mut Box<dyn DynamicDatagram>);
-        let d = DynamicDatagramPack2 { d1, d2, timeout };
-        match d.operation() {
-            Ok((op1, op2)) => map.insert(key, (op1, op2, timeout)),
-            Err(e) => {
-                let err = e.to_string();
-                return ResultGroupKVMap {
-                    result: GroupKVMapPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
-                };
-            }
-        };
-    } else if !d1.0.is_null() {
-        let d = Box::from_raw(d1.0 as *mut Box<dyn DynamicDatagram>);
-        let d = DynamicDatagramPack { d, timeout };
-        match d.operation() {
-            Ok((op1, op2)) => map.insert(key, (op1, op2, timeout)),
-            Err(e) => {
-                let err = e.to_string();
-                return ResultGroupKVMap {
-                    result: GroupKVMapPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
-                };
-            }
-        };
-    } else if !d2.0.is_null() {
-        let d = Box::from_raw(d2.0 as *mut Box<dyn DynamicDatagram>);
-        let d = DynamicDatagramPack { d, timeout };
-        match d.operation() {
-            Ok((op1, op2)) => map.insert(key, (op1, op2, timeout)),
-            Err(e) => {
-                let err = e.to_string();
-                return ResultGroupKVMap {
-                    result: GroupKVMapPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
-                };
-            }
-        };
+    match (d1.is_null(), d2.is_null()) {
+        (false, false) => DynamicDatagramPack2 {
+            d1: d1.into(),
+            d2: d2.into(),
+            timeout,
+        }
+        .operation(),
+        (false, true) => DynamicDatagramPack {
+            d: d1.into(),
+            timeout,
+        }
+        .operation(),
+        (true, false) => DynamicDatagramPack {
+            d: d2.into(),
+            timeout,
+        }
+        .operation(),
+        (true, true) => Err(AUTDInternalError::NotSupported("No datagram".to_owned())),
     }
-    ResultGroupKVMap {
-        result: GroupKVMapPtr(Box::into_raw(map) as _),
-        err_len: 0,
-        err: std::ptr::null_mut(),
-    }
+    .map(|op| {
+        map.insert(key, (op.0, op.1, timeout));
+        map
+    })
+    .into()
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -406,7 +415,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
     map: *const i32,
     kv_map: GroupKVMapPtr,
 ) -> ResultI32 {
-    Box::from_raw(kv_map.0 as *mut HashMap<K, V>)
+    take!(kv_map, HashMap<K, V>)
         .into_iter()
         .try_fold(
             cnt.group(|dev| {

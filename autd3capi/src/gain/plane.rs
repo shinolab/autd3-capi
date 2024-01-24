@@ -13,11 +13,10 @@ pub unsafe extern "C" fn AUTDGainPlane(
     intensity: u8,
     phase: u8,
 ) -> GainPtr {
-    GainPtr::new(
-        Plane::new(Vector3::new(nx, ny, nz))
-            .with_intensity(intensity)
-            .with_phase(Phase::from(phase)),
-    )
+    Plane::new(Vector3::new(nx, ny, nz))
+        .with_intensity(intensity)
+        .with_phase(Phase::from(phase))
+        .into()
 }
 
 #[no_mangle]

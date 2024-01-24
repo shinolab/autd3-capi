@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_def::ConstPtr;
+use autd3capi_def::{take, ConstPtr};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
@@ -28,9 +28,7 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraint
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(intensity: u8) -> EmissionConstraintPtr {
-    EmissionConstraintPtr(
-        Box::into_raw(Box::new(EmissionConstraint::Uniform(intensity.into()))) as _,
-    )
+    EmissionConstraint::Uniform(intensity.into()).into()
 }
 
 #[no_mangle]
@@ -39,10 +37,7 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
     min_v: u8,
     max_v: u8,
 ) -> EmissionConstraintPtr {
-    EmissionConstraintPtr(Box::into_raw(Box::new(EmissionConstraint::Clamp(
-        min_v.into(),
-        max_v.into(),
-    ))) as _)
+    EmissionConstraint::Clamp(min_v.into(), max_v.into()).into()
 }
 
 #[no_mangle]
@@ -51,5 +46,5 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintEq(
     a: EmissionConstraintPtr,
     b: EmissionConstraintPtr,
 ) -> bool {
-    *Box::from_raw(a.0 as *mut EmissionConstraint) == *Box::from_raw(b.0 as *mut EmissionConstraint)
+    *take!(a, EmissionConstraint) == *take!(b, EmissionConstraint)
 }
