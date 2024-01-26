@@ -20,6 +20,8 @@ pub unsafe extern "C" fn AUTDGainHoloNaive(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloNaiveDefaultConstraint() -> EmissionConstraintPtr {
-    GS::new(NalgebraBackend::new().unwrap()).constraint().into()
+pub unsafe extern "C" fn AUTDGainNaiveIsDefault(gs: GainPtr) -> bool {
+    let g = take_gain!(gs, Naive<NalgebraBackend>);
+    let default = Naive::new(NalgebraBackend::new().unwrap());
+    g.constraint() == default.constraint()
 }

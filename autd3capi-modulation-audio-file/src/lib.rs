@@ -2,7 +2,7 @@
 
 use std::ffi::{c_char, CStr};
 
-use autd3capi_def::*;
+use autd3capi_def::{driver::derive::ModulationProperty, *};
 
 use autd3_modulation_audio_file::{RawPCM, Wav};
 
@@ -42,8 +42,10 @@ pub unsafe extern "C" fn AUTDModulationWav(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationWavDefaultSamplingConfig() -> SamplingConfiguration {
-    autd3capi_def::driver::common::SamplingConfiguration::FREQ_4K_HZ.into() // TODO
+pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool {
+    let m = take_gain!(wav, Wav);
+    let default = Wav::new("").unwrap();
+    m.sampling_config() == default.sampling_config()
 }
 
 #[no_mangle]
@@ -83,6 +85,8 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationRawPCMDefaultSamplingConfig() -> SamplingConfiguration {
-    autd3capi_def::driver::common::SamplingConfiguration::FREQ_4K_HZ.into() // TODO
+pub unsafe extern "C" fn AUTDModulationRawPCMIsDefault(rawpcm: ModulationPtr) -> bool {
+    let m = take_gain!(rawpcm, RawPCM);
+    let default = RawPCM::new("", 0).unwrap();
+    m.sampling_config() == default.sampling_config()
 }

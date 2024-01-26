@@ -25,30 +25,12 @@ pub unsafe extern "C" fn AUTDModulationSquare(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareDefaultLow() -> u8 {
-    Square::new(0.0).low().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareDefaultHigh() -> u8 {
-    Square::new(0.0).high().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareDefaultDuty() -> float {
-    Square::new(0.0).duty()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareDefaultSamplingConfig() -> SamplingConfiguration {
-    Square::new(0.0).sampling_config().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareDefaultMode() -> SamplingMode {
-    Square::new(0.0).mode().into()
+pub unsafe extern "C" fn AUTDModulationSquareIsDefault(square: ModulationPtr) -> bool {
+    let m = take_gain!(square, Square);
+    let default = Square::new(0.);
+    m.low() == default.low()
+        && m.high() == default.high()
+        && m.duty() == default.duty()
+        && m.mode() == default.mode()
+        && m.sampling_config() == default.sampling_config()
 }

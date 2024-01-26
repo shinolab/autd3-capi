@@ -98,14 +98,4 @@ mod export {
             .period()
             .as_nanos() as _
     }
-
-    #[no_mangle]
-    #[must_use]
-    pub unsafe extern "C" fn AUTDSamplingConfigEq(
-        a: SamplingConfiguration,
-        b: SamplingConfiguration,
-    ) -> bool {
-        autd3_driver::common::SamplingConfiguration::from(a)
-            == autd3_driver::common::SamplingConfiguration::from(b)
-    }
 }

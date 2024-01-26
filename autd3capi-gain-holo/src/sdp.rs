@@ -26,26 +26,11 @@ pub unsafe extern "C" fn AUTDGainHoloSDP(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSDPDefaultConstraint() -> EmissionConstraintPtr {
-    SDP::new(NalgebraBackend::new().unwrap())
-        .constraint()
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSDPDefaultAlpha() -> float {
-    SDP::new(NalgebraBackend::new().unwrap()).alpha()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSDPDefaultLambda() -> float {
-    SDP::new(NalgebraBackend::new().unwrap()).lambda()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSDPDefaultRepeat() -> u32 {
-    SDP::new(NalgebraBackend::new().unwrap()).repeat() as _
+pub unsafe extern "C" fn AUTDGainSDPIsDefault(gs: GainPtr) -> bool {
+    let g = take_gain!(gs, SDP<NalgebraBackend>);
+    let default = SDP::new(NalgebraBackend::new().unwrap());
+    g.constraint() == default.constraint()
+        && g.alpha() == default.alpha()
+        && g.lambda() == default.lambda()
+        && g.repeat() == default.repeat()
 }

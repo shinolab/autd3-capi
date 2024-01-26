@@ -10,6 +10,7 @@ pub unsafe extern "C" fn AUTDGainFocus(x: float, y: float, z: float, intensity: 
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainFocusDefaultIntensity() -> u8 {
-    Focus::new(Vector3::zeros()).intensity().value()
+pub unsafe extern "C" fn AUTDGainFocusIsDefault(focus: GainPtr) -> bool {
+    let g = take_gain!(focus, Focus);
+    g.intensity() == Focus::new(Vector3::zeros()).intensity()
 }

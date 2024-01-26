@@ -22,12 +22,8 @@ pub unsafe extern "C" fn AUTDGainHoloGS(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSDefaultConstraint() -> EmissionConstraintPtr {
-    GS::new(NalgebraBackend::new().unwrap()).constraint().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSDefaultRepeat() -> u32 {
-    GS::new(NalgebraBackend::new().unwrap()).repeat() as _
+pub unsafe extern "C" fn AUTDGainGSIsDefault(gs: GainPtr) -> bool {
+    let g = take_gain!(gs, GS<NalgebraBackend>);
+    let default = GS::new(NalgebraBackend::new().unwrap());
+    g.constraint() == default.constraint() && g.repeat() == default.repeat()
 }

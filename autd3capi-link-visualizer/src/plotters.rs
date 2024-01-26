@@ -128,48 +128,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFigSizeWidth() -> u32 {
-    PlotConfig::default().figsize.0
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFigSizeHeight() -> u32 {
-    PlotConfig::default().figsize.1
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultCBarSize() -> float {
-    PlotConfig::default().cbar_size
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultFontSize() -> u32 {
-    PlotConfig::default().font_size
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultLabelAreaSize() -> u32 {
-    PlotConfig::default().label_area_size
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultMargin() -> u32 {
-    PlotConfig::default().margin
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultTicksStep() -> float {
-    PlotConfig::default().ticks_step
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigDefaultCMap() -> CMap {
-    CMap::Jet // TODO
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfigIsDefault(config: PlotConfigPtr) -> bool {
+    *take!(config, PlotConfig) == PlotConfig::default()
 }

@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-visualizer"
-version = "21.0.0"
+version = "21.0.1"
 edition = "2021"
 license = "MIT"
 
@@ -8,8 +8,8 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-def = { path = "../autd3capi-def", version = "21.0.0" }
-autd3-link-visualizer = { version = "21.0.0", features = ["plotters", "python", "gpu", "async-trait"] }
+autd3capi-def = { path = "../autd3capi-def", version = "21.0.1" }
+autd3-link-visualizer = { version = "21.0.1", features = ["plotters", "python", "gpu", "async-trait"] }
 
 [features]
 single_float = ["autd3-link-visualizer/single_float"]

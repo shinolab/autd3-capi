@@ -21,12 +21,8 @@ pub unsafe extern "C" fn AUTDGainHoloGreedy(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGreedyDefaultConstraint() -> EmissionConstraintPtr {
-    Greedy::new().constraint().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGreedyDefaultPhaseDiv() -> u8 {
-    Greedy::new().phase_div()
+pub unsafe extern "C" fn AUTDGainGreedyIsDefault(greedy: GainPtr) -> bool {
+    let g = take_gain!(greedy, Greedy);
+    let default = Greedy::new();
+    g.constraint() == default.constraint() && g.phase_div() == default.phase_div()
 }

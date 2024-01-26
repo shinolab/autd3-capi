@@ -29,30 +29,12 @@ pub unsafe extern "C" fn AUTDModulationSine(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSineDefaultSamplingConfig() -> SamplingConfiguration {
-    Sine::new(0.0).sampling_config().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSineDefaultIntensity() -> u8 {
-    Sine::new(0.0).intensity().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSineDefaultPhase() -> u8 {
-    Sine::new(0.0).phase().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSineDefaultOffset() -> u8 {
-    Sine::new(0.0).offset().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSineDefaultMode() -> SamplingMode {
-    Sine::new(0.0).mode().into()
+pub unsafe extern "C" fn AUTDModulationSineIsDefault(sine: ModulationPtr) -> bool {
+    let m = take_gain!(sine, Sine);
+    let default = Sine::new(0.);
+    m.intensity() == default.intensity()
+        && m.offset() == default.offset()
+        && m.phase() == default.phase()
+        && m.mode() == default.mode()
+        && m.sampling_config() == default.sampling_config()
 }

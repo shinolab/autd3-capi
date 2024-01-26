@@ -31,30 +31,13 @@ pub unsafe extern "C" fn AUTDGainHoloLM(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloLMDefaultConstraint() -> EmissionConstraintPtr {
-    LM::new(NalgebraBackend::new().unwrap()).constraint().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloLMDefaultEps1() -> float {
-    LM::new(NalgebraBackend::new().unwrap()).eps_1()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloLMDefaultEps2() -> float {
-    LM::new(NalgebraBackend::new().unwrap()).eps_2()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloLMDefaultTau() -> float {
-    LM::new(NalgebraBackend::new().unwrap()).tau()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloLMDefaultKMax() -> u32 {
-    LM::new(NalgebraBackend::new().unwrap()).k_max() as _
+pub unsafe extern "C" fn AUTDGainLMIsDefault(gs: GainPtr) -> bool {
+    let g = take_gain!(gs, LM<NalgebraBackend>);
+    let default = LM::new(NalgebraBackend::new().unwrap());
+    g.constraint() == default.constraint()
+        && g.eps_1() == default.eps_1()
+        && g.eps_2() == default.eps_2()
+        && g.tau() == default.tau()
+        && g.k_max() == default.k_max()
+        && g.initial() == default.initial()
 }

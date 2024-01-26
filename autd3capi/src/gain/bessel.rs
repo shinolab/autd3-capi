@@ -19,8 +19,7 @@ pub unsafe extern "C" fn AUTDGainBessel(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainBesselDefaultIntensity() -> u8 {
-    Bessel::new(Vector3::zeros(), Vector3::zeros(), 0.0)
-        .intensity()
-        .value()
+pub unsafe extern "C" fn AUTDGainBesselIsDefault(bessel: GainPtr) -> bool {
+    let g = take_gain!(bessel, Bessel);
+    g.intensity() == Bessel::new(Vector3::zeros(), Vector3::zeros(), 0.0).intensity()
 }

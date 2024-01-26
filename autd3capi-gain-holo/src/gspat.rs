@@ -22,14 +22,8 @@ pub unsafe extern "C" fn AUTDGainHoloGSPAT(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSPATDefaultConstraint() -> EmissionConstraintPtr {
-    GSPAT::new(NalgebraBackend::new().unwrap())
-        .constraint()
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloGSPATDefaultRepeat() -> u32 {
-    GSPAT::new(NalgebraBackend::new().unwrap()).repeat() as _
+pub unsafe extern "C" fn AUTDGainGSPATIsDefault(gs: GainPtr) -> bool {
+    let g = take_gain!(gs, GSPAT<NalgebraBackend>);
+    let default = GSPAT::new(NalgebraBackend::new().unwrap());
+    g.constraint() == default.constraint() && g.repeat() == default.repeat()
 }

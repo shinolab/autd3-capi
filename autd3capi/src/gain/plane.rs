@@ -21,12 +21,8 @@ pub unsafe extern "C" fn AUTDGainPlane(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainPlaneDefaultIntensity() -> u8 {
-    Plane::new(Vector3::zeros()).intensity().value()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainPlaneDefaultPhase() -> u8 {
-    Plane::new(Vector3::zeros()).phase().value()
+pub unsafe extern "C" fn AUTDGainPlanelIsDefault(plane: GainPtr) -> bool {
+    let g = take_gain!(plane, Plane);
+    let default = Plane::new(Vector3::zeros());
+    g.intensity() == default.intensity() && g.phase() == default.phase()
 }

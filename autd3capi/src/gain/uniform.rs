@@ -9,6 +9,7 @@ pub unsafe extern "C" fn AUTDGainUniform(intensity: u8, phase: u8) -> GainPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainUniformDefaultPhase() -> u8 {
-    Uniform::new(0).phase().value()
+pub unsafe extern "C" fn AUTDGainUniformIsDefault(uniform: GainPtr) -> bool {
+    let g = take_gain!(uniform, Uniform);
+    g.phase() == Uniform::new(0).phase()
 }

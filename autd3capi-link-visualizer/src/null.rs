@@ -40,6 +40,6 @@ pub struct NullPlotConfigPtr(pub ConstPtr);
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerNullPlotConfigDefault() -> NullPlotConfigPtr {
+pub unsafe extern "C" fn AUTDLinkVisualizerNullPlotConfig() -> NullPlotConfigPtr {
     NullPlotConfigPtr(Box::into_raw(Box::new(NullPlotConfig {})) as _)
 }

@@ -286,8 +286,11 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsDefaultStrictMode() -> bool {
-    ConfigureSilencerFixedCompletionSteps::default().strict_mode()
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsIsDefault(
+    silencer: DatagramPtr,
+) -> bool {
+    let silencer = take!(silencer, ConfigureSilencerFixedCompletionSteps);
+    silencer.strict_mode() == ConfigureSilencerFixedCompletionSteps::default().strict_mode()
 }
 
 #[no_mangle]

@@ -1,4 +1,4 @@
-use std::ffi::{c_char, CStr, CString};
+use std::ffi::{c_char, CStr};
 
 use autd3_link_visualizer::{PyPlotConfig, PythonBackend, Visualizer};
 use autd3capi_def::{
@@ -104,86 +104,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultFigSizeWidth() -> i32 {
-    PyPlotConfig::default().figsize.0
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultFigSizeHeight() -> i32 {
-    PyPlotConfig::default().figsize.1
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultDPI() -> i32 {
-    PyPlotConfig::default().dpi
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultCBarPosition(
-    cbar: *mut c_char,
-) -> u32 {
-    let config = PyPlotConfig::default().cbar_position;
-    if !cbar.is_null() {
-        let c_string: CString = CString::new(config.as_str()).unwrap();
-        let c_str: &CStr = c_string.as_c_str();
-        libc::strcpy(cbar, c_str.as_ptr());
-    }
-    return config.as_bytes().len() as u32 + 1;
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultCBarSize(cbar: *mut c_char) -> u32 {
-    let config = PyPlotConfig::default().cbar_size;
-    if !cbar.is_null() {
-        let c_string: CString = CString::new(config.as_str()).unwrap();
-        let c_str: &CStr = c_string.as_c_str();
-        libc::strcpy(cbar, c_str.as_ptr());
-    }
-    return config.as_bytes().len() as u32 + 1;
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultCBarPad(cbar: *mut c_char) -> u32 {
-    let config = PyPlotConfig::default().cbar_size;
-    if !cbar.is_null() {
-        let c_string: CString = CString::new(config.as_str()).unwrap();
-        let c_str: &CStr = c_string.as_c_str();
-        libc::strcpy(cbar, c_str.as_ptr());
-    }
-    return config.as_bytes().len() as u32 + 1;
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultFontSize() -> i32 {
-    PyPlotConfig::default().fontsize
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultTicksStep() -> float {
-    PyPlotConfig::default().ticks_step
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultCMap(cmap: *mut c_char) -> u32 {
-    let config = PyPlotConfig::default().cmap;
-    if !cmap.is_null() {
-        let c_string: CString = CString::new(config.as_str()).unwrap();
-        let c_str: &CStr = c_string.as_c_str();
-        libc::strcpy(cmap, c_str.as_ptr());
-    }
-    return config.as_bytes().len() as u32 + 1;
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigDefaultShow() -> bool {
-    PyPlotConfig::default().show
+pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfigIsDefault(config: PyPlotConfigPtr) -> bool {
+    *take!(config, PyPlotConfig) == PyPlotConfig::default()
 }
