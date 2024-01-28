@@ -148,44 +148,44 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithStateCheckInterval(
 struct SOEMCallbackPtr(ConstPtr);
 unsafe impl Send for SOEMCallbackPtr {}
 
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSOEMWithOnLost(
-    soem: LinkSOEMBuilderPtr,
-    on_lost_func: ConstPtr,
-) -> LinkSOEMBuilderPtr {
-    if on_lost_func.is_null() {
-        return soem;
-    }
-
-    let out_f = Arc::new(Mutex::new(SOEMCallbackPtr(on_lost_func)));
-    let out_func = move |msg: &str| {
-        let msg = std::ffi::CString::new(msg).unwrap();
-        let out_f =
-            std::mem::transmute::<_, unsafe extern "C" fn(*const c_char)>(out_f.lock().unwrap().0);
-        out_f(msg.as_ptr());
-    };
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_on_lost(out_func))
+#[repr(u8)]
+pub enum Status {
+    Error = 0,
+    StateChanged = 1,
+    Lost = 2,
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkSOEMWithOnErr(
+pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
     soem: LinkSOEMBuilderPtr,
-    on_err_func: ConstPtr,
+    handler: ConstPtr,
 ) -> LinkSOEMBuilderPtr {
-    if on_err_func.is_null() {
+    if handler.is_null() {
         return soem;
     }
 
-    let out_f = Arc::new(Mutex::new(SOEMCallbackPtr(on_err_func)));
-    let out_func = move |msg: &str| {
-        let msg = std::ffi::CString::new(msg).unwrap();
-        let out_f =
-            std::mem::transmute::<_, unsafe extern "C" fn(*const c_char)>(out_f.lock().unwrap().0);
-        out_f(msg.as_ptr());
+    let out_f = Arc::new(Mutex::new(SOEMCallbackPtr(handler)));
+    let out_func = move |slave: usize, status: autd3_link_soem::Status| {
+        let out_f = std::mem::transmute::<_, unsafe extern "C" fn(u32, Status, *const c_char)>(
+            out_f.lock().unwrap().0,
+        );
+        match status {
+            autd3_link_soem::Status::Error(msg) => {
+                let msg = std::ffi::CString::new(msg).unwrap();
+                out_f(slave as _, Status::Error, msg.as_ptr())
+            }
+            autd3_link_soem::Status::StateChanged(msg) => {
+                let msg = std::ffi::CString::new(msg).unwrap();
+                out_f(slave as _, Status::StateChanged, msg.as_ptr());
+            }
+            autd3_link_soem::Status::Lost(msg) => {
+                let msg = std::ffi::CString::new(msg).unwrap();
+                out_f(slave as _, Status::Lost, msg.as_ptr());
+            }
+        }
     };
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_on_err(out_func))
+    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_err_handler(out_func))
 }
 
 #[no_mangle]
