@@ -167,21 +167,21 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
 
     let out_f = Arc::new(Mutex::new(SOEMCallbackPtr(handler)));
     let out_func = move |slave: usize, status: autd3_link_soem::Status| {
-        let out_f = std::mem::transmute::<_, unsafe extern "C" fn(u32, Status, *const c_char)>(
+        let out_f = std::mem::transmute::<_, unsafe extern "C" fn(u32, u8, *const c_char)>(
             out_f.lock().unwrap().0,
         );
         match status {
             autd3_link_soem::Status::Error(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::Error, msg.as_ptr())
+                out_f(slave as _, Status::Error as _, msg.as_ptr());
             }
             autd3_link_soem::Status::StateChanged(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::StateChanged, msg.as_ptr());
+                out_f(slave as _, Status::StateChanged as _, msg.as_ptr());
             }
             autd3_link_soem::Status::Lost(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::Lost, msg.as_ptr());
+                out_f(slave as _, Status::Lost as _, msg.as_ptr());
             }
         }
     };
