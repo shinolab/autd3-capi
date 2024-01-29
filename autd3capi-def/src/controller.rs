@@ -36,27 +36,25 @@ impl std::ops::DerefMut for ControllerPtr {
 }
 
 pub struct SyncController {
+    runtime: tokio::runtime::Runtime,
     pub inner: Controller<SyncLink>,
 }
 
 impl SyncController {
     pub fn send<S: Datagram>(&mut self, s: S) -> Result<bool, AUTDError> {
-        self.inner.link.runtime().block_on(self.inner.send(s))
+        self.runtime.block_on(self.inner.send(s))
     }
 
     pub fn close(&mut self) -> Result<bool, AUTDError> {
-        self.inner.link.runtime().block_on(self.inner.close())
+        self.runtime.block_on(self.inner.close())
     }
 
     pub fn firmware_infos(&mut self) -> Result<Vec<FirmwareInfo>, AUTDError> {
-        self.inner
-            .link
-            .runtime()
-            .block_on(self.inner.firmware_infos())
+        self.runtime.block_on(self.inner.firmware_infos())
     }
 
     pub fn fpga_state(&mut self) -> Result<Vec<Option<FPGAState>>, AUTDError> {
-        self.inner.link.runtime().block_on(self.inner.fpga_state())
+        self.runtime.block_on(self.inner.fpga_state())
     }
 }
 
@@ -77,11 +75,11 @@ impl SyncControllerBuilder {
         }
     }
 
-    pub fn open_with(self, link_builder: SyncLinkBuilder) -> Result<SyncController, AUTDError> {
+    pub fn open_with(self, mut link_builder: SyncLinkBuilder) -> Result<SyncController, AUTDError> {
+        let runtime = link_builder.runtime.take().unwrap();
         Ok(SyncController {
-            inner: link_builder
-                .runtime()
-                .block_on(self.inner.open_with(link_builder))?,
+            inner: runtime.block_on(self.inner.open_with(link_builder))?,
+            runtime,
         })
     }
 }
@@ -117,7 +115,7 @@ impl SyncController {
         f: F,
     ) -> SyncGroupGuard<K, F> {
         SyncGroupGuard {
-            handle: self.inner.link.runtime().clone(),
+            handle: self.inner.link.handle.clone(),
             inner: self.inner.group(f),
         }
     }

@@ -38,18 +38,18 @@ impl LinkPtr {
 }
 
 pub struct SyncLink {
-    runtime: tokio::runtime::Runtime,
+    pub(crate) handle: tokio::runtime::Handle,
     pub inner: Box<dyn Link>,
 }
 
 impl SyncLink {
     pub fn runtime(&self) -> tokio::runtime::Handle {
-        self.runtime.handle().clone()
+        self.handle.clone()
     }
 }
 
 pub struct SyncLinkBuilder {
-    runtime: tokio::runtime::Handle,
+    pub(crate) runtime: Option<tokio::runtime::Runtime>,
     #[allow(clippy::type_complexity)]
     gen: Box<dyn FnOnce(&Geometry) -> Result<SyncLink, AUTDInternalError>>,
 }
@@ -67,21 +67,19 @@ impl SyncLinkBuilder {
             .enable_all()
             .build()
             .unwrap();
+        let handle = runtime.handle().clone();
         LinkBuilderPtr(Box::into_raw(Box::new(Self {
-            runtime: runtime.handle().clone(),
+            runtime: Some(runtime),
             gen: Box::new(move |geometry| {
-                tokio::task::block_in_place(|| runtime.block_on(builder.open(geometry))).map(|l| {
-                    SyncLink {
-                        runtime,
-                        inner: Box::new(l),
-                    }
-                })
+                match tokio::task::block_in_place(|| handle.block_on(builder.open(geometry))) {
+                    Ok(v) => Ok(SyncLink {
+                        handle,
+                        inner: Box::new(v),
+                    }),
+                    Err(e) => Err(e),
+                }
             }),
         })) as _)
-    }
-
-    pub fn runtime(&self) -> tokio::runtime::Handle {
-        self.runtime.clone()
     }
 }
 
