@@ -145,7 +145,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithStateCheckInterval(
     )
 }
 
-struct SOEMCallbackPtr(ConstPtr);
+struct SOEMCallbackPtr(ConstPtr, ConstPtr);
 unsafe impl Send for SOEMCallbackPtr {}
 
 #[repr(u8)]
@@ -160,28 +160,35 @@ pub enum Status {
 pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
     soem: LinkSOEMBuilderPtr,
     handler: ConstPtr,
+    context: ConstPtr,
 ) -> LinkSOEMBuilderPtr {
     if handler.is_null() {
         return soem;
     }
 
-    let out_f = Arc::new(Mutex::new(SOEMCallbackPtr(handler)));
+    let ptr = Arc::new(Mutex::new(SOEMCallbackPtr(handler, context)));
     let out_func = move |slave: usize, status: autd3_link_soem::Status| {
-        let out_f = std::mem::transmute::<_, unsafe extern "C" fn(u32, u8, *const c_char)>(
-            out_f.lock().unwrap().0,
-        );
+        let (out_f, context) = {
+            let ptr = ptr.lock().unwrap();
+            (
+                std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, u8, *const c_char)>(
+                    ptr.0,
+                ),
+                ptr.1,
+            )
+        };
         match status {
             autd3_link_soem::Status::Error(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::Error as _, msg.as_ptr());
+                out_f(context, slave as _, Status::Error as _, msg.as_ptr());
             }
             autd3_link_soem::Status::StateChanged(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::StateChanged as _, msg.as_ptr());
+                out_f(context, slave as _, Status::StateChanged as _, msg.as_ptr());
             }
             autd3_link_soem::Status::Lost(msg) => {
                 let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(slave as _, Status::Lost as _, msg.as_ptr());
+                out_f(context, slave as _, Status::Lost as _, msg.as_ptr());
             }
         }
     };
