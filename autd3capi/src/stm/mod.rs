@@ -39,24 +39,13 @@ pub unsafe extern "C" fn AUTDSTMPropsFromSamplingConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsWithStartIdx(props: STMPropsPtr, idx: i32) -> STMPropsPtr {
-    if idx < 0 {
-        take!(props, STMProps).with_start_idx(None)
-    } else {
-        take!(props, STMProps).with_start_idx(Some(idx as u16))
-    }
-    .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsWithFinishIdx(props: STMPropsPtr, idx: i32) -> STMPropsPtr {
-    if idx < 0 {
-        take!(props, STMProps).with_finish_idx(None)
-    } else {
-        take!(props, STMProps).with_finish_idx(Some(idx as u16))
-    }
-    .into()
+pub unsafe extern "C" fn AUTDSTMPropsWithLoopBehavior(
+    props: STMPropsPtr,
+    loop_behavior: LoopBehavior,
+) -> STMPropsPtr {
+    take!(props, STMProps)
+        .with_loop_behavior(loop_behavior.into())
+        .into()
 }
 
 #[no_mangle]
@@ -82,20 +71,6 @@ pub unsafe extern "C" fn AUTDSTMPropsSamplingConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsStartIdx(props: STMPropsPtr) -> i32 {
-    if let Some(idx) = props.start_idx() {
-        idx as i32
-    } else {
-        -1
-    }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsFinishIdx(props: STMPropsPtr) -> i32 {
-    if let Some(idx) = props.finish_idx() {
-        idx as i32
-    } else {
-        -1
-    }
+pub unsafe extern "C" fn AUTDSTMPropsLoopBehavior(props: STMPropsPtr) -> LoopBehavior {
+    take!(props, STMProps).loop_behavior().into()
 }

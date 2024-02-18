@@ -48,6 +48,16 @@ pub unsafe extern "C" fn AUTDLinkAuditTimeoutNs(audit: LinkPtr) -> u64 {
 }
 
 #[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditLastTimeoutNs(audit: LinkPtr) -> i64 {
+    audit
+        .cast::<Audit>()
+        .last_timeout()
+        .map(|v| v.as_nanos() as _)
+        .unwrap_or(-1)
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditDown(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().down()
 }
@@ -118,16 +128,32 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaIsForceFan(audit: LinkPtr, idx: u32) -
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmMode(audit: LinkPtr, idx: u32) -> bool {
-    audit.cast::<Audit>()[idx as usize].fpga().is_stm_mode()
+pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentStmSegment(audit: LinkPtr, idx: u32) -> Segment {
+    audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .current_stm_segment()
+        .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(audit: LinkPtr, idx: u32) -> bool {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentModSegment(audit: LinkPtr, idx: u32) -> Segment {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .is_stm_gain_mode()
+        .current_mod_segment()
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> bool {
+    audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .is_stm_gain_mode(segment.into())
 }
 
 #[no_mangle]
@@ -192,95 +218,108 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugOutputIdx(audit: LinkPtr, idx: u3
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModDelays(audit: LinkPtr, idx: u32, delay: *mut u16) {
-    std::ptr::copy_nonoverlapping(
-        audit.cast::<Audit>()[idx as usize]
-            .fpga()
-            .mod_delays()
-            .as_ptr(),
-        delay,
-        audit.cast::<Audit>()[idx as usize]
-            .fpga()
-            .mod_delays()
-            .len(),
-    )
-}
-
-#[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFrequencyDivision(audit: LinkPtr, idx: u32) -> u32 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFrequencyDivision(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .stm_frequency_division()
+        .stm_frequency_division(segment.into())
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmCycle(audit: LinkPtr, idx: u32) -> u32 {
-    audit.cast::<Audit>()[idx as usize].fpga().stm_cycle() as _
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSoundSpeed(audit: LinkPtr, idx: u32) -> u32 {
-    audit.cast::<Audit>()[idx as usize].fpga().sound_speed()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmStartIdx(audit: LinkPtr, idx: u32) -> i32 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmCycle(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .stm_start_idx()
-        .map_or(-1, |v| v as _)
+        .stm_cycle(segment.into()) as _
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFinishIdx(audit: LinkPtr, idx: u32) -> i32 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSoundSpeed(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .stm_finish_idx()
-        .map_or(-1, |v| v as _)
+        .sound_speed(segment.into())
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> LoopBehavior {
+    audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .stm_loop_behavior(segment.into())
+        .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFrequencyDivision(
     audit: LinkPtr,
+    segment: Segment,
     idx: u32,
 ) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .modulation_frequency_division()
+        .modulation_frequency_division(segment.into())
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationCycle(audit: LinkPtr, idx: u32) -> u32 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationCycle(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .modulation_cycle() as _
+        .modulation_cycle(segment.into()) as _
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulation(audit: LinkPtr, idx: u32, data: *mut u8) {
-    std::ptr::copy_nonoverlapping(
-        audit.cast::<Audit>()[idx as usize]
-            .fpga()
-            .modulation()
-            .as_ptr(),
-        data,
-        audit.cast::<Audit>()[idx as usize]
-            .fpga()
-            .modulation()
-            .len(),
-    )
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaIntensitiesAndPhases(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulation(
     audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+    data: *mut u8,
+) {
+    let m = audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .modulation(segment.into());
+    std::ptr::copy_nonoverlapping(m.as_ptr() as _, data, m.len())
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
+    audit: LinkPtr,
+    segment: Segment,
+    idx: u32,
+) -> LoopBehavior {
+    audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .modulation_loop_behavior(segment.into())
+        .into()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaIDrives(
+    audit: LinkPtr,
+    segment: Segment,
     idx: u32,
     stm_idx: u32,
     intensities: *mut u8,
@@ -288,9 +327,9 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaIntensitiesAndPhases(
 ) {
     let dp = audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .intensities_and_phases(stm_idx as _);
-    let d = dp.iter().map(|v| v.0).collect::<Vec<_>>();
-    let p = dp.iter().map(|v| v.1).collect::<Vec<_>>();
-    std::ptr::copy_nonoverlapping(d.as_ptr(), intensities, d.len());
-    std::ptr::copy_nonoverlapping(p.as_ptr(), phases, p.len());
+        .drives(segment.into(), stm_idx as _);
+    let d = dp.iter().map(|v| v.intensity()).collect::<Vec<_>>();
+    let p = dp.iter().map(|v| v.phase()).collect::<Vec<_>>();
+    std::ptr::copy_nonoverlapping(d.as_ptr() as _, intensities, d.len());
+    std::ptr::copy_nonoverlapping(p.as_ptr() as _, phases, p.len());
 }

@@ -6,7 +6,7 @@ use autd3::{
     Controller,
 };
 use autd3_driver::{
-    derive::Datagram,
+    datagram::Datagram,
     error::AUTDInternalError,
     firmware_version::FirmwareInfo,
     fpga::FPGAState,
@@ -75,10 +75,18 @@ impl SyncControllerBuilder {
         }
     }
 
-    pub fn open_with(self, mut link_builder: SyncLinkBuilder) -> Result<SyncController, AUTDError> {
+    pub fn open(self, link_builder: SyncLinkBuilder) -> Result<SyncController, AUTDError> {
+        Self::open_with_timeout(self, link_builder, std::time::Duration::from_millis(200))
+    }
+
+    pub fn open_with_timeout(
+        self,
+        mut link_builder: SyncLinkBuilder,
+        timeout: std::time::Duration,
+    ) -> Result<SyncController, AUTDError> {
         let runtime = link_builder.runtime.take().unwrap();
         Ok(SyncController {
-            inner: runtime.block_on(self.inner.open_with(link_builder))?,
+            inner: runtime.block_on(self.inner.open_with_timeout(link_builder, timeout))?,
             runtime,
         })
     }

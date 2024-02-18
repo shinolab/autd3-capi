@@ -125,28 +125,32 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPhasesOf(
     backend: Backend,
     directivity: Directivity,
     idx: u32,
+    segment: Segment,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
-    let m = match_visualizer!(backend, directivity, visualizer, phases_of, idx);
+    let segment = segment.into();
+    let m = match_visualizer!(backend, directivity, visualizer, phases, segment, idx);
     if !buf.is_null() {
-        std::ptr::copy_nonoverlapping(m.as_ptr(), buf, m.len());
+        std::ptr::copy_nonoverlapping(m.as_ptr() as _, buf, m.len());
     }
     m.len() as _
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkVisualizerIntensitiesOf(
+pub unsafe extern "C" fn AUTDLinkVisualizerIntensities(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
     idx: u32,
+    segment: Segment,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
-    let m = match_visualizer!(backend, directivity, visualizer, intensities_of, idx);
+    let segment = segment.into();
+    let m = match_visualizer!(backend, directivity, visualizer, intensities, segment, idx);
     if !buf.is_null() {
-        std::ptr::copy_nonoverlapping(m.as_ptr(), buf, m.len());
+        std::ptr::copy_nonoverlapping(m.as_ptr() as _, buf, m.len());
     }
     m.len() as _
 }
@@ -156,11 +160,13 @@ pub unsafe extern "C" fn AUTDLinkVisualizerModulation(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
+    segment: Segment,
     buf: *mut u8,
 ) -> u32 {
-    let m = match_visualizer!(backend, directivity, visualizer, modulation,);
+    let segment = segment.into();
+    let m = match_visualizer!(backend, directivity, visualizer, modulation, segment);
     if !buf.is_null() {
-        std::ptr::copy_nonoverlapping(m.as_ptr(), buf, m.len());
+        std::ptr::copy_nonoverlapping(m.as_ptr() as _, buf, m.len());
     }
     m.len() as _
 }
@@ -186,26 +192,29 @@ macro_rules! into_result {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkVisualizerCalcFieldOf(
+pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
     points: *const float,
     points_len: u32,
     geometry: GeometryPtr,
+    segment: Segment,
     idx: u32,
     buf: *mut float,
 ) -> ResultI32 {
     let idx = idx as usize;
+    let segment = segment.into();
     let len = points_len as usize;
     let points = std::slice::from_raw_parts(points as *const Vector3, len);
     into_result!(match_visualizer!(
         backend,
         directivity,
         visualizer,
-        calc_field_of,
+        calc_field,
         points.iter(),
         &geometry,
+        segment,
         idx
     )
     .and_then(|m| {
@@ -216,63 +225,52 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcFieldOf(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotFieldOf(
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotField(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
     config: ConfigPtr,
     range: PlotRangePtr,
     geometry: GeometryPtr,
+    segment: Segment,
     idx: u32,
 ) -> ResultI32 {
     let idx = idx as usize;
+    let segment = segment.into();
     into_result!(match_visualizer_plot!(
         backend,
         directivity,
         visualizer,
-        plot_field_of,
+        plot_field,
         config,
         *take!(range, PlotRange),
         &geometry,
+        segment,
         idx
     ))
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhaseOf(
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhase(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
     config: ConfigPtr,
     geometry: GeometryPtr,
+    segment: Segment,
     idx: u32,
 ) -> ResultI32 {
     let idx = idx as usize;
+    let segment = segment.into();
     into_result!(match_visualizer_plot!(
         backend,
         directivity,
         visualizer,
-        plot_phase_of,
+        plot_phase,
         config,
         &geometry,
+        segment,
         idx
-    ))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkVisualizerPlotModulation(
-    visualizer: LinkPtr,
-    backend: Backend,
-    directivity: Directivity,
-    config: ConfigPtr,
-) -> ResultI32 {
-    into_result!(match_visualizer_plot!(
-        backend,
-        directivity,
-        visualizer,
-        plot_modulation,
-        config,
     ))
 }

@@ -12,8 +12,15 @@ pub unsafe extern "C" fn AUTDModulationWav(
     path: *const c_char,
     config: SamplingConfiguration,
 ) -> ResultModulation {
-    let path = match CStr::from_ptr(path).to_str() {
-        Ok(v) => v,
+    match CStr::from_ptr(path)
+        .to_str()
+        .and_then(|path| Ok(Wav::new(path).with_sampling_config(config.into())))
+    {
+        Ok(v) => ResultModulation {
+            result: v.into(),
+            err_len: 0,
+            err: std::ptr::null_mut(),
+        },
         Err(e) => {
             let err = e.to_string();
             return ResultModulation {
@@ -22,21 +29,6 @@ pub unsafe extern "C" fn AUTDModulationWav(
                 err: Box::into_raw(Box::new(err)) as _,
             };
         }
-    };
-    match Wav::new(path) {
-        Ok(v) => ResultModulation {
-            result: v.with_sampling_config(config.into()).into(),
-            err_len: 0,
-            err: std::ptr::null_mut(),
-        },
-        Err(e) => {
-            let err = e.to_string();
-            ResultModulation {
-                result: ModulationPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
-            }
-        }
     }
 }
 
@@ -44,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationWav(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool {
     let m = take_gain!(wav, Wav);
-    let default = Wav::new("").unwrap();
+    let default = Wav::new("");
     m.sampling_config() == default.sampling_config()
 }
 
@@ -55,8 +47,15 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
     sample_rate: u32,
     config: SamplingConfiguration,
 ) -> ResultModulation {
-    let path = match CStr::from_ptr(path).to_str() {
-        Ok(v) => v,
+    match CStr::from_ptr(path)
+        .to_str()
+        .and_then(|path| Ok(RawPCM::new(path, sample_rate).with_sampling_config(config.into())))
+    {
+        Ok(v) => ResultModulation {
+            result: v.into(),
+            err_len: 0,
+            err: std::ptr::null_mut(),
+        },
         Err(e) => {
             let err = e.to_string();
             return ResultModulation {
@@ -65,21 +64,6 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
                 err: Box::into_raw(Box::new(err)) as _,
             };
         }
-    };
-    match RawPCM::new(path, sample_rate) {
-        Ok(v) => ResultModulation {
-            result: v.with_sampling_config(config.into()).into(),
-            err_len: 0,
-            err: std::ptr::null_mut(),
-        },
-        Err(e) => {
-            let err = e.to_string();
-            ResultModulation {
-                result: ModulationPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
-            }
-        }
     }
 }
 
@@ -87,6 +71,6 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationRawPCMIsDefault(rawpcm: ModulationPtr) -> bool {
     let m = take_gain!(rawpcm, RawPCM);
-    let default = RawPCM::new("", 0).unwrap();
+    let default = RawPCM::new("", 0);
     m.sampling_config() == default.sampling_config()
 }

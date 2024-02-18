@@ -4,6 +4,7 @@ use autd3_driver::derive::*;
 pub struct CustomModulation {
     pub buf: Vec<EmitIntensity>,
     pub config: SamplingConfiguration,
+    pub loop_behavior: LoopBehavior,
 }
 
 impl autd3_driver::datagram::Modulation for CustomModulation {

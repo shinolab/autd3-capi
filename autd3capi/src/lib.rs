@@ -52,13 +52,18 @@ pub unsafe extern "C" fn AUTDControllerBuilderAddDevice(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerOpenWith(
+pub unsafe extern "C" fn AUTDControllerOpen(
     builder: ControllerBuilderPtr,
     link_builder: LinkBuilderPtr,
+    timeout_ns: i64,
 ) -> ResultController {
     let builder = take!(builder, SyncControllerBuilder);
     let link_builder = take!(link_builder, SyncLinkBuilder);
-    builder.open_with(*link_builder).into()
+    match timeout_ns {
+        v if v < 0 => builder.open(*link_builder),
+        _ => builder.open_with_timeout(*link_builder, Duration::from_nanos(timeout_ns as _)),
+    }
+    .into()
 }
 
 #[no_mangle]
@@ -174,33 +179,6 @@ pub unsafe extern "C" fn AUTDDatagramSynchronize() -> DatagramPtr {
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramClear() -> DatagramPtr {
     Clear::new().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureModDelay(
-    f: ConstPtr,
-    context: ConstPtr,
-    geometry: GeometryPtr,
-) -> DatagramPtr {
-    let f = std::mem::transmute::<
-        _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32, u8) -> u16,
-    >(f);
-    DynamicConfigureModDelay::new(
-        geometry
-            .devices()
-            .flat_map(move |dev| {
-                dev.iter().map(move |tr| {
-                    (
-                        (dev.idx(), tr.idx()),
-                        f(context, geometry, dev.idx() as u32, tr.idx() as u8),
-                    )
-                })
-            })
-            .collect(),
-    )
-    .into()
 }
 
 #[no_mangle]
@@ -448,7 +426,7 @@ mod tests {
         let builder = AUTDControllerBuilderAddDevice(builder, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
         let builder = AUTDControllerBuilderAddDevice(builder, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
         let link = AUTDLinkAuditIntoBuilder(AUTDLinkAudit());
-        let result = AUTDControllerOpenWith(builder, link);
+        let result = AUTDControllerOpen(builder, link, -1);
         assert_ne!(result.result.0, std::ptr::null());
         result.result
     }
