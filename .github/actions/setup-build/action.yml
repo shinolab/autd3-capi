@@ -34,11 +34,6 @@ runs:
       with:
         toolchain: 'stable'
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v2
-      with:
-        repo-token: ${{ inputs.github-token }}
-
     - uses: Jimver/cuda-toolkit@v0.2.11
       if: inputs.cuda && inputs.os == 'windows-latest'
       with:
