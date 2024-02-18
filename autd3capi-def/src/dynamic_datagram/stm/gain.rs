@@ -2,12 +2,12 @@ use std::time::Duration;
 
 use autd3_driver::datagram::{Datagram, GainSTM};
 
-use crate::{DynamicDatagramS, G};
+use crate::{DynamicDatagramS, Segment, G};
 
 impl DynamicDatagramS for GainSTM<Box<G>> {
     fn operation_with_segment(
         &mut self,
-        segment: autd3::prelude::Segment,
+        segment: Segment,
         update_segment: bool,
     ) -> Result<
         (
@@ -24,7 +24,7 @@ impl DynamicDatagramS for GainSTM<Box<G>> {
                 self.mode(),
                 freq_div,
                 loop_behavior,
-                segment,
+                segment.into(),
                 update_segment,
             )),
             Box::<autd3_driver::operation::NullOp>::default(),

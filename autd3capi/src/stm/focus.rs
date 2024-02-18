@@ -14,6 +14,8 @@ use super::STMPropsPtr;
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFocus(
     props: STMPropsPtr,
+    segment: Segment,
+    update_segment: bool,
     points: *const float,
     intensities: *const u8,
     size: u64,
@@ -28,5 +30,6 @@ pub unsafe extern "C" fn AUTDSTMFocus(
             let intensity = *intensities.add(i);
             (p, intensity)
         }))
+        .map(|stm| stm.with_segment(segment, update_segment))
         .into()
 }

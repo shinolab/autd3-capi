@@ -57,6 +57,18 @@ impl std::ops::Deref for GainCalcDrivesMapPtr {
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
+    gain: GainPtr,
+    segment: Segment,
+    update_segment: bool,
+) -> DatagramPtr {
+    (*take!(gain, Box<G>))
+        .with_segment(segment, update_segment)
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDGainIntoDatagram(gain: GainPtr) -> DatagramPtr {
     (*take!(gain, Box<G>)).into()
 }

@@ -1,4 +1,5 @@
 #[repr(u8)]
+#[derive(Debug, Clone, Copy)]
 pub enum Segment {
     S0 = 0,
     S1 = 1,

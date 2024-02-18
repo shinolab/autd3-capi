@@ -2,12 +2,12 @@ use std::time::Duration;
 
 use autd3_driver::datagram::{Datagram, FocusSTM};
 
-use crate::DynamicDatagramS;
+use crate::{DynamicDatagramS, Segment};
 
 impl DynamicDatagramS for FocusSTM {
     fn operation_with_segment(
         &mut self,
-        segment: autd3::prelude::Segment,
+        segment: Segment,
         update_segment: bool,
     ) -> Result<
         (
@@ -23,7 +23,7 @@ impl DynamicDatagramS for FocusSTM {
                 self.clear(),
                 freq_div,
                 loop_behavior,
-                segment,
+                segment.into(),
                 update_segment,
             )),
             Box::<autd3_driver::operation::NullOp>::default(),

@@ -64,6 +64,18 @@ pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> Sampl
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
+    m: ModulationPtr,
+    segment: Segment,
+    update_segment: bool,
+) -> DatagramPtr {
+    (*take!(m, Box<M>))
+        .with_segment(segment, update_segment)
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDModulationIntoDatagram(m: ModulationPtr) -> DatagramPtr {
     (*take!(m, Box<M>)).into()
 }

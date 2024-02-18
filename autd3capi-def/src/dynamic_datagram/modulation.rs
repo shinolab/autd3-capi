@@ -2,12 +2,12 @@ use std::time::Duration;
 
 use autd3_driver::{error::AUTDInternalError, operation::Operation};
 
-use crate::{DynamicDatagramS, M};
+use crate::{DynamicDatagramS, Segment, M};
 
 impl DynamicDatagramS for Box<M> {
     fn operation_with_segment(
         &mut self,
-        segment: autd3::prelude::Segment,
+        segment: Segment,
         update_segment: bool,
     ) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         let freq_div = self.sampling_config().frequency_division();
@@ -18,7 +18,7 @@ impl DynamicDatagramS for Box<M> {
                 buf,
                 freq_div,
                 loop_behavior,
-                segment,
+                segment.into(),
                 update_segment,
             )),
             Box::<autd3_driver::operation::NullOp>::default(),

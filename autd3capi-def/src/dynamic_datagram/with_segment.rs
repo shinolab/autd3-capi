@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use autd3_driver::{derive::Segment, error::AUTDInternalError, operation::Operation};
+use autd3_driver::{error::AUTDInternalError, operation::Operation};
 
-use crate::DynamicDatagram;
+use crate::{DynamicDatagram, Segment};
 
 pub struct DynamicDatagramWithSegment<D: DynamicDatagramS> {
     datagram: D,
