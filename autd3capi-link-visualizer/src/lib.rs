@@ -192,6 +192,7 @@ macro_rules! into_result {
 }
 
 #[no_mangle]
+#[allow(clippy::blocks_in_conditions)]
 pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
     visualizer: LinkPtr,
     backend: Backend,

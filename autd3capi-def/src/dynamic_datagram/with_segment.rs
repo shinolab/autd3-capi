@@ -11,6 +11,7 @@ pub struct DynamicDatagramWithSegment<D: DynamicDatagramS> {
 }
 
 pub trait DynamicDatagramS {
+    #[allow(clippy::type_complexity)]
     fn operation_with_segment(
         &mut self,
         segment: Segment,
@@ -19,24 +20,6 @@ pub trait DynamicDatagramS {
 
     fn timeout(&self) -> Option<Duration>;
 }
-
-// impl<D: DynamicDatagramS> DynamicDatagramWithSegment<D> {
-//     pub const fn segment(&self) -> Segment {
-//         self.segment
-//     }
-
-//     pub const fn update_segment(&self) -> bool {
-//         self.update_segment
-//     }
-// }
-
-// impl<D: DynamicDatagramS> std::ops::Deref for DynamicDatagramWithSegment<D> {
-//     type Target = D;
-
-//     fn deref(&self) -> &Self::Target {
-//         &self.datagram
-//     }
-// }
 
 impl<D: DynamicDatagramS> DynamicDatagram for DynamicDatagramWithSegment<D> {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {

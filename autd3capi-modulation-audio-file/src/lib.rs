@@ -14,7 +14,7 @@ pub unsafe extern "C" fn AUTDModulationWav(
 ) -> ResultModulation {
     match CStr::from_ptr(path)
         .to_str()
-        .and_then(|path| Ok(Wav::new(path).with_sampling_config(config.into())))
+        .map(|path| Wav::new(path).with_sampling_config(config.into()))
     {
         Ok(v) => ResultModulation {
             result: v.into(),
@@ -49,7 +49,7 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 ) -> ResultModulation {
     match CStr::from_ptr(path)
         .to_str()
-        .and_then(|path| Ok(RawPCM::new(path, sample_rate).with_sampling_config(config.into())))
+        .map(|path| RawPCM::new(path, sample_rate).with_sampling_config(config.into()))
     {
         Ok(v) => ResultModulation {
             result: v.into(),
