@@ -17,6 +17,7 @@ pub unsafe extern "C" fn AUTDModulationSine(
     offset: u8,
     phase: u8,
     mode: SamplingMode,
+    loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq)
         .with_sampling_config(config.into())
@@ -24,6 +25,7 @@ pub unsafe extern "C" fn AUTDModulationSine(
         .with_offset(offset)
         .with_phase(Phase::new(phase))
         .with_mode(mode.into())
+        .with_loop_behavior(loop_behavior.into())
         .into()
 }
 
@@ -37,4 +39,5 @@ pub unsafe extern "C" fn AUTDModulationSineIsDefault(sine: ModulationPtr) -> boo
         && m.phase() == default.phase()
         && m.mode() == default.mode()
         && m.sampling_config() == default.sampling_config()
+        && m.loop_behavior() == default.loop_behavior()
 }

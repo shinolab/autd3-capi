@@ -11,11 +11,13 @@ use autd3_modulation_audio_file::{RawPCM, Wav};
 pub unsafe extern "C" fn AUTDModulationWav(
     path: *const c_char,
     config: SamplingConfiguration,
+    loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path)
-        .to_str()
-        .map(|path| Wav::new(path).with_sampling_config(config.into()))
-    {
+    match CStr::from_ptr(path).to_str().map(|path| {
+        Wav::new(path)
+            .with_sampling_config(config.into())
+            .with_loop_behavior(loop_behavior.into())
+    }) {
         Ok(v) => ResultModulation {
             result: v.into(),
             err_len: 0,
@@ -46,11 +48,13 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
     path: *const c_char,
     sample_rate: u32,
     config: SamplingConfiguration,
+    loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path)
-        .to_str()
-        .map(|path| RawPCM::new(path, sample_rate).with_sampling_config(config.into()))
-    {
+    match CStr::from_ptr(path).to_str().map(|path| {
+        RawPCM::new(path, sample_rate)
+            .with_sampling_config(config.into())
+            .with_loop_behavior(loop_behavior.into())
+    }) {
         Ok(v) => ResultModulation {
             result: v.into(),
             err_len: 0,

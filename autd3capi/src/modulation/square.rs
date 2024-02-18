@@ -13,6 +13,7 @@ pub unsafe extern "C" fn AUTDModulationSquare(
     high: u8,
     duty: float,
     mode: SamplingMode,
+    loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq)
         .with_sampling_config(config.into())
@@ -20,6 +21,7 @@ pub unsafe extern "C" fn AUTDModulationSquare(
         .with_high(high)
         .with_duty(duty)
         .with_mode(mode.into())
+        .with_loop_behavior(loop_behavior.into())
         .into()
 }
 
@@ -33,4 +35,5 @@ pub unsafe extern "C" fn AUTDModulationSquareIsDefault(square: ModulationPtr) ->
         && m.duty() == default.duty()
         && m.mode() == default.mode()
         && m.sampling_config() == default.sampling_config()
+        && m.loop_behavior() == default.loop_behavior()
 }
