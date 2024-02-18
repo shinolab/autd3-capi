@@ -14,12 +14,10 @@ use super::STMPropsPtr;
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFocus(
     props: STMPropsPtr,
-    segment: Segment,
-    update_segment: bool,
     points: *const float,
     intensities: *const u8,
     size: u64,
-) -> ResultDatagram {
+) -> ResultFocusSTM {
     FocusSTM::from_props(*take!(props, STMProps))
         .add_foci_from_iter((0..size as usize).map(|i| {
             let p = Vector3::new(
@@ -30,8 +28,25 @@ pub unsafe extern "C" fn AUTDSTMFocus(
             let intensity = *intensities.add(i);
             (p, intensity)
         }))
-        .map(|stm| stm.with_segment(segment, update_segment))
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
+    stm: FocusSTMPtr,
+    segment: Segment,
+    update_segment: bool,
+) -> DatagramPtr {
+    take!(stm, FocusSTM)
+        .with_segment(segment, update_segment)
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFocusIntoDatagram(stm: FocusSTMPtr) -> DatagramPtr {
+    (*take!(stm, FocusSTM)).into()
 }
 
 #[no_mangle]

@@ -2,11 +2,13 @@ mod datagram;
 mod gain;
 mod geometry;
 mod modulation;
+mod stm;
 
 pub use datagram::*;
 pub use gain::*;
 pub use geometry::*;
 pub use modulation::*;
+pub use stm::*;
 
 #[macro_export]
 macro_rules! impl_ptr {

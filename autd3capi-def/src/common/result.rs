@@ -1,8 +1,10 @@
-use crate::{ConstPtr, DynamicDatagram};
+use crate::{ConstPtr, DynamicDatagram, G};
 use autd3::prelude::*;
 use autd3_driver::error::AUTDInternalError;
 
-use crate::{DatagramPtr, ModulationPtr, AUTD3_ERR, AUTD3_FALSE, AUTD3_TRUE};
+use crate::{
+    DatagramPtr, FocusSTMPtr, GainSTMPtr, ModulationPtr, AUTD3_ERR, AUTD3_FALSE, AUTD3_TRUE,
+};
 
 #[cfg(feature = "export")]
 mod export {
@@ -119,6 +121,62 @@ impl<T: DynamicDatagram> From<Result<T, AUTDInternalError>> for ResultDatagram {
                 let err = e.to_string();
                 Self {
                     result: DatagramPtr::NULL,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct ResultFocusSTM {
+    pub result: FocusSTMPtr,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<FocusSTM, AUTDInternalError>> for ResultFocusSTM {
+    fn from(r: Result<FocusSTM, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v.into(),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: FocusSTMPtr(std::ptr::null_mut()),
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy)]
+pub struct ResultGainSTM {
+    pub result: GainSTMPtr,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<GainSTM<Box<G>>, AUTDInternalError>> for ResultGainSTM {
+    fn from(r: Result<GainSTM<Box<G>>, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v.into(),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: GainSTMPtr(std::ptr::null_mut()),
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: Box::into_raw(Box::new(err)) as _,
                 }
