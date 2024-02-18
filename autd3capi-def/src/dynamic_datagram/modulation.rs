@@ -1,8 +1,12 @@
 use std::time::Duration;
 
-use autd3_driver::{error::AUTDInternalError, operation::Operation};
+use autd3_driver::{
+    datagram::{ChangeModulationSegment, Datagram},
+    error::AUTDInternalError,
+    operation::Operation,
+};
 
-use crate::{DynamicDatagramS, Segment, M};
+use crate::{DynamicDatagram, DynamicDatagramS, Segment, M};
 
 impl DynamicDatagramS for Box<M> {
     fn operation_with_segment(
@@ -26,6 +30,27 @@ impl DynamicDatagramS for Box<M> {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        Some(std::time::Duration::from_millis(200))
+        <Self as Datagram>::timeout(self)
+    }
+}
+
+impl DynamicDatagram for ChangeModulationSegment {
+    fn operation(
+        &mut self,
+    ) -> Result<
+        (
+            Box<dyn autd3_driver::operation::Operation>,
+            Box<dyn autd3_driver::operation::Operation>,
+        ),
+        autd3::prelude::AUTDInternalError,
+    > {
+        Ok((
+            Box::new(<Self as Datagram>::O1::new(self.segment())),
+            Box::<autd3_driver::operation::NullOp>::default(),
+        ))
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        <Self as Datagram>::timeout(self)
     }
 }

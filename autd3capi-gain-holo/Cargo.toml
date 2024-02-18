@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-gain-holo"
-version = "22.0.0-rc.0"
+version = "22.0.0-rc.1"
 edition = "2021"
 license = "MIT"
 
@@ -9,7 +9,7 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
 autd3capi-def = { path = "../autd3capi-def" }
-autd3-gain-holo = { version = "22.0.0-rc.0", features = ["async-trait"] }
+autd3-gain-holo = { version = "22.0.0-rc.1", features = ["async-trait"] }
 
 [features]
 single_float = ["autd3capi-def/single_float", "autd3-gain-holo/single_float"]

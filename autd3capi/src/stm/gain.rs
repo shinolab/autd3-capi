@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_def::{
-    driver::datagram::{GainSTM, STMProps},
+    driver::datagram::{ChangeGainSTMSegment, GainSTM, STMProps},
     *,
 };
 
@@ -21,4 +21,10 @@ pub unsafe extern "C" fn AUTDSTMGain(
         .add_gains_from_iter((0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)))
         .map(|stm| stm.with_segment(segment, update_segment))
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramChangeGainSTMSegment(segment: Segment) -> DatagramPtr {
+    ChangeGainSTMSegment::new(segment.into()).into()
 }

@@ -2,7 +2,7 @@
 
 use autd3capi_def::{
     driver::{
-        datagram::{FocusSTM, STMProps},
+        datagram::{ChangeFocusSTMSegment, FocusSTM, STMProps},
         geometry::Vector3,
     },
     *,
@@ -32,4 +32,10 @@ pub unsafe extern "C" fn AUTDSTMFocus(
         }))
         .map(|stm| stm.with_segment(segment, update_segment))
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramChangeFocusSTMSegment(segment: Segment) -> DatagramPtr {
+    ChangeFocusSTMSegment::new(segment.into()).into()
 }

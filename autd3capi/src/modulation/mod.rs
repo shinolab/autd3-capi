@@ -1,4 +1,7 @@
-use autd3capi_def::{driver::derive::EmitIntensity, *};
+use autd3capi_def::{
+    driver::{datagram::ChangeModulationSegment, derive::EmitIntensity},
+    *,
+};
 
 pub mod custom;
 pub mod fourier;
@@ -121,4 +124,10 @@ impl From<autd3::modulation::SamplingMode> for SamplingMode {
             autd3::modulation::SamplingMode::SizeOptimized => SamplingMode::SizeOptimized,
         }
     }
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramChangeModulationSegment(segment: Segment) -> DatagramPtr {
+    ChangeModulationSegment::new(segment.into()).into()
 }

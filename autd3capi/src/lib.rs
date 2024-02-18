@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+pub mod datagram;
 pub mod gain;
 pub mod geometry;
 pub mod link;
@@ -8,9 +9,7 @@ pub mod stm;
 
 use std::{collections::HashMap, ffi::c_char, time::Duration};
 
-use autd3capi_def::{
-    autd3::prelude::*, driver::datagram::ConfigureSilencerFixedCompletionSteps, *,
-};
+use autd3capi_def::{autd3::prelude::*, *};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
@@ -171,108 +170,6 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSynchronize() -> DatagramPtr {
-    Synchronize::new().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramClear() -> DatagramPtr {
-    Clear::new().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureDebugOutputIdx(
-    f: ConstPtr,
-    context: ConstPtr,
-    geometry: GeometryPtr,
-) -> DatagramPtr {
-    let f = std::mem::transmute::<
-        _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> u8,
-    >(f);
-    DynamicConfigureDebugOutputIdx::new(
-        geometry
-            .devices()
-            .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
-            .collect(),
-    )
-    .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureForceFan(
-    f: ConstPtr,
-    context: ConstPtr,
-    geometry: GeometryPtr,
-) -> DatagramPtr {
-    let f = std::mem::transmute::<
-        _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
-    >(f);
-    DynamicConfigureForceFan::new(
-        geometry
-            .devices()
-            .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
-            .collect(),
-    )
-    .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAState(
-    f: ConstPtr,
-    context: ConstPtr,
-    geometry: GeometryPtr,
-) -> DatagramPtr {
-    let f = std::mem::transmute::<
-        _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
-    >(f);
-    DynamicConfigureReadsFPGAState::new(
-        geometry
-            .devices()
-            .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))
-            .collect(),
-    )
-    .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRate(
-    value_intensity: u16,
-    value_phase: u16,
-) -> ResultDatagram {
-    ConfigureSilencer::fixed_update_rate(value_intensity, value_phase).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
-    value_intensity: u16,
-    value_phase: u16,
-    strict_mode: bool,
-) -> ResultDatagram {
-    ConfigureSilencer::fixed_completion_steps(value_intensity, value_phase)
-        .map(|s| s.with_strict_mode(strict_mode))
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsIsDefault(
-    silencer: DatagramPtr,
-) -> bool {
-    let silencer = take!(silencer, ConfigureSilencerFixedCompletionSteps);
-    silencer.strict_mode() == ConfigureSilencerFixedCompletionSteps::default().strict_mode()
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDControllerSend(
     mut cnt: ControllerPtr,
     d1: DatagramPtr,
@@ -415,6 +312,8 @@ pub unsafe extern "C" fn AUTDControllerGroup(
 
 #[cfg(test)]
 mod tests {
+    use crate::datagram::debug::AUTDDatagramConfigureDebugOutputIdx;
+
     use super::{
         geometry::AUTDGeometry,
         link::{audit::*, AUTDLinkGet},
