@@ -124,8 +124,8 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPhasesOf(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
-    idx: u32,
     segment: Segment,
+    idx: u32,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
@@ -142,8 +142,8 @@ pub unsafe extern "C" fn AUTDLinkVisualizerIntensities(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
-    idx: u32,
     segment: Segment,
+    idx: u32,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
@@ -273,5 +273,25 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhase(
         &geometry,
         segment,
         idx
+    ))
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkVisualizerPlotModulation(
+    visualizer: LinkPtr,
+    backend: Backend,
+    directivity: Directivity,
+    config: ConfigPtr,
+    segment: Segment,
+) -> ResultI32 {
+    let segment = segment.into();
+    into_result!(match_visualizer_plot!(
+        backend,
+        directivity,
+        visualizer,
+        plot_modulation,
+        config,
+        segment
     ))
 }
