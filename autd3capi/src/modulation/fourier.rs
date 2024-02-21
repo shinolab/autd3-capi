@@ -7,31 +7,13 @@ use autd3capi_def::{
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationFourier(m: ModulationPtr) -> ModulationPtr {
-    Fourier::from(**take_mod!(m, Sine)).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationFourierAddComponent(
-    fourier: ModulationPtr,
-    m: ModulationPtr,
-) -> ModulationPtr {
-    take_mod!(fourier, Fourier)
-        .add_component(**take_mod!(m, Sine))
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationFourierAddComponents(
-    fourier: ModulationPtr,
+pub unsafe extern "C" fn AUTDModulationFourier(
     components: *const ModulationPtr,
     size: u32,
 ) -> ModulationPtr {
-    take_mod!(fourier, Fourier)
+    Fourier::new(**take_mod!(components.read(), Sine))
         .add_components_from_iter(
-            (0..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine)),
+            (1..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine)),
         )
         .into()
 }
