@@ -68,9 +68,3 @@ pub unsafe extern "C" fn AUTDSTMPropsSamplingConfig(
 ) -> ResultSamplingConfig {
     take!(props, STMProps).sampling_config(size as usize).into()
 }
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsLoopBehavior(props: STMPropsPtr) -> LoopBehavior {
-    take!(props, STMProps).loop_behavior().into()
-}
