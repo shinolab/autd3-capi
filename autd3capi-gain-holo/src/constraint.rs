@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_def::ConstPtr;
+use autd3capi_def::{take, ConstPtr};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
@@ -38,4 +38,15 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
     max_v: u8,
 ) -> EmissionConstraintPtr {
     EmissionConstraint::Clamp(min_v.into(), max_v.into()).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGainHoloConstraintEq(
+    a: EmissionConstraintPtr,
+    b: EmissionConstraintPtr,
+) -> bool {
+    let a = *take!(a, EmissionConstraint);
+    let b = *take!(b, EmissionConstraint);
+    a == b
 }

@@ -63,47 +63,14 @@ pub unsafe extern "C" fn AUTDLinkAuditDown(mut audit: LinkPtr) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditUp(mut audit: LinkPtr) {
-    audit.cast_mut::<Audit>().up()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditBreakDown(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().break_down()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
-    audit.cast_mut::<Audit>().repair()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditCpuUpdate(mut audit: LinkPtr, idx: u32) {
-    audit.cast_mut::<Audit>()[idx as usize].update()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditCpuIdx(audit: LinkPtr, idx: u32) -> u32 {
-    audit.cast::<Audit>()[idx as usize].idx() as _
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditCpuNumTransducers(audit: LinkPtr, idx: u32) -> u32 {
     audit.cast::<Audit>()[idx as usize].num_transducers() as _
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditCpuAck(audit: LinkPtr, idx: u32) -> u8 {
-    audit.cast::<Audit>()[idx as usize].ack()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditCpuRxData(audit: LinkPtr, idx: u32) -> u8 {
-    audit.cast::<Audit>()[idx as usize].rx_data()
 }
 
 #[no_mangle]
