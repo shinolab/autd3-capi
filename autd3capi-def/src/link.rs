@@ -113,4 +113,8 @@ impl Link for SyncLink {
     fn timeout(&self) -> Duration {
         self.inner.timeout()
     }
+
+    fn trace(&mut self, tx: &TxDatagram, rx: &mut [RxMessage], timeout: Option<Duration>) {
+        self.inner.trace(tx, rx, timeout)
+    }
 }
