@@ -44,11 +44,7 @@ impl Datagram for DynamicDatagramPack {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        if self.timeout.is_some() {
-            self.timeout
-        } else {
-            self.d.timeout()
-        }
+        self.timeout.or(self.d.timeout())
     }
 }
 
@@ -74,6 +70,12 @@ impl Datagram for DynamicDatagramPack2 {
 
     fn timeout(&self) -> Option<Duration> {
         self.timeout
+            .or(match (self.d1.timeout(), self.d2.timeout()) {
+                (Some(t1), Some(t2)) => Some(t1.max(t2)),
+                (Some(t1), None) => Some(t1),
+                (None, Some(t2)) => Some(t2),
+                (None, None) => None,
+            })
     }
 }
 
