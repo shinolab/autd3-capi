@@ -333,3 +333,13 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrives(
     std::ptr::copy_nonoverlapping(d.as_ptr() as _, intensities, d.len());
     std::ptr::copy_nonoverlapping(p.as_ptr() as _, phases, p.len());
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaPhaseFilter(
+    audit: LinkPtr,
+    idx: u32,
+    phase_filter: *mut u8,
+) {
+    let d = audit.cast::<Audit>()[idx as usize].fpga().phase_filter();
+    std::ptr::copy_nonoverlapping(d.as_ptr() as _, phase_filter, d.len());
+}
