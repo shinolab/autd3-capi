@@ -29,6 +29,31 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsIsDefault(
     silencer: DatagramPtr,
 ) -> bool {
-    let silencer = take!(silencer, ConfigureSilencerFixedCompletionSteps);
-    silencer.strict_mode() == ConfigureSilencerFixedCompletionSteps::default().strict_mode()
+    let silencer = take!(silencer, Box<ConfigureSilencerFixedCompletionSteps>);
+    let default = ConfigureSilencerFixedCompletionSteps::default();
+    silencer.completion_steps_intensity() == default.completion_steps_intensity()
+        && silencer.completion_steps_phase() == default.completion_steps_phase()
+        && silencer.strict_mode() == default.strict_mode()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_default() {
+        unsafe {
+            let silencer = AUTDDatagramSilencerFixedCompletionSteps(10, 40, true).result;
+            assert!(AUTDDatagramSilencerFixedCompletionStepsIsDefault(silencer));
+
+            let silencer = AUTDDatagramSilencerFixedCompletionSteps(10, 40, false).result;
+            assert!(!AUTDDatagramSilencerFixedCompletionStepsIsDefault(silencer));
+
+            let silencer = AUTDDatagramSilencerFixedCompletionSteps(11, 40, true).result;
+            assert!(!AUTDDatagramSilencerFixedCompletionStepsIsDefault(silencer));
+
+            let silencer = AUTDDatagramSilencerFixedCompletionSteps(10, 41, true).result;
+            assert!(!AUTDDatagramSilencerFixedCompletionStepsIsDefault(silencer));
+        }
+    }
 }
