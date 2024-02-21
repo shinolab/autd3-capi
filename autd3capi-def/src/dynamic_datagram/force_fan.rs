@@ -3,6 +3,7 @@ use std::{collections::HashMap, time::Duration};
 use super::DynamicDatagram;
 use autd3::prelude::*;
 use autd3_driver::{
+    datagram::Datagram,
     error::AUTDInternalError,
     operation::{ConfigureForceFanOp, Operation},
 };
@@ -46,13 +47,14 @@ impl Operation for DynamicConfigureForceFanOp {
 }
 
 impl DynamicDatagram for DynamicConfigureForceFan {
+    #[allow(clippy::box_default)]
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         let map = self.map.clone();
         Ok((
             Box::new(DynamicConfigureForceFanOp {
                 op: ConfigureForceFanOp::new(Box::new(move |dev: &Device| map[&dev.idx()])),
             }),
-            Box::<autd3_driver::operation::NullOp>::default(),
+            Box::new(<ConfigureForceFan<Box<dyn Fn(&Device) -> bool>> as Datagram>::O2::default()),
         ))
     }
 

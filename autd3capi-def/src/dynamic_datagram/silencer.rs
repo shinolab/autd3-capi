@@ -9,13 +9,14 @@ use autd3_driver::{
 use crate::DynamicDatagram;
 
 impl DynamicDatagram for ConfigureSilencerFixedUpdateRate {
+    #[allow(clippy::box_default)]
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         Ok((
             Box::new(<Self as Datagram>::O1::new(
                 self.update_rate_intensity(),
                 self.update_rate_phase(),
             )),
-            Box::<autd3_driver::operation::NullOp>::default(),
+            Box::new(<Self as Datagram>::O2::default()),
         ))
     }
 
@@ -25,6 +26,7 @@ impl DynamicDatagram for ConfigureSilencerFixedUpdateRate {
 }
 
 impl DynamicDatagram for ConfigureSilencerFixedCompletionSteps {
+    #[allow(clippy::box_default)]
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         Ok((
             Box::new(<Self as Datagram>::O1::new(
@@ -32,7 +34,7 @@ impl DynamicDatagram for ConfigureSilencerFixedCompletionSteps {
                 self.completion_steps_phase(),
                 self.strict_mode(),
             )),
-            Box::<autd3_driver::operation::NullOp>::default(),
+            Box::new(<Self as Datagram>::O2::default()),
         ))
     }
 

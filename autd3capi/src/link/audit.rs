@@ -317,7 +317,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaIDrives(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaDrives(
     audit: LinkPtr,
     segment: Segment,
     idx: u32,

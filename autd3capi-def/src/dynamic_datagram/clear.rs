@@ -9,10 +9,11 @@ use autd3_driver::{
 use crate::DynamicDatagram;
 
 impl DynamicDatagram for Clear {
+    #[allow(clippy::box_default)]
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         Ok((
-            Box::<autd3_driver::operation::ClearOp>::default(),
-            Box::<autd3_driver::operation::NullOp>::default(),
+            Box::new(<Self as Datagram>::O1::default()),
+            Box::new(<Self as Datagram>::O2::default()),
         ))
     }
 

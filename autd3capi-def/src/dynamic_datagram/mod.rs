@@ -5,6 +5,7 @@ mod debug;
 mod force_fan;
 mod gain;
 mod modulation;
+mod phase_filter;
 mod reads_fpga_state;
 mod silencer;
 mod stm;
@@ -13,6 +14,7 @@ mod with_segment;
 
 pub use debug::*;
 pub use force_fan::*;
+pub use phase_filter::*;
 pub use reads_fpga_state::*;
 pub use with_segment::*;
 

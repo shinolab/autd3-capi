@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-soem"
-version = "22.0.0-rc.1"
+version = "22.0.0-rc.2"
 edition = "2021"
 license = "MIT"
 
@@ -9,4 +9,4 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 autd3capi-def = { path = "../autd3capi-def" }
-autd3-link-soem = { version = "22.0.0-rc.1", features = ["local", "remote", "async-trait"] }
+autd3-link-soem = { version = "22.0.0-rc.2", features = ["local", "remote", "async-trait"] }
