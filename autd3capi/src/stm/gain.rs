@@ -22,12 +22,6 @@ pub unsafe extern "C" fn AUTDSTMGain(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMGainAddGain(stm: GainSTMPtr, gain: GainPtr) -> ResultDatagram {
-    take!(stm, GainSTM<_>).add_gain(*take!(gain, Box<G>)).into()
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     stm: GainSTMPtr,
     segment: Segment,
