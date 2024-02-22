@@ -98,21 +98,6 @@ pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloCUDAGreedy(
-    points: *const float,
-    amps: *const float,
-    size: u64,
-    div: u8,
-    constraint: EmissionConstraintPtr,
-) -> GainPtr {
-    create_holo!(Greedy, points, amps, size)
-        .with_phase_div(div)
-        .with_constraint(*take!(constraint, _))
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDALM(
     backend: BackendPtr,
     points: *const float,
