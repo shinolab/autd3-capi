@@ -4,8 +4,13 @@ use autd3capi_def::{autd3::modulation::Static, *};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationStatic(intensity: u8) -> ModulationPtr {
-    Static::with_intensity(intensity).into()
+pub unsafe extern "C" fn AUTDModulationStatic(
+    intensity: u8,
+    loop_behavior: LoopBehavior,
+) -> ModulationPtr {
+    Static::with_intensity(intensity)
+        .with_loop_behavior(loop_behavior.into())
+        .into()
 }
 
 #[no_mangle]

@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-simulator"
-version = "22.0.0"
+version = "22.0.1"
 edition = "2021"
 license = "MIT"
 
@@ -8,6 +8,6 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3-link-simulator = { version = "22.0.0", features = ["async-trait"] }
+autd3-link-simulator = { version = "22.0.1", features = ["async-trait"] }
 autd3capi-def = { path = "../autd3capi-def" }
 tokio = { version = "1.35.1", features = ["rt-multi-thread"] }

@@ -9,6 +9,7 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
     m: ModulationPtr,
     f: ConstPtr,
     context: ConstPtr,
+    loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     ModulationTransform::new(*take!(m, Box<M>), move |i, d| {
         EmitIntensity::new((std::mem::transmute::<
@@ -16,5 +17,6 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
             unsafe extern "C" fn(ConstPtr, u32, u8) -> u8,
         >(f))(context, i as u32, d.value()))
     })
+    .with_loop_behavior(loop_behavior.into())
     .into()
 }

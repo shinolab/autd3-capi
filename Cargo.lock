@@ -147,9 +147,9 @@ dependencies = [
 
 [[package]]
 name = "autd3"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71fd915ed111ab34d372c622bec01877ad9bd1db86ad847d3568cef1b66a966a"
+checksum = "a5c7dce66108fac31ca74aa1e2eb17b76eb5c425621001141272fb436960f390"
 dependencies = [
  "autd3-driver",
  "autd3-firmware-emulator",
@@ -177,9 +177,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-derive"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8871e4a088c17d626f1019501eaa482d0ac75af9a8a98b8c7c0a7155efa2778f"
+checksum = "2303001dac53ecb3c4b3a112cadb85068a17258ffbac99457425cab81c1d169b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -188,9 +188,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-driver"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "76c4592c4b289578cfb75bb9460c8c64cfa2621ac663ce609b492f6b806f7333"
+checksum = "fb9893aacce3f3aa846d8cf9ca4fc3306257671ab1312a2469b9b513c4539f2e"
 dependencies = [
  "async-trait",
  "autd3-derive",
@@ -206,9 +206,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c8669d0ecf8faecd96fcbf3875662b43d26523df9306743fcb90a7e1986c273c"
+checksum = "7b626524acaab09d424238663db6a7e00db2a5424d8e411cbde04a45822d8512"
 dependencies = [
  "autd3-driver",
  "chrono",
@@ -218,9 +218,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5900969bf62ba5b0688ff0b6000179a7543d3c9f5b2df98751abe23a5cd47bcc"
+checksum = "f550e88f205eb26af5345631536df47d416f94fb71ad9a82a46a75d8714f0034"
 dependencies = [
  "autd3-driver",
  "nalgebra",
@@ -230,9 +230,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-simulator"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "023edd3da6f2516e5e6d4a59c94145f397295bf19fb1ac7091a1e24ad41cac64"
+checksum = "5105a3751126aa239d2d420d04600beff2493fc5e3afb33943d769b231529098"
 dependencies = [
  "autd3-driver",
  "autd3-protobuf",
@@ -242,9 +242,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-soem"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "add25ca482fee51d5273963006cae062c0a0f63e9666dabdc7c1620080216769"
+checksum = "dc3210d387b5369a70a110275289714f249292b6cb52b15f71a0a8512b9bf979"
 dependencies = [
  "async-channel",
  "autd3-driver",
@@ -260,9 +260,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-twincat"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e30cebcca79b93166954dd55b023385a1fd37b303192bf951b29b3aa6a1e48dd"
+checksum = "8975cc669c29607a171889cd0714d7322e1d0f68dffd14d2168ae01ed0e3e480"
 dependencies = [
  "autd3-driver",
  "cc",
@@ -293,9 +293,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21f4561e15619f72950a4a252642b3bbbc91b1cda6fe0c3fef407f20996d5885"
+checksum = "5e2a156b2bcef2570db136605f66bc48c6c88e56e8c84196d4e93104816150a6"
 dependencies = [
  "autd3-driver",
  "hound",
@@ -305,9 +305,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-protobuf"
-version = "22.0.0"
+version = "22.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c538aa3e340b2c109bad83a49c98298429670947330b9aeca7bcf5d1571e3bde"
+checksum = "3a45c43b39e746177a0762acebdad2520569237cf1090ffecedf0736592c23cf"
 dependencies = [
  "autd3-driver",
  "h2 0.4.2",
@@ -318,7 +318,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "assert_approx_eq",
  "async-ffi",
@@ -327,7 +327,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-backend-cuda"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-backend-cuda",
  "autd3-gain-holo",
@@ -338,7 +338,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-def"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "assert_approx_eq",
  "autd3",
@@ -351,7 +351,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-def",
@@ -359,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-def",
@@ -368,7 +368,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-soem"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-link-soem",
  "autd3capi-def",
@@ -376,7 +376,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-def",
@@ -384,7 +384,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-visualizer"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-link-visualizer",
  "autd3capi-def",
@@ -392,7 +392,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "22.0.0"
+version = "22.0.1"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-def",
