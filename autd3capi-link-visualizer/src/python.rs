@@ -59,7 +59,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfig(
     cbar_size: *const c_char,
     cbar_pad: *const c_char,
     fontsize: i32,
-    ticks_step: float,
+    ticks_step: f64,
     cmap: *const c_char,
     show: bool,
     fname: *const c_char,

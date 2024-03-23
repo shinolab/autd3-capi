@@ -8,8 +8,8 @@ use autd3capi_def::*;
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaive(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {

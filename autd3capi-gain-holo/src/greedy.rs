@@ -7,8 +7,8 @@ use autd3capi_def::*;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedy(
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     div: u8,
     constraint: EmissionConstraintPtr,

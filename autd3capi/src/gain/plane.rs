@@ -7,9 +7,9 @@ use autd3capi_def::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainPlane(
-    nx: float,
-    ny: float,
-    nz: float,
+    nx: f64,
+    ny: f64,
+    nz: f64,
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {

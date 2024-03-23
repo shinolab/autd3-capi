@@ -91,11 +91,11 @@ impl From<CMap> for ListedColorMap {
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfig(
     width: u32,
     height: u32,
-    cbar_size: float,
+    cbar_size: f64,
     font_size: u32,
     label_area_size: u32,
     margin: u32,
-    ticks_step: float,
+    ticks_step: f64,
     cmap: CMap,
     fname: *const c_char,
 ) -> ResultPlotConfig {

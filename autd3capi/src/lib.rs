@@ -21,9 +21,6 @@ impl ControllerBuilderPtr {
     }
 }
 
-struct CallbackPtr(ConstPtr);
-unsafe impl Send for CallbackPtr {}
-
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
@@ -34,13 +31,13 @@ pub unsafe extern "C" fn AUTDControllerBuilder() -> ControllerBuilderPtr {
 #[no_mangle]
 pub unsafe extern "C" fn AUTDControllerBuilderAddDevice(
     builder: ControllerBuilderPtr,
-    x: float,
-    y: float,
-    z: float,
-    qw: float,
-    qx: float,
-    qy: float,
-    qz: float,
+    x: f64,
+    y: f64,
+    z: f64,
+    qw: f64,
+    qx: f64,
+    qy: f64,
+    qz: f64,
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(take!(builder, SyncControllerBuilder).add_device(
         AUTD3::new(Vector3::new(x, y, z)).with_rotation(UnitQuaternion::from_quaternion(

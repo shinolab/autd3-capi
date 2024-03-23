@@ -8,11 +8,11 @@ use autd3capi_def::{driver::geometry::Vector3, *};
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSDP(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
-    alpha: float,
-    lambda: float,
+    alpha: f64,
+    lambda: f64,
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {

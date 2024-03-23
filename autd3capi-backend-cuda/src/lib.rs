@@ -34,11 +34,11 @@ pub unsafe extern "C" fn AUTDCUDABackendDelete(backend: BackendPtr) {
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
-    alpha: float,
-    lambda: float,
+    alpha: f64,
+    lambda: f64,
     repeat: u32,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
@@ -54,8 +54,8 @@ pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     repeat: u32,
     constraint: EmissionConstraintPtr,
@@ -70,8 +70,8 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     repeat: u32,
     constraint: EmissionConstraintPtr,
@@ -86,8 +86,8 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
@@ -100,15 +100,15 @@ pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDALM(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
-    eps_1: float,
-    eps_2: float,
-    tau: float,
+    eps_1: f64,
+    eps_2: f64,
+    tau: f64,
     k_max: u32,
     constraint: EmissionConstraintPtr,
-    initial_ptr: *const float,
+    initial_ptr: *const f64,
     initial_len: u64,
 ) -> GainPtr {
     create_holo!(LM, CUDABackend, backend, points, amps, size)
@@ -116,7 +116,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDALM(
         .with_eps_2(eps_2)
         .with_tau(tau)
         .with_k_max(k_max as _)
-        .with_initial(vec_from_raw!(initial_ptr, float, initial_len))
+        .with_initial(vec_from_raw!(initial_ptr, f64, initial_len))
         .with_constraint(*take!(constraint, _))
         .into()
 }

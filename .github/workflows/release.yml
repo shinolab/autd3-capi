@@ -127,7 +127,7 @@ jobs:
 
       - name: Build project x64
         run: |
-          python3 build.py build --release --features "use_meter single_float"
+          python3 build.py build --release --features "use_meter"
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_x64.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -229,7 +229,7 @@ jobs:
 
       - name: Build project x64
         run: |
-          python3 build.py build --release --features "use_meter single_float"
+          python3 build.py build --release --features "use_meter"
           tar -zcvf assets_x64.tar.gz bin LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
@@ -446,7 +446,7 @@ jobs:
 
       - name: Build project
         run: |
-          python3 build.py build --release --universal --features "use_meter single_float"
+          python3 build.py build --release --universal --features "use_meter"
           tar -zcvf assets.tar.gz bin LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1

@@ -54,7 +54,6 @@ impl From<Result<autd3_driver::common::SamplingConfiguration, AUTDInternalError>
 #[cfg(feature = "export")]
 mod export {
     use super::*;
-    use autd3_driver::defined::float;
 
     #[no_mangle]
     #[must_use]
@@ -66,7 +65,7 @@ mod export {
 
     #[no_mangle]
     #[must_use]
-    pub unsafe extern "C" fn AUTDSamplingConfigFromFrequency(f: float) -> ResultSamplingConfig {
+    pub unsafe extern "C" fn AUTDSamplingConfigFromFrequency(f: f64) -> ResultSamplingConfig {
         autd3_driver::common::SamplingConfiguration::from_frequency(f).into()
     }
 
@@ -87,7 +86,7 @@ mod export {
 
     #[no_mangle]
     #[must_use]
-    pub unsafe extern "C" fn AUTDSamplingConfigFrequency(config: SamplingConfiguration) -> float {
+    pub unsafe extern "C" fn AUTDSamplingConfigFrequency(config: SamplingConfiguration) -> f64 {
         autd3_driver::common::SamplingConfiguration::from(config).frequency()
     }
 

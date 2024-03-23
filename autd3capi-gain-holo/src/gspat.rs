@@ -8,8 +8,8 @@ use autd3capi_def::{driver::geometry::Vector3, *};
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGSPAT(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
     repeat: u32,
     constraint: EmissionConstraintPtr,

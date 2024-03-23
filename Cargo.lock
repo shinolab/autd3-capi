@@ -147,9 +147,9 @@ dependencies = [
 
 [[package]]
 name = "autd3"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5c7dce66108fac31ca74aa1e2eb17b76eb5c425621001141272fb436960f390"
+checksum = "790ef41bb02a59e463fefdd652bf6f27c589bf4fa6d12a408ab751cdfedfc353"
 dependencies = [
  "autd3-driver",
  "autd3-firmware-emulator",
@@ -161,9 +161,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-backend-cuda"
-version = "22.0.0"
+version = "22.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ece50bd997f7cb6494e0c141861f1d945731266842eca42d278d05b3be1bb683"
+checksum = "e92123b662824e2de97f4223cb984b7664168deb2eb29c679e57c06ed10d273e"
 dependencies = [
  "autd3-driver",
  "autd3-gain-holo",
@@ -177,9 +177,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-derive"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2303001dac53ecb3c4b3a112cadb85068a17258ffbac99457425cab81c1d169b"
+checksum = "31ad3a6ff265b00fd7d45ec5a509e31ffc27bc69824a9306eed66250301b2c0e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -188,17 +188,19 @@ dependencies = [
 
 [[package]]
 name = "autd3-driver"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9893aacce3f3aa846d8cf9ca4fc3306257671ab1312a2469b9b513c4539f2e"
+checksum = "165e7208f9461c63cd0c65078d5b0d6241073d1d5de1d1aacd596a66c7e5f77f"
 dependencies = [
  "async-trait",
  "autd3-derive",
+ "bitfield-struct",
  "bitflags 2.4.2",
  "bitvec",
  "libc",
  "nalgebra",
  "num-complex",
+ "rand",
  "thiserror",
  "tokio",
  "windows",
@@ -206,9 +208,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b626524acaab09d424238663db6a7e00db2a5424d8e411cbde04a45822d8512"
+checksum = "c0b0464974510feff1c138a24fdd1985df24432809226ae5b1792dbec0b72997"
 dependencies = [
  "autd3-driver",
  "chrono",
@@ -218,9 +220,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f550e88f205eb26af5345631536df47d416f94fb71ad9a82a46a75d8714f0034"
+checksum = "d678f699678be0a8d75a0c42f67eace7c0af0701273c8d9929b0cc81d79cfaba"
 dependencies = [
  "autd3-driver",
  "nalgebra",
@@ -230,9 +232,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-simulator"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5105a3751126aa239d2d420d04600beff2493fc5e3afb33943d769b231529098"
+checksum = "d6fc2d1f24439b296ef4b3f1d5cf3f0dd50476678d4c0f719bb6c45f2da305d0"
 dependencies = [
  "autd3-driver",
  "autd3-protobuf",
@@ -242,9 +244,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-soem"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc3210d387b5369a70a110275289714f249292b6cb52b15f71a0a8512b9bf979"
+checksum = "1cb373bd4bb93043f1b126621081a0aa1113594dd60ed814af75dc3d020cba6b"
 dependencies = [
  "async-channel",
  "autd3-driver",
@@ -260,9 +262,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-twincat"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8975cc669c29607a171889cd0714d7322e1d0f68dffd14d2168ae01ed0e3e480"
+checksum = "c5799f8d13c64a1460a8cd06454b84f6d91ed85a9c65fd7ffad524fdf47a05a5"
 dependencies = [
  "autd3-driver",
  "cc",
@@ -273,9 +275,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-visualizer"
-version = "22.0.0"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52bfe4c0cb70b375fcee0ec6850e25217415002e4e928969144c7f77b280e7f0"
+checksum = "ebd825de8140d3c2f28fdcedbe509b48466fde08cf70f8183dc326828d3f4a4c"
 dependencies = [
  "autd3-driver",
  "autd3-firmware-emulator",
@@ -293,9 +295,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e2a156b2bcef2570db136605f66bc48c6c88e56e8c84196d4e93104816150a6"
+checksum = "16201fce551623a5e9b3ef1e99b4047d738b90369b464714d4207aaf3cac2974"
 dependencies = [
  "autd3-driver",
  "hound",
@@ -305,9 +307,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-protobuf"
-version = "22.0.1"
+version = "22.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a45c43b39e746177a0762acebdad2520569237cf1090ffecedf0736592c23cf"
+checksum = "8ba22e24644d21469e6ff21f634937835af42c75023333aaa7fc58d98061e535"
 dependencies = [
  "autd3-driver",
  "h2 0.4.2",
@@ -318,7 +320,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "assert_approx_eq",
  "async-ffi",
@@ -327,7 +329,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-backend-cuda"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-backend-cuda",
  "autd3-gain-holo",
@@ -338,7 +340,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-def"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "assert_approx_eq",
  "autd3",
@@ -351,7 +353,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-def",
@@ -359,7 +361,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-def",
@@ -368,7 +370,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-soem"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-link-soem",
  "autd3capi-def",
@@ -376,7 +378,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-def",
@@ -384,7 +386,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-visualizer"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-link-visualizer",
  "autd3capi-def",
@@ -392,7 +394,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "22.0.1"
+version = "22.0.3"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-def",
@@ -469,6 +471,17 @@ name = "base64"
 version = "0.21.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
+
+[[package]]
+name = "bitfield-struct"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b0fe3d90b1534e1b0e92008ad2d9f9a3ddb650965ae0592ed1d1031b9dea94f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.50",
+]
 
 [[package]]
 name = "bitflags"
@@ -558,7 +571,7 @@ dependencies = [
  "js-sys",
  "num-traits",
  "wasm-bindgen",
- "windows-targets 0.52.0",
+ "windows-targets 0.52.4",
 ]
 
 [[package]]
@@ -1243,7 +1256,7 @@ dependencies = [
  "iana-time-zone-haiku",
  "js-sys",
  "wasm-bindgen",
- "windows-core",
+ "windows-core 0.52.0",
 ]
 
 [[package]]
@@ -2730,12 +2743,12 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
 name = "windows"
-version = "0.52.0"
+version = "0.54.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e48a53791691ab099e5e2ad123536d0fff50652600abaf43bbf952894110d0be"
+checksum = "9252e5725dbed82865af151df558e754e4a3c2c30818359eb17465f1346a1b49"
 dependencies = [
- "windows-core",
- "windows-targets 0.52.0",
+ "windows-core 0.54.0",
+ "windows-targets 0.52.4",
 ]
 
 [[package]]
@@ -2744,7 +2757,26 @@ version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "33ab640c8d7e35bf8ba19b884ba838ceb4fba93a4e8c65a9059d08afcfc683d9"
 dependencies = [
- "windows-targets 0.52.0",
+ "windows-targets 0.52.4",
+]
+
+[[package]]
+name = "windows-core"
+version = "0.54.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12661b9c89351d684a50a8a643ce5f608e20243b9fb84687800163429f161d65"
+dependencies = [
+ "windows-result",
+ "windows-targets 0.52.4",
+]
+
+[[package]]
+name = "windows-result"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd19df78e5168dfb0aedc343d1d1b8d422ab2db6756d2dc3fef75035402a3f64"
+dependencies = [
+ "windows-targets 0.52.4",
 ]
 
 [[package]]
@@ -2762,7 +2794,7 @@ version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
 dependencies = [
- "windows-targets 0.52.0",
+ "windows-targets 0.52.4",
 ]
 
 [[package]]
@@ -2782,17 +2814,17 @@ dependencies = [
 
 [[package]]
 name = "windows-targets"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a18201040b24831fbb9e4eb208f8892e1f50a37feb53cc7ff887feb8f50e7cd"
+checksum = "7dd37b7e5ab9018759f893a1952c9420d060016fc19a472b4bb20d1bdd694d1b"
 dependencies = [
- "windows_aarch64_gnullvm 0.52.0",
- "windows_aarch64_msvc 0.52.0",
- "windows_i686_gnu 0.52.0",
- "windows_i686_msvc 0.52.0",
- "windows_x86_64_gnu 0.52.0",
- "windows_x86_64_gnullvm 0.52.0",
- "windows_x86_64_msvc 0.52.0",
+ "windows_aarch64_gnullvm 0.52.4",
+ "windows_aarch64_msvc 0.52.4",
+ "windows_i686_gnu 0.52.4",
+ "windows_i686_msvc 0.52.4",
+ "windows_x86_64_gnu 0.52.4",
+ "windows_x86_64_gnullvm 0.52.4",
+ "windows_x86_64_msvc 0.52.4",
 ]
 
 [[package]]
@@ -2803,9 +2835,9 @@ checksum = "2b38e32f0abccf9987a4e3079dfb67dcd799fb61361e53e2882c3cbaf0d905d8"
 
 [[package]]
 name = "windows_aarch64_gnullvm"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb7764e35d4db8a7921e09562a0304bf2f93e0a51bfccee0bd0bb0b666b015ea"
+checksum = "bcf46cf4c365c6f2d1cc93ce535f2c8b244591df96ceee75d8e83deb70a9cac9"
 
 [[package]]
 name = "windows_aarch64_msvc"
@@ -2815,9 +2847,9 @@ checksum = "dc35310971f3b2dbbf3f0690a219f40e2d9afcf64f9ab7cc1be722937c26b4bc"
 
 [[package]]
 name = "windows_aarch64_msvc"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbaa0368d4f1d2aaefc55b6fcfee13f41544ddf36801e793edbbfd7d7df075ef"
+checksum = "da9f259dd3bcf6990b55bffd094c4f7235817ba4ceebde8e6d11cd0c5633b675"
 
 [[package]]
 name = "windows_i686_gnu"
@@ -2827,9 +2859,9 @@ checksum = "a75915e7def60c94dcef72200b9a8e58e5091744960da64ec734a6c6e9b3743e"
 
 [[package]]
 name = "windows_i686_gnu"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a28637cb1fa3560a16915793afb20081aba2c92ee8af57b4d5f28e4b3e7df313"
+checksum = "b474d8268f99e0995f25b9f095bc7434632601028cf86590aea5c8a5cb7801d3"
 
 [[package]]
 name = "windows_i686_msvc"
@@ -2839,9 +2871,9 @@ checksum = "8f55c233f70c4b27f66c523580f78f1004e8b5a8b659e05a4eb49d4166cca406"
 
 [[package]]
 name = "windows_i686_msvc"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ffe5e8e31046ce6230cc7215707b816e339ff4d4d67c65dffa206fd0f7aa7b9a"
+checksum = "1515e9a29e5bed743cb4415a9ecf5dfca648ce85ee42e15873c3cd8610ff8e02"
 
 [[package]]
 name = "windows_x86_64_gnu"
@@ -2851,9 +2883,9 @@ checksum = "53d40abd2583d23e4718fddf1ebec84dbff8381c07cae67ff7768bbf19c6718e"
 
 [[package]]
 name = "windows_x86_64_gnu"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d6fa32db2bc4a2f5abeacf2b69f7992cd09dca97498da74a151a3132c26befd"
+checksum = "5eee091590e89cc02ad514ffe3ead9eb6b660aedca2183455434b93546371a03"
 
 [[package]]
 name = "windows_x86_64_gnullvm"
@@ -2863,9 +2895,9 @@ checksum = "0b7b52767868a23d5bab768e390dc5f5c55825b6d30b86c844ff2dc7414044cc"
 
 [[package]]
 name = "windows_x86_64_gnullvm"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a657e1e9d3f514745a572a6846d3c7aa7dbe1658c056ed9c3344c4109a6949e"
+checksum = "77ca79f2451b49fa9e2af39f0747fe999fcda4f5e241b2898624dca97a1f2177"
 
 [[package]]
 name = "windows_x86_64_msvc"
@@ -2875,9 +2907,9 @@ checksum = "ed94fce61571a4006852b7389a063ab983c02eb1bb37b47f8272ce92d06d9538"
 
 [[package]]
 name = "windows_x86_64_msvc"
-version = "0.52.0"
+version = "0.52.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dff9641d1cd4be8d1a070daf9e3773c5f67e78b4d9d42263020c057706765c04"
+checksum = "32b752e52a2da0ddfbdbcc6fceadfeede4c939ed16d13e648833a61dfb611ed8"
 
 [[package]]
 name = "winnow"

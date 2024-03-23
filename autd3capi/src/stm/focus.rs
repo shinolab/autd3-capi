@@ -14,7 +14,7 @@ use super::STMPropsPtr;
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFocus(
     props: STMPropsPtr,
-    points: *const float,
+    points: *const f64,
     intensities: *const u8,
     size: u64,
 ) -> ResultFocusSTM {

@@ -11,7 +11,7 @@ use super::SamplingMode;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSine(
-    freq: float,
+    freq: f64,
     config: SamplingConfiguration,
     intensity: u8,
     offset: u8,

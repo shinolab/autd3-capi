@@ -11,7 +11,6 @@ mod ptr;
 pub use autd3::{controller::Controller, error::AUTDError};
 pub use autd3_driver::{
     datagram::{Datagram, Gain, GainFilter, Modulation, STMProps},
-    defined::float,
     error::AUTDInternalError,
     firmware_version::FirmwareInfo,
     geometry::{Device, Geometry, Vector3},
@@ -40,11 +39,11 @@ pub type Cnt = SyncController;
 pub const NUM_TRANS_IN_UNIT: u32 = 249;
 pub const NUM_TRANS_IN_X: u32 = 18;
 pub const NUM_TRANS_IN_Y: u32 = 14;
-pub const TRANS_SPACING_MM: float = 10.16;
-pub const DEVICE_HEIGHT_MM: float = 151.4;
-pub const DEVICE_WIDTH_MM: float = 192.0;
+pub const TRANS_SPACING_MM: f64 = 10.16;
+pub const DEVICE_HEIGHT_MM: f64 = 151.4;
+pub const DEVICE_WIDTH_MM: f64 = 192.0;
 pub const FPGA_CLK_FREQ: u32 = 20480000;
-pub const ULTRASOUND_FREQUENCY: float = 40000.0;
+pub const ULTRASOUND_FREQUENCY: f64 = 40000.0;
 
 pub const AUTD3_ERR: i32 = -1;
 pub const AUTD3_TRUE: i32 = 1;

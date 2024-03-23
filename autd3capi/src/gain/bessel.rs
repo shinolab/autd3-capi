@@ -7,13 +7,13 @@ use autd3capi_def::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
-    x: float,
-    y: float,
-    z: float,
-    nx: float,
-    ny: float,
-    nz: float,
-    theta_z: float,
+    x: f64,
+    y: f64,
+    z: f64,
+    nx: f64,
+    ny: f64,
+    nz: f64,
+    theta_z: f64,
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {

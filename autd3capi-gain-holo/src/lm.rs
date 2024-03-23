@@ -8,14 +8,14 @@ use autd3capi_def::{driver::geometry::Vector3, *};
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloLM(
     backend: BackendPtr,
-    points: *const float,
-    amps: *const float,
+    points: *const f64,
+    amps: *const f64,
     size: u64,
-    eps_1: float,
-    eps_2: float,
-    tau: float,
+    eps_1: f64,
+    eps_2: f64,
+    tau: f64,
     k_max: u32,
-    initial_ptr: *const float,
+    initial_ptr: *const f64,
     initial_len: u64,
     constraint: EmissionConstraintPtr,
 ) -> GainPtr {
@@ -24,7 +24,7 @@ pub unsafe extern "C" fn AUTDGainHoloLM(
         .with_eps_2(eps_2)
         .with_tau(tau)
         .with_k_max(k_max as _)
-        .with_initial(vec_from_raw!(initial_ptr, float, initial_len))
+        .with_initial(vec_from_raw!(initial_ptr, f64, initial_len))
         .with_constraint(*take!(constraint, _))
         .into()
 }

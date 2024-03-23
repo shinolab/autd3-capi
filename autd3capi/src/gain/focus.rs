@@ -7,9 +7,9 @@ use autd3capi_def::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainFocus(
-    x: float,
-    y: float,
-    z: float,
+    x: f64,
+    y: f64,
+    z: f64,
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {

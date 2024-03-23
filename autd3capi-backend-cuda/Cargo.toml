@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-backend-cuda"
-version = "22.0.1"
+version = "22.0.3"
 edition = "2021"
 license = "MIT"
 
@@ -8,11 +8,8 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-def = { path = "../autd3capi-def", version = "22.0.1" }
-autd3capi-gain-holo = { path = "../autd3capi-gain-holo", version = "22.0.1" }
-autd3-gain-holo = { version = "22.0.1", features = ["async-trait"] }
-autd3-backend-cuda = { version = "22.0.0", features = ["async-trait"] }
+autd3capi-def = { path = "../autd3capi-def", version = "22.0.3" }
+autd3capi-gain-holo = { path = "../autd3capi-gain-holo", version = "22.0.3" }
+autd3-gain-holo = { version = "22.0.3", features = ["async-trait"] }
+autd3-backend-cuda = { version = "22.0.2", features = ["async-trait"] }
 libc = "0.2.144"
-
-[features]
-single_float = ["autd3capi-def/single_float", "autd3-backend-cuda/single_float"]

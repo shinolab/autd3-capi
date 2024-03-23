@@ -7,11 +7,11 @@ use super::SamplingMode;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquare(
-    freq: float,
+    freq: f64,
     config: SamplingConfiguration,
     low: u8,
     high: u8,
-    duty: float,
+    duty: f64,
     mode: SamplingMode,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {

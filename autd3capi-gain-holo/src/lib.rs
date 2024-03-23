@@ -27,13 +27,13 @@ pub struct ResultBackend {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: float) -> float {
+pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f64) -> f64 {
     (value * dB).as_pascal()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: float) -> float {
+pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f64) -> f64 {
     (value * Pascal).as_spl()
 }
 

@@ -9,7 +9,7 @@ pub unsafe extern "C" fn AUTDTransducer(dev: DevicePtr, idx: u32) -> TransducerP
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr, pos: *mut float) {
+pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr, pos: *mut f64) {
     let p = tr.position();
     pos.add(0).write(p.x);
     pos.add(1).write(p.y);
@@ -17,7 +17,7 @@ pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr, pos: *mut flo
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerRotation(tr: TransducerPtr, rot: *mut float) {
+pub unsafe extern "C" fn AUTDTransducerRotation(tr: TransducerPtr, rot: *mut f64) {
     let r = tr.rotation();
     rot.add(0).write(r.w);
     rot.add(1).write(r.i);
@@ -26,7 +26,7 @@ pub unsafe extern "C" fn AUTDTransducerRotation(tr: TransducerPtr, rot: *mut flo
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionX(tr: TransducerPtr, dir: *mut float) {
+pub unsafe extern "C" fn AUTDTransducerDirectionX(tr: TransducerPtr, dir: *mut f64) {
     let d = tr.x_direction();
     dir.add(0).write(d.x);
     dir.add(1).write(d.y);
@@ -34,7 +34,7 @@ pub unsafe extern "C" fn AUTDTransducerDirectionX(tr: TransducerPtr, dir: *mut f
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionY(tr: TransducerPtr, dir: *mut float) {
+pub unsafe extern "C" fn AUTDTransducerDirectionY(tr: TransducerPtr, dir: *mut f64) {
     let d = tr.y_direction();
     dir.add(0).write(d.x);
     dir.add(1).write(d.y);
@@ -42,7 +42,7 @@ pub unsafe extern "C" fn AUTDTransducerDirectionY(tr: TransducerPtr, dir: *mut f
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionZ(tr: TransducerPtr, dir: *mut float) {
+pub unsafe extern "C" fn AUTDTransducerDirectionZ(tr: TransducerPtr, dir: *mut f64) {
     let d = tr.z_direction();
     dir.add(0).write(d.x);
     dir.add(1).write(d.y);
@@ -51,6 +51,6 @@ pub unsafe extern "C" fn AUTDTransducerDirectionZ(tr: TransducerPtr, dir: *mut f
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDTransducerWavelength(tr: TransducerPtr, sound_speed: float) -> float {
+pub unsafe extern "C" fn AUTDTransducerWavelength(tr: TransducerPtr, sound_speed: f64) -> f64 {
     tr.wavelength(sound_speed)
 }

@@ -19,7 +19,7 @@ impl From<STMProps> for STMPropsPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsFromFreq(freq: float) -> STMPropsPtr {
+pub unsafe extern "C" fn AUTDSTMPropsFromFreq(freq: f64) -> STMPropsPtr {
     STMProps::from_freq(freq).into()
 }
 
@@ -50,7 +50,7 @@ pub unsafe extern "C" fn AUTDSTMPropsWithLoopBehavior(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPropsFrequency(props: STMPropsPtr, size: u64) -> float {
+pub unsafe extern "C" fn AUTDSTMPropsFrequency(props: STMPropsPtr, size: u64) -> f64 {
     take!(props, STMProps).freq(size as usize)
 }
 
