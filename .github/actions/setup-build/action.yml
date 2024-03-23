@@ -40,6 +40,8 @@ runs:
         cuda: '12.2.0'
         method: 'network'
         sub-packages: '["nvcc", "cudart", "cublas_dev", "cusolver_dev"]'
+        use-github-cache: false
+        use-local-cache: false
     - name: install cuda
       shell: bash
       if: inputs.cuda && inputs.os == 'ubuntu-latest'
