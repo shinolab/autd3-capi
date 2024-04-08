@@ -309,7 +309,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
 
 #[cfg(test)]
 mod tests {
-    use crate::datagram::debug::AUTDDatagramConfigureDebugOutputIdx;
+    use crate::datagram::debug::AUTDDatagramConfigureDebugSettings;
 
     use super::{
         geometry::AUTDGeometry,
@@ -327,15 +327,14 @@ mod tests {
         result.result
     }
 
-    unsafe extern "C" fn debug_0(_ptr: ConstPtr, _geometry: GeometryPtr, _idx: u32) -> u8 {
-        0
-    }
-
-    unsafe extern "C" fn debug_1(_ptr: ConstPtr, _geometry: GeometryPtr, idx: u32) -> u8 {
-        if idx == 0 {
-            10
-        } else {
-            0xFF
+    unsafe extern "C" fn debug_0(
+        _ptr: ConstPtr,
+        _geometry: GeometryPtr,
+        _idx: u32,
+    ) -> DebugSettings {
+        DebugSettings {
+            ty: [0x01, 0x23, 0x45, 0x67],
+            value: [0x89AB, 0xCDEF, 0x0123, 0x4567],
         }
     }
 
@@ -347,21 +346,25 @@ mod tests {
 
             let audit = AUTDLinkGet(cnt);
             for i in 0..2 {
-                assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, i), 0xFF);
+                let mut ty = [0x00u8; 4];
+                let mut value = [0x00u16; 4];
+                AUTDLinkAuditFpgaDebugTypes(audit, i, ty.as_mut_ptr());
+                AUTDLinkAuditFpgaDebugValues(audit, i, value.as_mut_ptr());
+                assert_eq!([0x00, 0x00, 0x00, 0x00], ty);
+                assert_eq!([0x0000, 0x0000, 0x0000, 0x0000], value);
             }
 
-            let d1 = AUTDDatagramConfigureDebugOutputIdx(debug_0 as _, std::ptr::null(), geometry);
+            let d1 = AUTDDatagramConfigureDebugSettings(debug_0 as _, std::ptr::null(), geometry);
             let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
             assert_eq!(res.result, AUTD3_TRUE);
             for i in 0..2 {
-                assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, i), 0);
+                let mut ty = [0x00u8; 4];
+                let mut value = [0x00u16; 4];
+                AUTDLinkAuditFpgaDebugTypes(audit, i, ty.as_mut_ptr());
+                AUTDLinkAuditFpgaDebugValues(audit, i, value.as_mut_ptr());
+                assert_eq!([0x01, 0x23, 0x45, 0x67], ty);
+                assert_eq!([0x89AB, 0xCDEF, 0x0123, 0x4567], value);
             }
-
-            let d1 = AUTDDatagramConfigureDebugOutputIdx(debug_1 as _, std::ptr::null(), geometry);
-            let res = AUTDControllerSend(cnt, d1, DatagramPtr(std::ptr::null()), 200 * 1000 * 1000);
-            assert_eq!(res.result, AUTD3_TRUE);
-            assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, 0), 10);
-            assert_eq!(AUTDLinkAuditFpgaDebugOutputIdx(audit, 1), 0xFF);
         }
     }
 }

@@ -176,12 +176,15 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(
 }
 
 #[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugOutputIdx(audit: LinkPtr, idx: u32) -> u8 {
-    audit.cast::<Audit>()[idx as usize]
-        .fpga()
-        .debug_output_idx()
-        .unwrap_or(0xFF)
+pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugTypes(audit: LinkPtr, idx: u32, ty: *mut u8) {
+    let src = audit.cast::<Audit>()[idx as usize].fpga().debug_types();
+    std::ptr::copy_nonoverlapping(src.as_ptr() as _, ty, src.len())
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u32, value: *mut u16) {
+    let src = audit.cast::<Audit>()[idx as usize].fpga().debug_values();
+    std::ptr::copy_nonoverlapping(src.as_ptr() as _, value, src.len())
 }
 
 #[no_mangle]

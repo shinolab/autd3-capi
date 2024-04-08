@@ -1,17 +1,19 @@
-use autd3capi_def::{ConstPtr, DatagramPtr, DynamicConfigureDebugOutputIdx, GeometryPtr};
+use autd3capi_def::{
+    ConstPtr, DatagramPtr, DebugSettings, DynamicConfigureDebugSettings, GeometryPtr,
+};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureDebugOutputIdx(
+pub unsafe extern "C" fn AUTDDatagramConfigureDebugSettings(
     f: ConstPtr,
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
         _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> u8,
+        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> DebugSettings,
     >(f);
-    DynamicConfigureDebugOutputIdx::new(
+    DynamicConfigureDebugSettings::new(
         geometry
             .devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))

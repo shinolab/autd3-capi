@@ -7,31 +7,57 @@ use autd3_driver::{
     operation::{Operation, TypeTag},
 };
 
-pub struct DynamicConfigureDebugOutputIdx {
-    idx_map: HashMap<usize, u8>,
+#[repr(C, align(2))]
+struct DebugSettingInner {
+    tag: TypeTag,
+    __pad: u8,
+    ty: [u8; 4],
+    value: [u16; 4],
 }
 
-impl DynamicConfigureDebugOutputIdx {
-    pub fn new(idx_map: HashMap<usize, u8>) -> Self {
-        Self { idx_map }
+#[repr(C)]
+#[derive(Clone)]
+pub struct DebugSettings {
+    pub ty: [u8; 4],
+    pub value: [u16; 4],
+}
+
+pub struct DynamicConfigureDebugSettings {
+    map: HashMap<usize, DebugSettings>,
+}
+
+impl DynamicConfigureDebugSettings {
+    pub fn new(map: HashMap<usize, DebugSettings>) -> Self {
+        Self { map }
     }
 }
 
-pub struct DynamicDebugOutIdxOp {
+pub struct DynamicDebugSettingOp {
     remains: HashMap<usize, usize>,
-    idx_map: HashMap<usize, u8>,
+    idx_map: HashMap<usize, DebugSettings>,
 }
 
-impl Operation for DynamicDebugOutIdxOp {
+impl Operation for DynamicDebugSettingOp {
     fn pack(&mut self, device: &Device, tx: &mut [u8]) -> Result<usize, AUTDInternalError> {
         assert_eq!(self.remains[&device.idx()], 1);
-        tx[0] = TypeTag::Debug as u8;
-        tx[1] = self.idx_map.get(&device.idx()).cloned().unwrap_or(0xFF);
-        Ok(2)
+        let d = unsafe {
+            (tx.as_mut_ptr() as *mut DebugSettingInner)
+                .as_mut()
+                .unwrap()
+        };
+        d.tag = TypeTag::Debug;
+        let v = &self.idx_map[&device.idx()];
+        for (i, &ty) in v.ty.iter().enumerate() {
+            d.ty[i] = ty;
+        }
+        for (i, &value) in v.value.iter().enumerate() {
+            d.value[i] = value;
+        }
+        Ok(std::mem::size_of::<DebugSettingInner>())
     }
 
     fn required_size(&self, _: &Device) -> usize {
-        2
+        std::mem::size_of::<DebugSettingInner>()
     }
 
     fn init(&mut self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
@@ -48,12 +74,12 @@ impl Operation for DynamicDebugOutIdxOp {
     }
 }
 
-impl DynamicDatagram for DynamicConfigureDebugOutputIdx {
+impl DynamicDatagram for DynamicConfigureDebugSettings {
     fn operation(&mut self) -> Result<(Box<dyn Operation>, Box<dyn Operation>), AUTDInternalError> {
         Ok((
-            Box::new(DynamicDebugOutIdxOp {
+            Box::new(DynamicDebugSettingOp {
                 remains: Default::default(),
-                idx_map: self.idx_map.clone(),
+                idx_map: self.map.clone(),
             }),
             Box::<autd3_driver::operation::NullOp>::default(),
         ))
