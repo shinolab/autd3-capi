@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 use autd3capi_driver::{
-    driver::{datagram::SwapSegment, derive::EmitIntensity, error::AUTDInternalError},
+    driver::{datagram::SwapSegment, error::AUTDInternalError},
     *,
 };
 
@@ -17,7 +15,7 @@ pub mod r#static;
 pub struct ModulationCalcPtr(pub ConstPtr);
 
 impl std::ops::Deref for ModulationCalcPtr {
-    type Target = HashMap<usize, Vec<u8>>;
+    type Target = Vec<u8>;
 
     fn deref(&self) -> &Self::Target {
         unsafe { (self.0 as *mut Self::Target).as_ref().unwrap() }
@@ -32,8 +30,8 @@ pub struct ResultModulationCalc {
     pub err: ConstPtr,
 }
 
-impl From<Result<HashMap<usize, Vec<u8>>, AUTDInternalError>> for ResultModulationCalc {
-    fn from(r: Result<HashMap<usize, Vec<u8>>, AUTDInternalError>) -> Self {
+impl From<Result<Vec<u8>, AUTDInternalError>> for ResultModulationCalc {
+    fn from(r: Result<Vec<u8>, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
@@ -90,29 +88,17 @@ pub unsafe extern "C" fn AUTDModulationCalc(
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcGetResult(src: ModulationCalcPtr, dst: *mut u8) {
-    let src = take!(src, Vec<EmitIntensity>);
     std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDModulationCCalcGetSize(src: ModulationCalcPtr, idx: u32) -> u32 {
-    let idx = idx as usize;
-    src[&idx].len() as u32
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDModulationCCalcGetResult(
-    src: ModulationCalcPtr,
-    dst: *mut u8,
-    idx: u32,
-) {
-    let idx = idx as usize;
-    std::ptr::copy_nonoverlapping(src[&idx].as_ptr(), dst, src[&idx].len());
+pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u32 {
+    src.len() as u32
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
-    let _ = take!(src, HashMap<usize, Vec<u8>>);
+    let _ = take!(src, Vec<u8>);
 }
 
 #[no_mangle]

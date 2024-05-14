@@ -4,6 +4,7 @@ use autd3capi_driver::{
     autd3::{controller::ControllerBuilder, error::AUTDError, Controller},
     driver::{
         autd3_device::AUTD3,
+        defined::{Freq, Hz},
         geometry::{IntoDevice, Quaternion, UnitQuaternion, Vector3},
     },
     take, ConstPtr, LinkBuilderPtr, SyncLinkBuilder,
@@ -16,9 +17,9 @@ pub struct SyncControllerBuilder {
 }
 
 impl SyncControllerBuilder {
-    pub const fn new() -> Self {
+    pub const fn new(ultrasound_freq: Freq<u32>) -> Self {
         Self {
-            inner: Controller::builder(),
+            inner: Controller::builder_with_ultrasound_freq(ultrasound_freq),
         }
     }
 
@@ -58,8 +59,8 @@ impl ControllerBuilderPtr {
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilder() -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(SyncControllerBuilder::new())
+pub unsafe extern "C" fn AUTDControllerBuilder(ultrasound_freq: u32) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(SyncControllerBuilder::new(ultrasound_freq * Hz))
 }
 
 #[no_mangle]

@@ -3,7 +3,7 @@
 mod timer_strategy;
 
 use std::{
-    ffi::{c_char, CStr},
+    ffi::{c_char, CStr, CString},
     net::SocketAddr,
     sync::{Arc, Mutex},
     time::Duration,
@@ -159,6 +159,21 @@ pub enum Status {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDLinkSOEMStatusGetMsg(src: Status, dst: *mut c_char) {
+    let c_string = CString::new(format!(
+        "{}",
+        match src {
+            Status::Error => autd3_link_soem::Status::Error,
+            Status::StateChanged => autd3_link_soem::Status::StateChanged,
+            Status::Lost => autd3_link_soem::Status::Lost,
+        }
+    ))
+    .unwrap();
+    let c_str: &CStr = c_string.as_c_str();
+    libc::strcpy(dst, c_str.as_ptr());
+}
+
+#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
     soem: LinkSOEMBuilderPtr,
@@ -174,24 +189,19 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
         let (out_f, context) = {
             let ptr = ptr.lock().unwrap();
             (
-                std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, u8, *const c_char)>(
-                    ptr.0,
-                ),
+                std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, Status)>(ptr.0),
                 ptr.1,
             )
         };
         match status {
-            autd3_link_soem::Status::Error(msg) => {
-                let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(context, slave as _, Status::Error as _, msg.as_ptr());
+            autd3_link_soem::Status::Error => {
+                out_f(context, slave as _, Status::Error);
             }
-            autd3_link_soem::Status::StateChanged(msg) => {
-                let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(context, slave as _, Status::StateChanged as _, msg.as_ptr());
+            autd3_link_soem::Status::StateChanged => {
+                out_f(context, slave as _, Status::StateChanged);
             }
-            autd3_link_soem::Status::Lost(msg) => {
-                let msg = std::ffi::CString::new(msg).unwrap();
-                out_f(context, slave as _, Status::Lost as _, msg.as_ptr());
+            autd3_link_soem::Status::Lost => {
+                out_f(context, slave as _, Status::Lost);
             }
         }
     };
