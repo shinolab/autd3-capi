@@ -22,6 +22,8 @@ pub type L = dyn autd3_driver::link::Link;
 pub type G = dyn autd3_driver::datagram::Gain;
 pub type M = dyn autd3_driver::datagram::Modulation;
 
+pub use autd3_driver::geometry::Vector3;
+
 #[macro_export]
 macro_rules! vec_from_raw {
     ($src:expr, $type:ty, $len:expr) => {{

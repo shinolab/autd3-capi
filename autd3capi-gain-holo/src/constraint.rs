@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_def::{take, ConstPtr};
+use autd3capi_driver::{take, ConstPtr};
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

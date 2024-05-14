@@ -10,7 +10,7 @@ pub mod nalgebra_backend;
 pub mod sdp;
 
 use autd3_gain_holo::*;
-use autd3capi_def::*;
+use autd3capi_driver::*;
 use constraint::EmissionConstraintPtr;
 
 #[derive(Debug, Clone, Copy)]
@@ -34,14 +34,14 @@ pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f64) -> f64 {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f64) -> f64 {
-    (value * Pascal).as_spl()
+    (value * Pa).as_spl()
 }
 
 #[macro_export]
 macro_rules! create_holo {
-    ($type:tt, $backend_type:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {
-        $type::new(
-            ($backend.0 as *const std::sync::Arc<$backend_type>)
+    ($type:tt, $backend_type:tt, $direcivity:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {
+        $type::<$direcivity, $backend_type<$direcivity>>::new(
+            ($backend.0 as *const std::sync::Arc<$backend_type<$direcivity>>)
                 .as_ref()
                 .unwrap()
                 .clone(),
@@ -52,19 +52,19 @@ macro_rules! create_holo {
                 $points.add(i * 3 + 1).read(),
                 $points.add(i * 3 + 2).read(),
             );
-            let amp = *$amps.add(i) * Pascal;
+            let amp = *$amps.add(i) * Pa;
             (p, amp)
         }))
     };
 
-    ($type:tt, $points:expr, $amps:expr, $size:expr) => {
-        $type::new().add_foci_from_iter((0..$size as usize).map(|i| {
+    ($type:tt, $direcivity:tt, $points:expr, $amps:expr, $size:expr) => {
+        $type::<$direcivity>::new().add_foci_from_iter((0..$size as usize).map(|i| {
             let p = Vector3::new(
                 $points.add(i * 3).read(),
                 $points.add(i * 3 + 1).read(),
                 $points.add(i * 3 + 2).read(),
             );
-            let amp = *$amps.add(i) * Pascal;
+            let amp = *$amps.add(i) * Pa;
             (p, amp)
         }))
     };

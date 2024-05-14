@@ -3,10 +3,7 @@
 use autd3capi_driver::{
     autd3::{
         derive::SamplingConfig,
-        modulation::{
-            sampling_mode::{ExactFreq, ExactFreqFloat, NearestFreq},
-            Square,
-        },
+        modulation::{sampling_mode::ExactFreqFloat, Square},
     },
     driver::{defined::Hz, derive::ModulationProperty},
     *,
@@ -71,33 +68,9 @@ pub unsafe extern "C" fn AUTDModulationSquareNearest(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareExactIsDefault(square: ModulationPtr) -> bool {
-    let m = take_gain!(square, Square<ExactFreq>);
-    let default = Square::new(0 * Hz);
-    m.low() == default.low()
-        && m.high() == default.high()
-        && m.duty() == default.duty()
-        && m.sampling_config() == default.sampling_config()
-        && m.loop_behavior() == default.loop_behavior()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareExactFloatIsDefault(square: ModulationPtr) -> bool {
+pub unsafe extern "C" fn AUTDModulationSquareIsDefault(square: ModulationPtr) -> bool {
     let m = take_gain!(square, Square<ExactFreqFloat>);
     let default = Square::new(0. * Hz);
-    m.low() == default.low()
-        && m.high() == default.high()
-        && m.duty() == default.duty()
-        && m.sampling_config() == default.sampling_config()
-        && m.loop_behavior() == default.loop_behavior()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareNearestIsDefault(square: ModulationPtr) -> bool {
-    let m = take_gain!(square, Square<NearestFreq>);
-    let default = Square::with_freq_nearest(0. * Hz);
     m.low() == default.low()
         && m.high() == default.high()
         && m.duty() == default.duty()
