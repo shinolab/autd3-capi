@@ -38,7 +38,7 @@ impl DynamicDatagram for DynamicPhaseFilter {
                         move |tr| f(context, geometry, dev_idx, tr.idx() as u8)
                     },
                 )),
-                Box::new(autd3_driver::firmware::operation::NullOp::default()),
+                Box::<autd3_driver::firmware::operation::NullOp>::default(),
             )
         }
     }

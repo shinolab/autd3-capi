@@ -21,7 +21,7 @@ impl DynamicDatagram for DynamicReadsFPGAState {
             Box::new(autd3_driver::firmware::operation::ReadsFPGAStateOp::new(
                 move |dev| map[&dev.idx()],
             )),
-            Box::new(autd3_driver::firmware::operation::NullOp::default()),
+            Box::<autd3_driver::firmware::operation::NullOp>::default(),
         )
     }
 

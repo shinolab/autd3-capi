@@ -35,7 +35,7 @@ impl DynamicDatagram for DynamicForceFan {
                 Box::new(autd3_driver::firmware::operation::ForceFanOp::new(
                     move |dev| f(context, geometry, dev.idx() as u32),
                 )),
-                Box::new(autd3_driver::firmware::operation::NullOp::default()),
+                Box::<autd3_driver::firmware::operation::NullOp>::default(),
             )
         }
     }

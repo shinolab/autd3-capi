@@ -76,7 +76,6 @@ pub unsafe extern "C" fn AUTDControllerGroupCreateKVMap() -> GroupKVMapPtr {
 }
 
 #[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
     mut map: GroupKVMapPtr,
     key: i32,

@@ -23,7 +23,7 @@ where
                 self.segment(),
                 self.transition_mode(),
             )),
-            Box::new(<Self as Datagram>::O2::default()),
+            Box::<<Self as Datagram>::O2>::default(),
         )
     }
 
