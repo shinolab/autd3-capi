@@ -2,14 +2,29 @@
 
 use autd3capi_def::{
     driver::derive::EmitIntensity, vec_from_raw, CustomModulation, LoopBehavior, ModulationPtr,
-    SamplingConfiguration,
+    SamplingConfig,
 };
+
+use autd3_driver::derive::*;
+
+#[derive(Modulation)]
+pub struct CustomModulation {
+    pub buf: Vec<EmitIntensity>,
+    pub config: SamplingConfig,
+    pub loop_behavior: LoopBehavior,
+}
+
+impl autd3_driver::datagram::Modulation for CustomModulation {
+    fn calc(&self) -> Result<Vec<EmitIntensity>, AUTDInternalError> {
+        Ok(self.buf.clone())
+    }
+}
 
 #[no_mangle]
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDModulationCustom(
-    config: SamplingConfiguration,
+    config: SamplingConfig,
     ptr: *const u8,
     len: u64,
     loop_behavior: LoopBehavior,

@@ -8,5 +8,5 @@ license = "MIT"
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-def = { path = "../autd3capi-def", version = "23.1.0" }
+autd3capi-driver = { path = "../autd3capi-driver", version = "23.1.0" }
 autd3-link-visualizer = { workspace = true, features = ["plotters", "python", "gpu", "async-trait"] }

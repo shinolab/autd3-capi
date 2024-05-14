@@ -8,5 +8,5 @@ license = "MIT"
 crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-def = { path = "../autd3capi-def" }
+autd3capi-driver = { path = "../autd3capi-driver" }
 autd3-gain-holo = { workspace = true, features = ["async-trait"] }

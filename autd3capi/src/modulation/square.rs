@@ -8,7 +8,7 @@ use super::SamplingMode;
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquare(
     freq: f64,
-    config: SamplingConfiguration,
+    config: SamplingConfig,
     low: u8,
     high: u8,
     duty: f64,

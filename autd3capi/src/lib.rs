@@ -1,10 +1,12 @@
 #![allow(clippy::missing_safety_doc)]
 
 pub mod datagram;
+pub mod driver;
 pub mod gain;
 pub mod geometry;
 pub mod link;
 pub mod modulation;
+pub mod result;
 pub mod stm;
 
 use std::{collections::HashMap, ffi::c_char, time::Duration};
@@ -199,8 +201,8 @@ pub unsafe extern "C" fn AUTDControllerSend(
 
 type K = i32;
 type V = (
-    Box<dyn driver::operation::Operation>,
-    Box<dyn driver::operation::Operation>,
+    Box<dyn driver::firmware::operation::Operation>,
+    Box<dyn driver::firmware::operation::Operation>,
     Option<Duration>,
 );
 

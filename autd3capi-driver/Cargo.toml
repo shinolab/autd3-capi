@@ -1,0 +1,27 @@
+[package]
+name = "autd3capi-driver"
+version = "23.1.0"
+edition = "2021"
+authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
+
+license = "MIT"
+description = "Base library for autd3 C API"
+repository = "https://github.com/shinolab/autd3"
+readme = "README.md"
+keywords = ["autd"]
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+autd3 = { workspace = true, features = ["async-trait"] }
+autd3-driver = { workspace = true, features = ["derive", "async-trait"] }
+libc = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }
+
+[features]
+use_meter = ["autd3-driver/use_meter"]
+left_handed = ["autd3-driver/left_handed"]
+
+[dev-dependencies]
+assert_approx_eq = { workspace = true }

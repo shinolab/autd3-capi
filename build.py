@@ -143,7 +143,7 @@ class Config:
         command = self.cargo_command_base("build")
         command.append("--all")
         command.append("--features")
-        features = "export "
+        features = ""
         if extra_features is not None:
             features += extra_features
         command.append(features)
@@ -345,17 +345,6 @@ def util_update_ver(args):
                 )
             with open(toml, "w") as f:
                 f.write(content)
-
-        with open("Cargo.toml", "r") as f:
-            content = f.read()
-            content = re.sub(
-                r'^autd3(.*)version = "(.*?)"',
-                f'autd3\\1version = "{version}"',
-                content,
-                flags=re.MULTILINE,
-            )
-        with open("Cargo.toml", "w") as f:
-            f.write(content)
 
         with open("ThirdPartyNotice.txt", "r") as f:
             content = f.read()

@@ -7,10 +7,7 @@ pub unsafe extern "C" fn AUTDDatagramConfigureForceFan(
     context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let f = std::mem::transmute::<
-        _,
-        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
-    >(f);
+    let f = std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, GeometryPtr, u32) -> bool>(f);
     DynamicConfigureForceFan::new(
         geometry
             .devices()

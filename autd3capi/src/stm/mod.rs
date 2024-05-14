@@ -32,7 +32,7 @@ pub unsafe extern "C" fn AUTDSTMPropsFromPeriod(p: u64) -> STMPropsPtr {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMPropsFromSamplingConfig(
-    config: SamplingConfiguration,
+    config: SamplingConfig,
 ) -> STMPropsPtr {
     STMProps::from_sampling_config(config.into()).into()
 }

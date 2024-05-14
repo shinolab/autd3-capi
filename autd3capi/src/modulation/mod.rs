@@ -27,13 +27,13 @@ pub struct ResultModulationCalc {
 
 impl
     From<(
-        autd3capi_def::driver::common::SamplingConfiguration,
+        autd3capi_def::driver::common::SamplingConfig,
         Result<Vec<EmitIntensity>, AUTDInternalError>,
     )> for ResultModulationCalc
 {
     fn from(
         r: (
-            autd3capi_def::driver::common::SamplingConfiguration,
+            autd3capi_def::driver::common::SamplingConfig,
             Result<Vec<EmitIntensity>, AUTDInternalError>,
         ),
     ) -> Self {
@@ -61,7 +61,7 @@ impl
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfiguration {
+pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfig {
     take!(m, Box<M>).sampling_config().into()
 }
 

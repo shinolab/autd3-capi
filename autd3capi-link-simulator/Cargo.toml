@@ -9,5 +9,5 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 autd3-link-simulator = { workspace = true, features = ["async-trait"] }
-autd3capi-def = { path = "../autd3capi-def" }
+autd3capi-driver = { path = "../autd3capi-driver" }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
