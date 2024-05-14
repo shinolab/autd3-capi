@@ -12,14 +12,6 @@ inputs:
     description: 'arch'
     required: false
     default: ''
-  shaderc:
-    description: 'shaderc'
-    required: false
-    default: ''
-  cuda:
-    description: 'cuda'
-    required: false
-    default: ''
 runs:
   using: "composite"
   steps:
@@ -33,65 +25,6 @@ runs:
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: 'stable'
-
-    - uses: Jimver/cuda-toolkit@v0.2.14
-      if: inputs.cuda && inputs.os == 'windows-latest'
-      with:
-        cuda: '12.2.0'
-        method: 'network'
-        sub-packages: '["nvcc", "cudart", "cublas_dev", "cusolver_dev"]'
-        use-github-cache: false
-        use-local-cache: false
-    - name: install cuda
-      shell: bash
-      if: inputs.cuda && inputs.os == 'ubuntu-latest'
-      run: |
-        wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-        sudo dpkg -i cuda-keyring_1.1-1_all.deb
-        sudo apt-get update
-        sudo apt-get -y install cuda-nvcc-12-2 libcublas-dev-12-2 libcusolver-dev-12-2
-        echo "/usr/local/cuda/bin" >> $GITHUB_PATH
-
-    - name: install shaderc
-      shell: pwsh
-      if: inputs.shaderc && inputs.os == 'windows-latest'
-      run: |
-        Invoke-WebRequest -URI https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2019/10/20230531-104731/install.zip -OutFile shaderc.zip
-        Expand-Archive -Path shaderc.zip -DestinationPath shaderc
-        echo "SHADERC_LIB_DIR=$Env:GITHUB_WORKSPACE/shaderc/install/lib" >> $Env:GITHUB_ENV
-        rm shaderc.zip
-    - name: install shaderc
-      shell: bash
-      if: inputs.shaderc && inputs.os == 'ubuntu-latest'
-      run: |
-        curl -L https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/linux/continuous_clang_release/418/20230531-104531/install.tgz > shaderc.tgz
-        tar -xzf shaderc.tgz
-        echo "SHADERC_LIB_DIR=$GITHUB_WORKSPACE/install/lib" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/install/lib" >> $GITHUB_ENV
-        rm shaderc.tgz
-    - name: install shaderc
-      shell: bash
-      if: inputs.shaderc && inputs.os == 'macos-latest'
-      run: |
-        curl -L https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/macos/continuous_clang_release/426/20230531-104534/install.tgz > shaderc.tgz
-        tar -xzf shaderc.tgz
-        echo "SHADERC_LIB_DIR=$GITHUB_WORKSPACE/install/lib" >> $GITHUB_ENV
-        echo "DYLD_LIBRARY_PATH=$GITHUB_WORKSPACE/install/lib" >> $GITHUB_ENV
-        cp install/lib/*.dylib /usr/local/lib/
-        rm shaderc.tgz
-
-    - name: install aarch64 target on macos
-      shell: bash
-      if: inputs.os == 'macos-latest'
-      run: |
-        rustup target add aarch64-apple-darwin
-
-    - name: install dependencies
-      shell: bash
-      if: inputs.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y pkg-config libfreetype6-dev libfontconfig1-dev
 
     - name: install cross
       shell: bash

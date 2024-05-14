@@ -9,7 +9,6 @@ import re
 import shutil
 import subprocess
 import sys
-from shutil import which
 from typing import Optional
 
 
@@ -68,12 +67,9 @@ class Config:
     _platform: str
     _all: bool
     release: bool
-    shaderc: bool
-    cuda: bool
     target: Optional[str]
     universal: bool
     no_examples: bool
-    cuda: bool
 
     def __init__(self, args):
         self._platform = platform.system()
@@ -87,11 +83,7 @@ class Config:
         self.universal = hasattr(args, "universal") and args.universal
         self.no_examples = hasattr(args, "no_examples") and args.no_examples
 
-        self.cuda = False if self.is_macos() else self.is_cuda_available()
-
         if self.is_linux() and hasattr(args, "arch") and args.arch is not None:
-            self.shaderc = False
-            self.cuda = False
             match args.arch:
                 case "arm32":
                     self.target = "armv7-unknown-linux-gnueabihf"
@@ -102,28 +94,6 @@ class Config:
                     sys.exit(-1)
         else:
             self.target = None
-            if self.is_shaderc_available():
-                self.shaderc = True
-            else:
-                self.shaderc = False
-
-    def is_shaderc_available(self):
-        shaderc_lib_name = (
-            "shaderc_combined.lib" if self.is_windows() else "libshaderc_combined.a"
-        )
-        if env_exists("SHADERC_LIB_DIR"):
-            if os.path.isfile(f"{os.environ['SHADERC_LIB_DIR']}/{shaderc_lib_name}"):
-                return True
-        if env_exists("VULKAN_SDK"):
-            if os.path.isfile(f"{os.environ['VULKAN_SDK']}/lib/{shaderc_lib_name}"):
-                return True
-        if not self.is_windows():
-            if os.path.isfile(f"/usr/local/lib/{shaderc_lib_name}"):
-                return True
-        return False
-
-    def is_cuda_available(self):
-        return which("nvcc") is not None
 
     def cargo_command_base(self, subcommand):
         command = []
@@ -147,13 +117,6 @@ class Config:
         if extra_features is not None:
             features += extra_features
         command.append(features)
-        if not self.cuda:
-            command.append("--exclude")
-            command.append("autd3capi-backend-cuda")
-
-        if not self.shaderc:
-            command.append("--exclude")
-            command.append("autd3capi-link-visualizer")
 
         if self.is_macos() and self.universal:
             command_aarch64 = command.copy()
