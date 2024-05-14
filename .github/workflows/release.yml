@@ -55,10 +55,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: windows-latest
-          shaderc: true
-          cuda: true
 
       - name: Get the version
         id: get_version
@@ -100,6 +97,60 @@ jobs:
           asset_name: ${{ steps.get_version.outputs.result }}-x64-static.zip
           asset_content_type: application/zip
 
+  publish_win_arm:
+    needs: [release]
+    name: upload-release-asset-windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup-build
+        with:
+          os: windows-latest
+          arch: 'aarch64'
+
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win';
+
+      - name: Build project arm
+        run: |
+          python3 build.py build --release --arch aarch64
+          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_arm-dll.zip
+          Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets_arm-static.zip
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./release_url/release_url.txt
+      - name: Upload Release Asset Win Arm Dll
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets_arm-dll.zip
+          asset_name: ${{ steps.get_version.outputs.result }}-arm-dll.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset Win arm Static
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets_arm-static.zip
+          asset_name: ${{ steps.get_version.outputs.result }}-arm-static.zip
+          asset_content_type: application/zip
+
   publish_win-unity:
     needs: [release]
     name: upload-release-asset-windows-for-unity
@@ -111,10 +162,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: windows-latest
-          shaderc: true
-          cuda: true
 
       - name: Get the version
         id: get_version
@@ -147,6 +195,51 @@ jobs:
           asset_name: ${{ steps.get_version.outputs.result }}-x64-dll.zip
           asset_content_type: application/zip
 
+  publish_win_arm-unity:
+    needs: [release]
+    name: upload-release-asset-windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./.github/actions/setup-build
+        with:
+          os: windows-latest
+          arch: 'aarch64'
+
+      - name: Get the version
+        id: get_version
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win-unity';
+
+      - name: Build project arm
+        run: |
+          python3 build.py build --release --arch aarch64 --features "use_meter left_handed"
+          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_arm-dll.zip
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./release_url/release_url.txt
+      - name: Upload Release Asset Win Arm Dll
+        uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets_arm-dll.zip
+          asset_name: ${{ steps.get_version.outputs.result }}-arm-dll.zip
+          asset_content_type: application/zip
+
   publish_linux:
     needs: [release]
     name: upload-release-asset-linux
@@ -157,10 +250,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
-          shaderc: true
-          cuda: true
 
       - name: Get the version
         id: get_version
@@ -213,10 +303,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
-          shaderc: true
-          cuda: true
 
       - name: Get the version
         id: get_version
@@ -250,7 +337,6 @@ jobs:
           asset_name: ${{ steps.get_version.outputs.result }}-x64-shared.tar.gz
           asset_content_type: application/octet-stream
 
-  
   publish_linux-arm32:
     needs: [release]
     name: upload-release-asset-linux-arm32
@@ -261,11 +347,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'arm32'
-          shaderc: false
-          cuda: false
 
       - name: Get the version
         id: get_version
@@ -318,11 +401,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'aarch64'
-          shaderc: false
-          cuda: false
 
       - name: Get the version
         id: get_version
@@ -375,10 +455,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: macos-latest
-          shaderc: true
-          cuda: false
 
       - name: Get the version
         id: get_version
@@ -387,11 +464,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-universal';
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-aarch64';
 
       - name: Build project
         run: |
-          python3 build.py build --release --universal
+          python3 build.py build --release
           tar -zcvf assets-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
           tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
@@ -430,10 +507,7 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: macos-latest
-          shaderc: true
-          cuda: false
 
       - name: Get the version
         id: get_version
@@ -442,11 +516,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-unity-universal';
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-unity-aarch64';
 
       - name: Build project
         run: |
-          python3 build.py build --release --universal --features "use_meter left_handed"
+          python3 build.py build --release --features "use_meter left_handed"
           tar -zcvf assets.tar.gz bin LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
