@@ -1,4 +1,6 @@
-use autd3capi_def::{ControllerPtr, LinkPtr};
+use autd3capi_driver::LinkPtr;
+
+use crate::controller::ControllerPtr;
 
 pub mod audit;
 pub mod nop;

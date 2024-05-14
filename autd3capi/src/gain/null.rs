@@ -1,4 +1,4 @@
-use autd3capi_def::{autd3::gain::Null, GainPtr};
+use autd3capi_driver::{autd3::gain::Null, GainPtr};
 
 #[no_mangle]
 #[must_use]

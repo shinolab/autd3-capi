@@ -3,7 +3,7 @@ use std::time::Duration;
 use autd3::{derive::DatagramS, gain::Null};
 use autd3_driver::firmware::operation::Operation;
 
-use crate::{DynamicDatagramS, Segment, G};
+use crate::{DynamicDatagram, DynamicDatagramS, Segment, G};
 
 impl DynamicDatagramS for Box<G> {
     fn operation_with_segment(
@@ -25,5 +25,15 @@ impl DynamicDatagramS for Box<G> {
 
     fn timeout(&self) -> Option<Duration> {
         <Self as DatagramS>::timeout(self)
+    }
+}
+
+impl DynamicDatagram for Box<G> {
+    fn operation(&mut self) -> (Box<dyn Operation>, Box<dyn Operation>) {
+        self.operation_with_segment(Segment::S0, true)
+    }
+
+    fn timeout(&self) -> Option<Duration> {
+        <Self as DynamicDatagramS>::timeout(self)
     }
 }

@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{driver::derive::RadiationPressure, *};
+use autd3capi_driver::{driver::derive::RadiationPressure, *};
 
 #[no_mangle]
 #[must_use]

@@ -1,4 +1,4 @@
-use autd3capi_def::{driver::datagram::Synchronize, DatagramPtr};
+use autd3capi_driver::{driver::datagram::Synchronize, DatagramPtr};
 
 #[no_mangle]
 #[must_use]

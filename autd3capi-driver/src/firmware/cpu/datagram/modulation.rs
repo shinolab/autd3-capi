@@ -1,12 +1,9 @@
 use std::time::Duration;
 
 use autd3::modulation::Static;
-use autd3_driver::{
-    datagram::Datagram,
-    firmware::{fpga::TransitionMode, operation::Operation},
-};
+use autd3_driver::{datagram::Datagram, firmware::operation::Operation};
 
-use crate::{DynamicDatagramST, Segment, M};
+use crate::{DynamicDatagramST, Segment, TransitionMode, M};
 
 impl DynamicDatagramST for Box<M> {
     fn operation_with_segment(
@@ -20,7 +17,7 @@ impl DynamicDatagramST for Box<M> {
             Box::new(autd3_driver::firmware::operation::ModulationOp::new(
                 tmp,
                 segment.into(),
-                transition_mode,
+                transition_mode.map(|m| m.into()),
             )),
             Box::<autd3_driver::firmware::operation::NullOp>::default(),
         )

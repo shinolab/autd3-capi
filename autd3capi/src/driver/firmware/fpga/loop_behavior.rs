@@ -1,17 +1,20 @@
+use autd3capi_driver::driver::firmware::fpga::LoopBehavior as RawLoopBehavior;
+use autd3capi_driver::LoopBehavior;
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLoopBehaviorInfinite() -> LoopBehavior {
-    autd3_driver::derive::LoopBehavior::Infinite.into()
+    RawLoopBehavior::infinite().into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLoopBehaviorFinite(v: u32) -> LoopBehavior {
-    autd3_driver::derive::LoopBehavior::Finite(NonZeroU32::new(v).unwrap()).into()
+    RawLoopBehavior::finite(v).unwrap().into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLoopBehaviorOnce() -> LoopBehavior {
-    autd3_driver::derive::LoopBehavior::once().into()
+    RawLoopBehavior::once().into()
 }

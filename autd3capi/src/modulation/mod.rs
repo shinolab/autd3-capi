@@ -1,46 +1,41 @@
-use autd3capi_def::{
-    driver::{datagram::ChangeModulationSegment, derive::EmitIntensity},
+use std::collections::HashMap;
+
+use autd3capi_driver::{
+    driver::{datagram::SwapSegment, derive::EmitIntensity, error::AUTDInternalError},
     *,
 };
 
-pub mod custom;
 pub mod fourier;
 pub mod radiation_pressure;
+pub mod raw;
 pub mod sine;
 pub mod square;
 pub mod r#static;
-pub mod transform;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ModulationCalcPtr(pub ConstPtr);
 
+impl std::ops::Deref for ModulationCalcPtr {
+    type Target = HashMap<usize, Vec<u8>>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { (self.0 as *mut Self::Target).as_ref().unwrap() }
+    }
+}
+
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct ResultModulationCalc {
     pub result: ModulationCalcPtr,
-    pub result_len: u32,
-    pub freq_div: u32,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl
-    From<(
-        autd3capi_def::driver::common::SamplingConfig,
-        Result<Vec<EmitIntensity>, AUTDInternalError>,
-    )> for ResultModulationCalc
-{
-    fn from(
-        r: (
-            autd3capi_def::driver::common::SamplingConfig,
-            Result<Vec<EmitIntensity>, AUTDInternalError>,
-        ),
-    ) -> Self {
-        match r.1 {
+impl From<Result<HashMap<usize, Vec<u8>>, AUTDInternalError>> for ResultModulationCalc {
+    fn from(r: Result<HashMap<usize, Vec<u8>>, AUTDInternalError>) -> Self {
+        match r {
             Ok(v) => Self {
-                result_len: v.len() as u32,
-                freq_div: r.0.frequency_division(),
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
                 err: std::ptr::null_mut(),
@@ -49,8 +44,6 @@ impl
                 let err = e.to_string();
                 Self {
                     result: ModulationCalcPtr(std::ptr::null()),
-                    result_len: 0,
-                    freq_div: 0,
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: Box::into_raw(Box::new(err)) as _,
                 }
@@ -61,19 +54,22 @@ impl
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfig {
-    take!(m, Box<M>).sampling_config().into()
+pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
+    m: ModulationPtr,
+    segment: Segment,
+) -> DatagramPtr {
+    (*take!(m, Box<M>)).with_segment(segment, None).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
+pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegmentTransition(
     m: ModulationPtr,
     segment: Segment,
-    update_segment: bool,
+    transition_mode: TransitionMode,
 ) -> DatagramPtr {
     (*take!(m, Box<M>))
-        .with_segment(segment, update_segment)
+        .with_segment(segment, Some(transition_mode))
         .into()
 }
 
@@ -85,15 +81,11 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagram(m: ModulationPtr) -> Datagra
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSize(m: ModulationPtr) -> ResultI32 {
-    take!(m, Box<M>).len().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationCalc(m: ModulationPtr) -> ResultModulationCalc {
-    let m = take!(m, Box<M>);
-    (m.sampling_config(), m.calc()).into()
+pub unsafe extern "C" fn AUTDModulationCalc(
+    m: ModulationPtr,
+    geometry: GeometryPtr,
+) -> ResultModulationCalc {
+    take!(m, Box<M>).calc(&geometry).into()
 }
 
 #[no_mangle]
@@ -102,32 +94,32 @@ pub unsafe extern "C" fn AUTDModulationCalcGetResult(src: ModulationCalcPtr, dst
     std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
 }
 
-#[repr(u8)]
-pub enum SamplingMode {
-    ExactFrequency = 0,
-    SizeOptimized = 1,
+#[no_mangle]
+pub unsafe extern "C" fn AUTDModulationCCalcGetSize(src: ModulationCalcPtr, idx: u32) -> u32 {
+    let idx = idx as usize;
+    src[&idx].len() as u32
 }
 
-impl From<SamplingMode> for autd3::modulation::SamplingMode {
-    fn from(mode: SamplingMode) -> Self {
-        match mode {
-            SamplingMode::ExactFrequency => autd3::modulation::SamplingMode::ExactFrequency,
-            SamplingMode::SizeOptimized => autd3::modulation::SamplingMode::SizeOptimized,
-        }
-    }
+#[no_mangle]
+pub unsafe extern "C" fn AUTDModulationCCalcGetResult(
+    src: ModulationCalcPtr,
+    dst: *mut u8,
+    idx: u32,
+) {
+    let idx = idx as usize;
+    std::ptr::copy_nonoverlapping(src[&idx].as_ptr(), dst, src[&idx].len());
 }
 
-impl From<autd3::modulation::SamplingMode> for SamplingMode {
-    fn from(mode: autd3::modulation::SamplingMode) -> Self {
-        match mode {
-            autd3::modulation::SamplingMode::ExactFrequency => SamplingMode::ExactFrequency,
-            autd3::modulation::SamplingMode::SizeOptimized => SamplingMode::SizeOptimized,
-        }
-    }
+#[no_mangle]
+pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
+    let _ = take!(src, HashMap<usize, Vec<u8>>);
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramChangeModulationSegment(segment: Segment) -> DatagramPtr {
-    ChangeModulationSegment::new(segment.into()).into()
+pub unsafe extern "C" fn AUTDDatagramSwapSegmentModulation(
+    segment: Segment,
+    transition_mode: TransitionMode,
+) -> DatagramPtr {
+    SwapSegment::modulation(segment.into(), transition_mode.into()).into()
 }

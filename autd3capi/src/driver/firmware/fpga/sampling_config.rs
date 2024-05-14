@@ -1,37 +1,25 @@
+use autd3capi_driver::{autd3::derive::SamplingConfig, driver::defined::Hz, SamplingConfigPtr};
+
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFrequencyDivision(div: u32) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfig::from_frequency_division(div).into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u32) -> SamplingConfigPtr {
+    SamplingConfig::Division(div).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFrequency(f: f64) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfig::from_frequency(f).into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromDivisionRaw(div: u32) -> SamplingConfigPtr {
+    SamplingConfig::DivisionRaw(div).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: u64) -> ResultSamplingConfig {
-    autd3_driver::common::SamplingConfig::from_period(std::time::Duration::from_nanos(p)).into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: u32) -> SamplingConfigPtr {
+    SamplingConfig::Freq(f * Hz).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFrequencyDivision(config: SamplingConfig) -> u32 {
-    autd3_driver::common::SamplingConfig::from(config).frequency_division()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFrequency(config: SamplingConfig) -> f64 {
-    autd3_driver::common::SamplingConfig::from(config).frequency()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigPeriod(config: SamplingConfig) -> u64 {
-    autd3_driver::common::SamplingConfig::from(config)
-        .period()
-        .as_nanos() as _
+pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f64) -> SamplingConfigPtr {
+    SamplingConfig::FreqNearest(f * Hz).into()
 }

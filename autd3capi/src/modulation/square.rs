@@ -1,39 +1,106 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{autd3::modulation::Square, driver::derive::ModulationProperty, *};
-
-use super::SamplingMode;
+use autd3capi_driver::{
+    autd3::{
+        derive::SamplingConfig,
+        modulation::{
+            sampling_mode::{ExactFreq, ExactFreqFloat, NearestFreq},
+            Square,
+        },
+    },
+    driver::{defined::Hz, derive::ModulationProperty},
+    *,
+};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSquare(
-    freq: f64,
-    config: SamplingConfig,
+pub unsafe extern "C" fn AUTDModulationSquareExact(
+    freq: u32,
+    config: SamplingConfigPtr,
     low: u8,
     high: u8,
     duty: f64,
-    mode: SamplingMode,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
-    Square::new(freq)
-        .with_sampling_config(config.into())
+    Square::new(freq * Hz)
+        .with_sampling_config(*take!(config, SamplingConfig))
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
-        .with_mode(mode.into())
         .with_loop_behavior(loop_behavior.into())
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSquareIsDefault(square: ModulationPtr) -> bool {
-    let m = take_gain!(square, Square);
-    let default = Square::new(0.);
+pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
+    freq: f64,
+    config: SamplingConfigPtr,
+    low: u8,
+    high: u8,
+    duty: f64,
+    loop_behavior: LoopBehavior,
+) -> ModulationPtr {
+    Square::new(freq * Hz)
+        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_low(low)
+        .with_high(high)
+        .with_duty(duty)
+        .with_loop_behavior(loop_behavior.into())
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareNearest(
+    freq: f64,
+    config: SamplingConfigPtr,
+    low: u8,
+    high: u8,
+    duty: f64,
+    loop_behavior: LoopBehavior,
+) -> ModulationPtr {
+    Square::with_freq_nearest(freq * Hz)
+        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_low(low)
+        .with_high(high)
+        .with_duty(duty)
+        .with_loop_behavior(loop_behavior.into())
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareExactIsDefault(square: ModulationPtr) -> bool {
+    let m = take_gain!(square, Square<ExactFreq>);
+    let default = Square::new(0 * Hz);
     m.low() == default.low()
         && m.high() == default.high()
         && m.duty() == default.duty()
-        && m.mode() == default.mode()
+        && m.sampling_config() == default.sampling_config()
+        && m.loop_behavior() == default.loop_behavior()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareExactFloatIsDefault(square: ModulationPtr) -> bool {
+    let m = take_gain!(square, Square<ExactFreqFloat>);
+    let default = Square::new(0. * Hz);
+    m.low() == default.low()
+        && m.high() == default.high()
+        && m.duty() == default.duty()
+        && m.sampling_config() == default.sampling_config()
+        && m.loop_behavior() == default.loop_behavior()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareNearestIsDefault(square: ModulationPtr) -> bool {
+    let m = take_gain!(square, Square<NearestFreq>);
+    let default = Square::with_freq_nearest(0. * Hz);
+    m.low() == default.low()
+        && m.high() == default.high()
+        && m.duty() == default.duty()
         && m.sampling_config() == default.sampling_config()
         && m.loop_behavior() == default.loop_behavior()
 }

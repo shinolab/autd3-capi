@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use autd3_driver::{firmware::fpga::TransitionMode, firmware::operation::Operation};
+use autd3_driver::firmware::operation::Operation;
 
-use crate::{DynamicDatagram, Segment};
+use crate::{DynamicDatagram, Segment, TransitionMode};
 
 pub struct DynamicDatagramWithSegmentTransition<D: DynamicDatagramST> {
     datagram: D,
@@ -37,7 +37,7 @@ impl<D: DynamicDatagramST> DynamicDatagram for D {
         <Self as DynamicDatagramST>::operation_with_segment(
             self,
             Segment::S0,
-            Some(TransitionMode::Immidiate),
+            Some(autd3_driver::firmware::fpga::TransitionMode::Immediate.into()),
         )
     }
 

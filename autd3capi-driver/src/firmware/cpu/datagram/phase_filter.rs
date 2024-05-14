@@ -13,7 +13,7 @@ pub struct DynamicPhaseFilter {
 }
 
 impl DynamicPhaseFilter {
-    pub const fn new(f: ConstPtr, context: ConstPtr, geometry: GeometryPtr) -> Self {
+    pub const fn additive(f: ConstPtr, context: ConstPtr, geometry: GeometryPtr) -> Self {
         Self {
             f,
             context,

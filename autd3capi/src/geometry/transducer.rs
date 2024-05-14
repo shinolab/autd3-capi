@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::*;
+use autd3capi_driver::*;
 
 #[no_mangle]
 #[must_use]
@@ -47,10 +47,4 @@ pub unsafe extern "C" fn AUTDTransducerDirectionZ(tr: TransducerPtr, dir: *mut f
     dir.add(0).write(d.x);
     dir.add(1).write(d.y);
     dir.add(2).write(d.z);
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDTransducerWavelength(tr: TransducerPtr, sound_speed: f64) -> f64 {
-    tr.wavelength(sound_speed)
 }

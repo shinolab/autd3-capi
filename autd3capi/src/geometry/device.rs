@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{
+use autd3capi_driver::{
     driver::geometry::{Quaternion, UnitQuaternion, Vector3},
     *,
 };
@@ -94,4 +94,16 @@ pub unsafe extern "C" fn AUTDDeviceEnableSet(mut dev: DevicePtr, value: bool) {
 #[must_use]
 pub unsafe extern "C" fn AUTDDeviceEnableGet(dev: DevicePtr) -> bool {
     dev.enable
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDeviceWavelength(dev: DevicePtr) -> f64 {
+    dev.wavelength()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDeviceWavenumber(dev: DevicePtr) -> f64 {
+    dev.wavenumber()
 }

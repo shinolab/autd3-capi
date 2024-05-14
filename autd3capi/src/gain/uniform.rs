@@ -1,5 +1,7 @@
-use autd3capi_def::{autd3::gain::Uniform, *};
-use driver::common::Phase;
+use autd3capi_driver::{
+    autd3::{derive::Phase, gain::Uniform},
+    *,
+};
 
 #[no_mangle]
 #[must_use]

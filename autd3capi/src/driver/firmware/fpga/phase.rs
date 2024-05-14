@@ -1,9 +1,9 @@
-use autd3_driver::common::Phase;
+use autd3capi_driver::{autd3::derive::rad, driver::firmware::fpga::Phase};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDPhaseFromRad(value: f64) -> u8 {
-    Phase::from_rad(value).value()
+    Phase::from(value * rad).value()
 }
 
 #[no_mangle]

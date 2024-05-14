@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use autd3capi_def::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
+use autd3capi_driver::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
 
 type M = HashMap<usize, Vec<i32>>;
 

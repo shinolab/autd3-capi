@@ -1,17 +1,19 @@
 use std::collections::HashMap;
 
-use autd3capi_def::{
-    driver::datagram::{ChangeGainSegment, GainFilter},
+use autd3capi_driver::{
+    driver::{
+        datagram::{GainFilter, SwapSegment},
+        error::AUTDInternalError,
+    },
     *,
 };
 
 pub mod bessel;
-pub mod custom;
 pub mod focus;
 pub mod group;
 pub mod null;
 pub mod plane;
-pub mod trans_test;
+pub mod raw;
 pub mod uniform;
 
 #[derive(Debug, Clone, Copy)]
@@ -26,11 +28,19 @@ pub struct ResultGainCalcDrivesMap {
     pub err: ConstPtr,
 }
 
-impl From<Result<HashMap<usize, Vec<autd3capi_def::driver::common::Drive>>, AUTDInternalError>>
-    for ResultGainCalcDrivesMap
+impl
+    From<
+        Result<
+            HashMap<usize, Vec<autd3capi_driver::driver::firmware::fpga::Drive>>,
+            AUTDInternalError,
+        >,
+    > for ResultGainCalcDrivesMap
 {
     fn from(
-        r: Result<HashMap<usize, Vec<autd3capi_def::driver::common::Drive>>, AUTDInternalError>,
+        r: Result<
+            HashMap<usize, Vec<autd3capi_driver::driver::firmware::fpga::Drive>>,
+            AUTDInternalError,
+        >,
     ) -> Self {
         match r {
             Ok(v) => Self {
@@ -103,5 +113,5 @@ pub unsafe extern "C" fn AUTDGainCalcFreeResult(src: GainCalcDrivesMapPtr) {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramChangeGainSegment(segment: Segment) -> DatagramPtr {
-    ChangeGainSegment::new(segment.into()).into()
+    SwapSegment::gain(segment.into()).into()
 }

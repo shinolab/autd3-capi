@@ -4,7 +4,9 @@ pub mod device;
 pub mod rotation;
 pub mod transducer;
 
-use autd3capi_def::*;
+use autd3capi_driver::*;
+
+use crate::controller::ControllerPtr;
 
 #[no_mangle]
 #[must_use]

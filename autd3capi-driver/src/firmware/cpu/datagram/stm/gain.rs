@@ -1,9 +1,8 @@
 use std::time::Duration;
 
-use autd3::derive::TransitionMode;
 use autd3_driver::datagram::{Datagram, GainSTM};
 
-use crate::{DynamicDatagramST, Segment, G};
+use crate::{DynamicDatagramST, Segment, TransitionMode, G};
 
 impl DynamicDatagramST for GainSTM<Box<G>> {
     fn operation_with_segment(
@@ -23,7 +22,7 @@ impl DynamicDatagramST for GainSTM<Box<G>> {
                 config,
                 loop_behavior,
                 segment.into(),
-                transition_mode,
+                transition_mode.map(|m| m.into()),
             )),
             Box::<autd3_driver::firmware::operation::NullOp>::default(),
         )

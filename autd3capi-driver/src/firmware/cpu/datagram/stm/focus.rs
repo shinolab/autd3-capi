@@ -1,11 +1,8 @@
 use std::time::Duration;
 
-use autd3_driver::{
-    datagram::{Datagram, FocusSTM},
-    firmware::fpga::TransitionMode,
-};
+use autd3_driver::datagram::{Datagram, FocusSTM};
 
-use crate::{DynamicDatagramST, Segment};
+use crate::{DynamicDatagramST, Segment, TransitionMode};
 
 impl DynamicDatagramST for FocusSTM {
     fn operation_with_segment(
@@ -24,7 +21,7 @@ impl DynamicDatagramST for FocusSTM {
                 config,
                 loop_behavior,
                 segment.into(),
-                transition_mode,
+                transition_mode.map(|m| m.into()),
             )),
             Box::<autd3_driver::firmware::operation::NullOp>::default(),
         )

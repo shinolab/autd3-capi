@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{autd3::modulation::Static, *};
+use autd3capi_driver::{autd3::modulation::Static, *};
 
 #[no_mangle]
 #[must_use]

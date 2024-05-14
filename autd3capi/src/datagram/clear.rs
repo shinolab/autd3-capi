@@ -1,4 +1,4 @@
-use autd3capi_def::{driver::datagram::Clear, DatagramPtr};
+use autd3capi_driver::{driver::datagram::Clear, DatagramPtr};
 
 #[no_mangle]
 #[must_use]

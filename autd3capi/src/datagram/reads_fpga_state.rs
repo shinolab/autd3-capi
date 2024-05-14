@@ -1,8 +1,8 @@
-use autd3capi_def::{ConstPtr, DatagramPtr, DynamicConfigureReadsFPGAState, GeometryPtr};
+use autd3capi_driver::{ConstPtr, DatagramPtr, DynamicReadsFPGAState, GeometryPtr};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAState(
+pub unsafe extern "C" fn AUTDDatagramReadsFPGAState(
     f: ConstPtr,
     context: ConstPtr,
     geometry: GeometryPtr,
@@ -11,7 +11,7 @@ pub unsafe extern "C" fn AUTDDatagramConfigureReadsFPGAState(
         _,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u32) -> bool,
     >(f);
-    DynamicConfigureReadsFPGAState::new(
+    DynamicReadsFPGAState::new(
         geometry
             .devices()
             .map(move |dev| (dev.idx(), f(context, geometry, dev.idx() as u32)))

@@ -1,8 +1,6 @@
-#![allow(clippy::missing_safety_doc)]
-
-use autd3capi_def::{
+use autd3capi_driver::{
     driver::{
-        datagram::{ChangeFocusSTMSegment, FocusSTM, STMProps},
+        datagram::{FocusSTM, STMProps, SwapSegment},
         geometry::Vector3,
     },
     *,
@@ -17,7 +15,7 @@ pub unsafe extern "C" fn AUTDSTMFocus(
     points: *const f64,
     intensities: *const u8,
     size: u64,
-) -> ResultFocusSTM {
+) -> FocusSTMPtr {
     FocusSTM::from_props(*take!(props, STMProps))
         .add_foci_from_iter((0..size as usize).map(|i| {
             let p = Vector3::new(
@@ -36,10 +34,19 @@ pub unsafe extern "C" fn AUTDSTMFocus(
 pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
     stm: FocusSTMPtr,
     segment: Segment,
-    update_segment: bool,
+) -> DatagramPtr {
+    take!(stm, FocusSTM).with_segment(segment, None).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
+    stm: FocusSTMPtr,
+    segment: Segment,
+    transition_mode: TransitionMode,
 ) -> DatagramPtr {
     take!(stm, FocusSTM)
-        .with_segment(segment, update_segment)
+        .with_segment(segment, Some(transition_mode))
         .into()
 }
 
@@ -51,6 +58,9 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagram(stm: FocusSTMPtr) -> DatagramP
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramChangeFocusSTMSegment(segment: Segment) -> DatagramPtr {
-    ChangeFocusSTMSegment::new(segment.into()).into()
+pub unsafe extern "C" fn AUTDDatagramSwapSegmentFocusSTM(
+    segment: Segment,
+    transition_mode: TransitionMode,
+) -> DatagramPtr {
+    SwapSegment::focus_stm(segment.into(), transition_mode.into()).into()
 }

@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_def::{autd3::link::audit::*, driver::link::Link, *};
+use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
 use std::time::Duration;
 
 #[repr(C)]
@@ -189,14 +189,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u32, 
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFrequencyDivision(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivision(
     audit: LinkPtr,
     segment: Segment,
     idx: u32,
 ) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .stm_frequency_division(segment.into())
+        .stm_freq_division(segment.into())
 }
 
 #[no_mangle]
@@ -238,14 +238,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFrequencyDivision(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivision(
     audit: LinkPtr,
     segment: Segment,
     idx: u32,
 ) -> u32 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .modulation_frequency_division(segment.into())
+        .modulation_freq_division(segment.into())
 }
 
 #[no_mangle]
