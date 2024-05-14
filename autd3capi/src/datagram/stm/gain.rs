@@ -1,20 +1,55 @@
 use autd3capi_driver::{
-    driver::datagram::{GainSTM, STMProps, SwapSegment},
+    driver::{
+        datagram::{GainSTM, SwapSegment},
+        defined::Hz,
+    },
     *,
 };
 
-use super::STMPropsPtr;
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainFromFreq(freq: f64) -> GainSTMPtr {
+    GainSTM::<Box<G>>::from_freq(freq * Hz).into()
+}
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMGain(
-    props: STMPropsPtr,
+pub unsafe extern "C" fn AUTDSTMGainFromFreqNearest(freq: f64) -> GainSTMPtr {
+    GainSTM::<Box<G>>::from_freq_nearest(freq * Hz).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainFromSamplingConfig(config: SamplingConfigPtr) -> GainSTMPtr {
+    GainSTM::<Box<G>>::from_sampling_config(*take!(config, _)).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainWithMode(stm: GainSTMPtr, mode: GainSTMMode) -> GainSTMPtr {
+    take!(stm, GainSTM<Box<G>>).with_mode(mode.into()).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainAddGains(
+    stm: GainSTMPtr,
     gains: *const GainPtr,
     size: u32,
-    mode: GainSTMMode,
 ) -> GainSTMPtr {
-    GainSTM::<Box<G>>::from_props_mode(*take!(props, STMProps), mode.into())
+    take!(stm, GainSTM<Box<G>>)
         .add_gains_from_iter((0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)))
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainWithLoopBehavior(
+    stm: GainSTMPtr,
+    loop_behavior: LoopBehavior,
+) -> GainSTMPtr {
+    take!(stm, GainSTM<Box<G>>)
+        .with_loop_behavior(loop_behavior.into())
         .into()
 }
 

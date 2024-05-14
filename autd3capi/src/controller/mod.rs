@@ -40,11 +40,11 @@ pub struct SyncController {
 }
 
 impl SyncController {
-    pub fn send<S: Datagram>(&mut self, s: S) -> Result<bool, AUTDError> {
+    pub fn send<S: Datagram>(&mut self, s: S) -> Result<(), AUTDError> {
         self.runtime.block_on(self.inner.send(s))
     }
 
-    pub fn close(&mut self) -> Result<bool, AUTDError> {
+    pub fn close(&mut self) -> Result<(), AUTDError> {
         self.runtime.block_on(self.inner.close())
     }
 

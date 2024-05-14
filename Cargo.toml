@@ -7,55 +7,16 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.dependencies]
-autd3 = { path = "autd3/autd3" }
-autd3-driver = { path = "autd3/autd3-driver" }
-autd3-gain-holo = { path = "autd3/autd3-gain-holo" }
-autd3-link-simulator = { path = "autd3/autd3-link-simulator" }
-autd3-link-soem = { path = "autd3/autd3-link-soem" }
-autd3-link-twincat = { path = "autd3/autd3-link-twincat" }
-autd3-modulation-audio-file = { path = "autd3/autd3-modulation-audio-file" }
-autd3-backend-cuda = { version = "23.0.0" }
-autd3-link-visualizer = { version = "23.0.0" }
+autd3 = { version = "24.0.0-rc.1" }
+autd3-driver = { version = "24.0.0-rc.1" }
+autd3-gain-holo = { version = "24.0.0-rc.1" }
+autd3-link-simulator = { version = "24.0.0-rc.1" }
+autd3-link-soem = { version = "24.0.0-rc.1" }
+autd3-link-twincat = { version = "24.0.0-rc.1" }
+autd3-modulation-audio-file = { version = "24.0.0-rc.1" }
 libc = "0.2.144"
-anyhow = "1.0.79"
 assert_approx_eq = "1.1.0"
-async-channel = "2.1.1"
-async-std = "1.12.0"
-async-trait = "0.1.77"
-bitfield-struct = "0.6.0"
-bitflags = "2.0.2"
-bitvec = "1.0.1"
-cc = "1.0.73"
-colored = "2.0.0"
-criterion = "0.5.1"
-ctrlc-async = "3.2.2"
-glob = "0.3.0"
-h2 = "0.4.0"
-hound = "3.5.0"
-itertools = "0.12.0"
-libloading = "0.8.0"
-nalgebra = { version = "0.32.3", default-features = false }
-num = "0.4.0"
-num-complex = { version = "0.4.4", default-features = false }
-num-integer = "0.1.45"
-proc-macro2 = "1.0.78"
-prost = "0.12.0"
-quote = "1.0.18"
-rand = "0.8.5"
-rstest = "0.18.2"
-serde = "1.0.188"
-serde_json = "1.0.107"
-syn = "2.0.3"
-tempfile = "3.9.0"
-thiserror = "1.0.40"
-time = { version = "0.3.23", default-features = false }
-tokio = "1.35.1"
-tonic = { version = "0.11.0", default-features = false }
-tonic-build = "0.11.0"
-wav_io = "0.1.8"
-thread-priority = "1.0.0"
-const_fn = "0.4.10"
-rayon = "1.10.0"
+tokio = "1.37.0"
 
 [profile.release]
 strip = true

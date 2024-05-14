@@ -32,7 +32,7 @@ impl<'a, K: Hash + Eq + Clone + Debug, F: Fn(&Device) -> Option<K>> SyncGroupGua
         }
     }
 
-    pub fn send(self) -> Result<bool, AUTDInternalError> {
+    pub fn send(self) -> Result<(), AUTDInternalError> {
         self.handle.block_on(self.inner.send())
     }
 }
