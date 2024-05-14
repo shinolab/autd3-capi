@@ -1,5 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
+mod timer_strategy;
+
 use std::{
     ffi::{c_char, CStr},
     net::SocketAddr,
@@ -7,9 +9,10 @@ use std::{
     time::Duration,
 };
 
-use autd3capi_def::*;
+use autd3capi_driver::*;
 
 use autd3_link_soem::{local::link_soem::*, remote::link_soem_remote::*, EthernetAdapters};
+use timer_strategy::TimerStrategy;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
