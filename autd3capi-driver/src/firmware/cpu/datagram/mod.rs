@@ -1,10 +1,10 @@
-#![allow(clippy::missing_safety_doc)]
-
 mod clear;
+mod debug;
 mod force_fan;
 mod gain;
 mod modulation;
 mod phase_filter;
+mod pulse_width_encoder;
 mod reads_fpga_state;
 mod segment;
 mod silencer;
@@ -13,6 +13,7 @@ mod synchronize;
 mod with_segment;
 mod with_segment_transition;
 
+pub use debug::*;
 pub use force_fan::*;
 pub use phase_filter::*;
 pub use reads_fpga_state::*;

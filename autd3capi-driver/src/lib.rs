@@ -1,12 +1,14 @@
 #![allow(clippy::missing_safety_doc)]
 
 mod autd3_device;
+mod ethercat;
 mod firmware;
 mod link;
 mod ptr;
 mod result;
 
 pub use autd3_device::*;
+pub use ethercat::*;
 pub use firmware::*;
 pub use link::*;
 pub use ptr::*;

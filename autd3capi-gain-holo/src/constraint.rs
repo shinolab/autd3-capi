@@ -33,6 +33,12 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(intensity: u8) -> Emissio
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f64) -> EmissionConstraintPtr {
+    EmissionConstraint::Multiply(v).into()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
     min_v: u8,
     max_v: u8,

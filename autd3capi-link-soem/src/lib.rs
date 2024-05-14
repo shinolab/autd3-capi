@@ -102,21 +102,6 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimerStrategy(
     LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_timer_strategy(timer_strategy.into()))
 }
 
-#[repr(u8)]
-pub enum SyncMode {
-    FreeRun = 0,
-    DC = 1,
-}
-
-impl From<SyncMode> for autd3_link_soem::SyncMode {
-    fn from(mode: SyncMode) -> Self {
-        match mode {
-            SyncMode::FreeRun => autd3_link_soem::SyncMode::FreeRun,
-            SyncMode::DC => autd3_link_soem::SyncMode::DC,
-        }
-    }
-}
-
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMWithSyncMode(

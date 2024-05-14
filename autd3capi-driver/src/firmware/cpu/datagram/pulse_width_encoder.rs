@@ -1,16 +1,16 @@
 use std::time::Duration;
 
 use autd3_driver::{
-    datagram::{Datagram, Synchronize},
+    datagram::{Datagram, PulseWidthEncoder},
     firmware::operation::Operation,
 };
 
 use crate::DynamicDatagram;
 
-impl DynamicDatagram for Synchronize {
+impl DynamicDatagram for PulseWidthEncoder {
     fn operation(&mut self) -> (Box<dyn Operation>, Box<dyn Operation>) {
         (
-            Box::<<Self as Datagram>::O1>::default(),
+            Box::new(<<Self as Datagram>::O1>::new(self.buf().to_vec())),
             Box::<<Self as Datagram>::O2>::default(),
         )
     }

@@ -7,19 +7,9 @@ use autd3::{derive::DEFAULT_TIMEOUT, prelude::*};
 use autd3_driver::firmware::operation::Operation;
 
 pub struct DynamicPhaseFilter {
-    f: ConstPtr,
-    context: ConstPtr,
-    geometry: GeometryPtr,
-}
-
-impl DynamicPhaseFilter {
-    pub const fn additive(f: ConstPtr, context: ConstPtr, geometry: GeometryPtr) -> Self {
-        Self {
-            f,
-            context,
-            geometry,
-        }
-    }
+    pub f: ConstPtr,
+    pub context: ConstPtr,
+    pub geometry: GeometryPtr,
 }
 
 impl DynamicDatagram for DynamicPhaseFilter {
