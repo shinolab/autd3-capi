@@ -28,13 +28,34 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ${{ matrix.os }}
 
       - name: Test src on ${{ matrix.os }}
         run: |
           python3 build.py build
         shell: bash
+
+  build-windows-aarch64-src:
+    name: build-src-windows-aarch64
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: fetch submodule
+        run: |
+          git submodule update --init --recursive autd3
+
+      - name: Setup
+        uses: ./.github/actions/setup-build
+        with:
+          os: windows-latest
+          arch: 'aarch64'
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+      - name: Test src on ${{ matrix.os }}
+        run: |
+          python3 build.py build --arch aarch64
 
   build-linux-arm32-src:
     name: build-src-linux-arm32
@@ -51,7 +72,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'arm32'
 
@@ -76,7 +96,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
           arch: 'aarch64'
 
@@ -99,7 +118,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup-build
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           os: ubuntu-latest
 
       - name: Rust cache

@@ -68,7 +68,6 @@ class Config:
     _all: bool
     release: bool
     target: Optional[str]
-    universal: bool
     no_examples: bool
 
     def __init__(self, args):
@@ -80,29 +79,37 @@ class Config:
 
         self._all = hasattr(args, "all") and args.all
         self.release = hasattr(args, "release") and args.release
-        self.universal = hasattr(args, "universal") and args.universal
         self.no_examples = hasattr(args, "no_examples") and args.no_examples
 
-        if self.is_linux() and hasattr(args, "arch") and args.arch is not None:
-            match args.arch:
-                case "arm32":
-                    self.target = "armv7-unknown-linux-gnueabihf"
-                case "aarch64":
-                    self.target = "aarch64-unknown-linux-gnu"
-                case _:
-                    err(f'arch "{args.arch}" is not supported.')
-                    sys.exit(-1)
+        if hasattr(args, "arch") and args.arch is not None:
+            if self.is_linux():
+                match args.arch:
+                    case "arm32":
+                        self.target = "armv7-unknown-linux-gnueabihf"
+                    case "aarch64":
+                        self.target = "aarch64-unknown-linux-gnu"
+                    case _:
+                        err(f'arch "{args.arch}" is not supported.')
+                        sys.exit(-1)
+            elif self.is_windows():
+                match args.arch:
+                    case "aarch64":
+                        self.target = "aarch64-pc-windows-msvc"
+                    case _:
+                        err(f'arch "{args.arch}" is not supported.')
+                        sys.exit(-1)
         else:
             self.target = None
 
     def cargo_command_base(self, subcommand):
         command = []
-        if self.target is None:
-            command.append("cargo")
-            command.append(subcommand)
-        else:
+        if self.is_linux() and self.target:
             command.append("cross")
             command.append(subcommand)
+        else:
+            command.append("cargo")
+            command.append(subcommand)
+        if self.target:
             command.append("--target")
             command.append(self.target)
         if self.release:
@@ -117,18 +124,10 @@ class Config:
         if extra_features is not None:
             features += extra_features
         command.append(features)
-
-        if self.is_macos() and self.universal:
-            command_aarch64 = command.copy()
-            command_aarch64.append("--target=aarch64-apple-darwin")
-            command_x86 = command.copy()
-            command_x86.append("--target=x86_64-apple-darwin")
-            return [command_aarch64, command_x86]
-        else:
-            return [command]
+        return command
 
     def cargo_clippy_capi_command(self):
-        command = self.cargo_build_capi_command()[0]
+        command = self.cargo_build_capi_command()
         command[1] = "clippy"
         command.append("--")
         command.append("-D")
@@ -160,39 +159,23 @@ class Config:
 
 def copy_dll(config: Config, dst: str):
     if config.is_windows():
-        target = "target/release" if config.release else "target/debug"
+        target = ""
+        if config.target is None:
+            target = "target/release" if config.release else "target/debug"
+        else:
+            target = (
+                f"target/{config.target}/release"
+                if config.release
+                else f"target/{config.target}/debug"
+            )
         for dll in glob.glob(f"{target}/*.dll"):
             shutil.copy(dll, dst)
         for lib in glob.glob(f"{target}/*.dll.lib"):
             shutil.copy(lib, dst)
     elif config.is_macos():
-        if config.universal:
-            target = (
-                "target/x86_64-apple-darwin/release"
-                if config.release
-                else "target/x86_64-apple-darwin/debug"
-            )
-            target_aarch64 = (
-                "target/aarch64-apple-darwin/release"
-                if config.release
-                else "target/aarch64-apple-darwin/debug"
-            )
-            for x64_lib in glob.glob(f"{target}/*.dylib"):
-                base_name = os.path.basename(x64_lib)
-                subprocess.run(
-                    [
-                        "lipo",
-                        "-create",
-                        x64_lib,
-                        f"./{target_aarch64}/{base_name}",
-                        "-output",
-                        f"./{dst}/{base_name}",
-                    ]
-                ).check_returncode()
-        else:
-            target = "target/release" if config.release else "target/debug"
-            for lib in glob.glob(f"{target}/*.dylib"):
-                shutil.copy(lib, dst)
+        target = "target/release" if config.release else "target/debug"
+        for lib in glob.glob(f"{target}/*.dylib"):
+            shutil.copy(lib, dst)
     elif config.is_linux():
         target = ""
         if config.target is None:
@@ -209,7 +192,15 @@ def copy_dll(config: Config, dst: str):
 
 def copy_lib(config: Config, dst: str):
     if config.is_windows():
-        target = "target/release" if config.release else "target/debug"
+        target = ""
+        if config.target is None:
+            target = "target/release" if config.release else "target/debug"
+        else:
+            target = (
+                f"target/{config.target}/release"
+                if config.release
+                else f"target/{config.target}/debug"
+            )
         for dll in glob.glob(f"{target}/*.lib"):
             shutil.copy(dll, dst)
         rm_glob_f(f"{dst}/*.dll.lib")
@@ -217,33 +208,9 @@ def copy_lib(config: Config, dst: str):
             for pdb in glob.glob(f"{target}/*.pdb"):
                 shutil.copy(pdb, "lib")
     elif config.is_macos():
-        if config.universal:
-            target = (
-                "target/x86_64-apple-darwin/release"
-                if config.release
-                else "target/x86_64-apple-darwin/debug"
-            )
-            target_aarch64 = (
-                "target/aarch64-apple-darwin/release"
-                if config.release
-                else "target/aarch64-apple-darwin/debug"
-            )
-            for x64_lib in glob.glob(f"{target}/*.a"):
-                base_name = os.path.basename(x64_lib)
-                subprocess.run(
-                    [
-                        "lipo",
-                        "-create",
-                        x64_lib,
-                        f"./{target_aarch64}/{base_name}",
-                        "-output",
-                        f"./{dst}/{base_name}",
-                    ]
-                ).check_returncode()
-        else:
-            target = "target/release" if config.release else "target/debug"
-            for lib in glob.glob(f"{target}/*.a"):
-                shutil.copy(lib, dst)
+        target = "target/release" if config.release else "target/debug"
+        for lib in glob.glob(f"{target}/*.a"):
+            shutil.copy(lib, dst)
     elif config.is_linux():
         target = ""
         if config.target is None:
@@ -263,8 +230,9 @@ def capi_build(args):
 
     with working_dir("."):
         config.setup_linker()
-        for command in config.cargo_build_capi_command(args.features):
-            subprocess.run(command).check_returncode()
+        subprocess.run(
+            config.cargo_build_capi_command(args.features)
+        ).check_returncode()
 
         os.makedirs("bin", exist_ok=True)
         copy_dll(config, "bin")
@@ -350,10 +318,7 @@ if __name__ == "__main__":
             "--release", action="store_true", help="release build"
         )
         parser_build.add_argument(
-            "--arch", help="cross-compile for specific architecture (for Linux)"
-        )
-        parser_build.add_argument(
-            "--universal", action="store_true", help="build universal binary"
+            "--arch", help="cross-compile for specific architecture"
         )
         parser_build.add_argument(
             "--features",
