@@ -1,10 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_driver::{
-    autd3::{
-        derive::SamplingConfig,
-        modulation::{sampling_mode::ExactFreqFloat, Square},
-    },
+    autd3::modulation::{sampling_mode::ExactFreqFloat, Square},
     driver::{defined::Hz, derive::ModulationProperty},
     *,
 };
@@ -20,7 +17,7 @@ pub unsafe extern "C" fn AUTDModulationSquareExact(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -39,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -58,7 +55,7 @@ pub unsafe extern "C" fn AUTDModulationSquareNearest(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::with_freq_nearest(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_low(low)
         .with_high(high)
         .with_duty(duty)

@@ -1,10 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_driver::{
-    autd3::{
-        derive::SamplingConfig,
-        modulation::{sampling_mode::ExactFreqFloat, Sine},
-    },
+    autd3::modulation::{sampling_mode::ExactFreqFloat, Sine},
     driver::{defined::Hz, derive::ModulationProperty},
     *,
 };
@@ -20,7 +17,7 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
@@ -39,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
@@ -58,7 +55,7 @@ pub unsafe extern "C" fn AUTDModulationSineNearest(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::with_freq_nearest(freq * Hz)
-        .with_sampling_config(*take!(config, SamplingConfig))
+        .with_sampling_config(*take!(config, _))
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)

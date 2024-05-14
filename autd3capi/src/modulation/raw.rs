@@ -33,7 +33,7 @@ pub unsafe extern "C" fn AUTDModulationCustom(
     loop_behavior: autd3capi_driver::LoopBehavior,
 ) -> ModulationPtr {
     RawModulation {
-        config: *take!(config, SamplingConfig),
+        config: *take!(config, _),
         buf: HashMap::default(),
         loop_behavior: loop_behavior.into(),
     }

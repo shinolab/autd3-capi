@@ -2,7 +2,10 @@
 
 use std::ffi::{c_char, CStr};
 
-use autd3capi_def::{driver::derive::ModulationProperty, *};
+use autd3capi_driver::{
+    driver::{defined::Hz, derive::ModulationProperty},
+    *,
+};
 
 use autd3_modulation_audio_file::{RawPCM, Wav};
 
@@ -10,12 +13,12 @@ use autd3_modulation_audio_file::{RawPCM, Wav};
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationWav(
     path: *const c_char,
-    config: SamplingConfig,
+    config: SamplingConfigPtr,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     match CStr::from_ptr(path).to_str().map(|path| {
         Wav::new(path)
-            .with_sampling_config(config.into())
+            .with_sampling_config(*take!(config, _))
             .with_loop_behavior(loop_behavior.into())
     }) {
         Ok(v) => ResultModulation {
@@ -47,12 +50,12 @@ pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool 
 pub unsafe extern "C" fn AUTDModulationRawPCM(
     path: *const c_char,
     sample_rate: u32,
-    config: SamplingConfig,
+    config: SamplingConfigPtr,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     match CStr::from_ptr(path).to_str().map(|path| {
-        RawPCM::new(path, sample_rate)
-            .with_sampling_config(config.into())
+        RawPCM::new(path, sample_rate * Hz)
+            .with_sampling_config(*take!(config, _))
             .with_loop_behavior(loop_behavior.into())
     }) {
         Ok(v) => ResultModulation {
@@ -75,6 +78,6 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationRawPCMIsDefault(rawpcm: ModulationPtr) -> bool {
     let m = take_gain!(rawpcm, RawPCM);
-    let default = RawPCM::new("", 0);
+    let default = RawPCM::new("", 0 * Hz);
     m.sampling_config() == default.sampling_config()
 }
