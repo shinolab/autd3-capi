@@ -6,7 +6,7 @@ use std::{
     time::Duration,
 };
 
-use autd3capi_def::*;
+use autd3capi_driver::*;
 
 use autd3_link_simulator::*;
 
