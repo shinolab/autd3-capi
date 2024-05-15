@@ -34,14 +34,14 @@ impl Gain for RawGain {
 #[no_mangle]
 #[must_use]
 #[allow(clippy::uninit_vec)]
-pub unsafe extern "C" fn AUTDGainCustom() -> GainPtr {
+pub unsafe extern "C" fn AUTDGainRaw() -> GainPtr {
     RawGain::default().into()
 }
 
 #[no_mangle]
 #[must_use]
 #[allow(clippy::uninit_vec)]
-pub unsafe extern "C" fn AUTDGainCustomSet(
+pub unsafe extern "C" fn AUTDGainRawSet(
     custom: GainPtr,
     dev_idx: u32,
     ptr: *const Drive,

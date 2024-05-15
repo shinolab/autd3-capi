@@ -9,6 +9,7 @@ use autd3capi_driver::{
 };
 
 pub mod bessel;
+pub mod custom;
 pub mod focus;
 pub mod group;
 pub mod null;

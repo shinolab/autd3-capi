@@ -18,16 +18,19 @@ pub unsafe extern "C" fn AUTDGainCustom(
         _,
         unsafe extern "C" fn(ContextPtr, GeometryPtr, u32, u8, *mut Drive),
     >(f);
-    Custom::new(move |dev, tr| {
-        let mut d = driver::common::Drive::null();
-        f(
-            context,
-            geometry,
-            dev.idx() as u32,
-            tr.idx() as u8,
-            &mut d as *mut _ as *mut _,
-        );
-        Some(d)
+    Custom::new(move |dev| {
+        let dev_idx = dev.idx() as u32;
+        move |tr| {
+            let mut d = driver::firmware::fpga::Drive::null();
+            f(
+                context,
+                geometry,
+                dev_idx,
+                tr.idx() as u8,
+                &mut d as *mut _ as *mut _,
+            );
+            d
+        }
     })
     .into()
 }

@@ -6,6 +6,9 @@ pub struct GeometryPtr(pub ConstPtr);
 
 impl_ptr!(GeometryPtr, autd3_driver::geometry::Geometry);
 
+unsafe impl Send for GeometryPtr {}
+unsafe impl Sync for GeometryPtr {}
+
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct DevicePtr(pub ConstPtr);

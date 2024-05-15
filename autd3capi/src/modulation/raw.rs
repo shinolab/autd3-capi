@@ -18,7 +18,7 @@ impl Modulation for RawModulation {
 #[no_mangle]
 #[must_use]
 #[allow(clippy::uninit_vec)]
-pub unsafe extern "C" fn AUTDModulationCustom(
+pub unsafe extern "C" fn AUTDModulationRaw(
     config: SamplingConfigPtr,
     loop_behavior: autd3capi_driver::LoopBehavior,
     ptr: *const u8,
