@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
 use autd3capi_driver::{
-    driver::{
-        datagram::{GainFilter, SwapSegment},
-        error::AUTDInternalError,
-    },
+    driver::{datagram::GainFilter, error::AUTDInternalError},
     *,
 };
 
@@ -109,10 +106,4 @@ pub unsafe extern "C" fn AUTDGainCalcGetResult(
 #[no_mangle]
 pub unsafe extern "C" fn AUTDGainCalcFreeResult(src: GainCalcDrivesMapPtr) {
     let _ = take!(src, HashMap<usize, Vec<Drive>>);
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramChangeGainSegment(segment: Segment) -> DatagramPtr {
-    SwapSegment::gain(segment.into()).into()
 }

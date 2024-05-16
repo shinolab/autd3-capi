@@ -10,14 +10,14 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareExact(
     freq: u32,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     low: u8,
     high: u8,
     duty: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -29,14 +29,14 @@ pub unsafe extern "C" fn AUTDModulationSquareExact(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
     freq: f64,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     low: u8,
     high: u8,
     duty: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -48,14 +48,14 @@ pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareNearest(
     freq: f64,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     low: u8,
     high: u8,
     duty: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::with_freq_nearest(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_low(low)
         .with_high(high)
         .with_duty(duty)

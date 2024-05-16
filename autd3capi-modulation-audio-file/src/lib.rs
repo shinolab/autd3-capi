@@ -13,12 +13,12 @@ use autd3_modulation_audio_file::{RawPCM, Wav};
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationWav(
     path: *const c_char,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     match CStr::from_ptr(path).to_str().map(|path| {
         Wav::new(path)
-            .with_sampling_config(*take!(config, _))
+            .with_sampling_config(config.into())
             .with_loop_behavior(loop_behavior.into())
     }) {
         Ok(v) => ResultModulation {
@@ -50,12 +50,12 @@ pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool 
 pub unsafe extern "C" fn AUTDModulationRawPCM(
     path: *const c_char,
     sample_rate: u32,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     match CStr::from_ptr(path).to_str().map(|path| {
         RawPCM::new(path, sample_rate * Hz)
-            .with_sampling_config(*take!(config, _))
+            .with_sampling_config(config.into())
             .with_loop_behavior(loop_behavior.into())
     }) {
         Ok(v) => ResultModulation {

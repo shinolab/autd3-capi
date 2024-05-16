@@ -3,13 +3,13 @@ use std::time::Duration;
 use autd3::modulation::Static;
 use autd3_driver::{datagram::Datagram, firmware::operation::Operation};
 
-use crate::{DynamicDatagramST, Segment, TransitionMode, M};
+use crate::{DynamicDatagramST, Segment, TransitionModeWrap, M};
 
 impl DynamicDatagramST for Box<M> {
     fn operation_with_segment(
         &mut self,
         segment: Segment,
-        transition_mode: Option<TransitionMode>,
+        transition_mode: Option<TransitionModeWrap>,
     ) -> (Box<dyn Operation>, Box<dyn Operation>) {
         let mut tmp: Box<M> = Box::<Static>::default();
         std::mem::swap(&mut tmp, self);

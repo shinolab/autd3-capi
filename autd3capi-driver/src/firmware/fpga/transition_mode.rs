@@ -5,13 +5,13 @@ use autd3_driver::{
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct TransitionMode {
+pub struct TransitionModeWrap {
     ty: u8,
     value: u64,
 }
 
-impl From<TransitionMode> for autd3_driver::firmware::fpga::TransitionMode {
-    fn from(mode: TransitionMode) -> Self {
+impl From<TransitionModeWrap> for autd3_driver::firmware::fpga::TransitionMode {
+    fn from(mode: TransitionModeWrap) -> Self {
         match mode.ty {
             TRANSITION_MODE_SYNC_IDX => autd3_driver::firmware::fpga::TransitionMode::SyncIdx,
             TRANSITION_MODE_SYS_TIME => autd3_driver::firmware::fpga::TransitionMode::SysTime(
@@ -36,7 +36,7 @@ impl From<TransitionMode> for autd3_driver::firmware::fpga::TransitionMode {
     }
 }
 
-impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionMode {
+impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionModeWrap {
     fn from(transition_mode: autd3_driver::firmware::fpga::TransitionMode) -> Self {
         match transition_mode {
             autd3::derive::TransitionMode::SyncIdx => Self {

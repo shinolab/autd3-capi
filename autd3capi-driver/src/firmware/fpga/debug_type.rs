@@ -1,7 +1,9 @@
 use autd3::derive::Device;
 
 #[repr(u8)]
-pub enum DebugType {
+#[derive(Clone, Copy, Default)]
+enum DebugTypeTag {
+    #[default]
     None,
     BaseSignal,
     Thermo,
@@ -17,28 +19,87 @@ pub enum DebugType {
 }
 
 #[repr(C)]
-pub struct DebugSetting {
-    pub ty: DebugType,
-    pub value: u16,
+#[derive(Clone, Copy, Default)]
+pub struct DebugTypeWrap {
+    ty: DebugTypeTag,
+    value: u16,
 }
 
-impl DebugSetting {
+impl DebugTypeWrap {
     pub fn convert(self, dev: &Device) -> autd3_driver::firmware::fpga::DebugType {
         match self.ty {
-            DebugType::None => autd3_driver::firmware::fpga::DebugType::None,
-            DebugType::BaseSignal => autd3_driver::firmware::fpga::DebugType::BaseSignal,
-            DebugType::Thermo => autd3_driver::firmware::fpga::DebugType::Thermo,
-            DebugType::ForceFan => autd3_driver::firmware::fpga::DebugType::ForceFan,
-            DebugType::Sync => autd3_driver::firmware::fpga::DebugType::Sync,
-            DebugType::ModSegment => autd3_driver::firmware::fpga::DebugType::ModSegment,
-            DebugType::ModIdx => autd3_driver::firmware::fpga::DebugType::ModIdx(self.value),
-            DebugType::StmSegment => autd3_driver::firmware::fpga::DebugType::StmSegment,
-            DebugType::StmIdx => autd3_driver::firmware::fpga::DebugType::StmIdx(self.value),
-            DebugType::IsStmMode => autd3_driver::firmware::fpga::DebugType::IsStmMode,
-            DebugType::PwmOut => {
+            DebugTypeTag::None => autd3_driver::firmware::fpga::DebugType::None,
+            DebugTypeTag::BaseSignal => autd3_driver::firmware::fpga::DebugType::BaseSignal,
+            DebugTypeTag::Thermo => autd3_driver::firmware::fpga::DebugType::Thermo,
+            DebugTypeTag::ForceFan => autd3_driver::firmware::fpga::DebugType::ForceFan,
+            DebugTypeTag::Sync => autd3_driver::firmware::fpga::DebugType::Sync,
+            DebugTypeTag::ModSegment => autd3_driver::firmware::fpga::DebugType::ModSegment,
+            DebugTypeTag::ModIdx => autd3_driver::firmware::fpga::DebugType::ModIdx(self.value),
+            DebugTypeTag::StmSegment => autd3_driver::firmware::fpga::DebugType::StmSegment,
+            DebugTypeTag::StmIdx => autd3_driver::firmware::fpga::DebugType::StmIdx(self.value),
+            DebugTypeTag::IsStmMode => autd3_driver::firmware::fpga::DebugType::IsStmMode,
+            DebugTypeTag::PwmOut => {
                 autd3_driver::firmware::fpga::DebugType::PwmOut(&dev[self.value as usize])
             }
-            DebugType::Direct => autd3_driver::firmware::fpga::DebugType::Direct(self.value != 0),
+            DebugTypeTag::Direct => {
+                autd3_driver::firmware::fpga::DebugType::Direct(self.value != 0)
+            }
+        }
+    }
+}
+
+impl<'a> From<autd3_driver::firmware::fpga::DebugType<'a>> for DebugTypeWrap {
+    fn from(value: autd3_driver::firmware::fpga::DebugType) -> Self {
+        match value {
+            autd3_driver::firmware::fpga::DebugType::None => DebugTypeWrap {
+                ty: DebugTypeTag::None,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::BaseSignal => DebugTypeWrap {
+                ty: DebugTypeTag::BaseSignal,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::Thermo => DebugTypeWrap {
+                ty: DebugTypeTag::Thermo,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::ForceFan => DebugTypeWrap {
+                ty: DebugTypeTag::ForceFan,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::Sync => DebugTypeWrap {
+                ty: DebugTypeTag::Sync,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::ModSegment => DebugTypeWrap {
+                ty: DebugTypeTag::ModSegment,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::ModIdx(v) => DebugTypeWrap {
+                ty: DebugTypeTag::ModIdx,
+                value: v,
+            },
+            autd3_driver::firmware::fpga::DebugType::StmSegment => DebugTypeWrap {
+                ty: DebugTypeTag::StmSegment,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::StmIdx(v) => DebugTypeWrap {
+                ty: DebugTypeTag::StmIdx,
+                value: v,
+            },
+            autd3_driver::firmware::fpga::DebugType::IsStmMode => DebugTypeWrap {
+                ty: DebugTypeTag::IsStmMode,
+                value: 0,
+            },
+            autd3_driver::firmware::fpga::DebugType::PwmOut(v) => DebugTypeWrap {
+                ty: DebugTypeTag::PwmOut,
+                value: v.idx() as u16,
+            },
+            autd3_driver::firmware::fpga::DebugType::Direct(v) => DebugTypeWrap {
+                ty: DebugTypeTag::Direct,
+                value: if v { 1 } else { 0 },
+            },
+            _ => unreachable!(),
         }
     }
 }

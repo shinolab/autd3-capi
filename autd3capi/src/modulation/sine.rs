@@ -10,14 +10,14 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineExact(
     freq: u32,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
     phase: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
@@ -29,14 +29,14 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineExactFloat(
     freq: f64,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
     phase: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
@@ -48,14 +48,14 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineNearest(
     freq: f64,
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
     phase: f64,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::with_freq_nearest(freq * Hz)
-        .with_sampling_config(*take!(config, _))
+        .with_sampling_config(config.into())
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)

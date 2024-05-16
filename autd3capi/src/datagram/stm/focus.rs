@@ -1,9 +1,5 @@
 use autd3capi_driver::{
-    driver::{
-        datagram::{FocusSTM, SwapSegment},
-        defined::Hz,
-        geometry::Vector3,
-    },
+    driver::{datagram::FocusSTM, defined::Hz, geometry::Vector3},
     *,
 };
 
@@ -21,8 +17,8 @@ pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(freq: f64) -> FocusSTMPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(config: SamplingConfigPtr) -> FocusSTMPtr {
-    FocusSTM::from_sampling_config(*take!(config, _)).into()
+pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(config: SamplingConfigWrap) -> FocusSTMPtr {
+    FocusSTM::from_sampling_config(config.into()).into()
 }
 
 #[no_mangle]
@@ -71,7 +67,7 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
 pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
     stm: FocusSTMPtr,
     segment: Segment,
-    transition_mode: TransitionMode,
+    transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     take!(stm, FocusSTM)
         .with_segment(segment, Some(transition_mode))
@@ -82,13 +78,4 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFocusIntoDatagram(stm: FocusSTMPtr) -> DatagramPtr {
     (*take!(stm, FocusSTM)).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSwapSegmentFocusSTM(
-    segment: Segment,
-    transition_mode: TransitionMode,
-) -> DatagramPtr {
-    SwapSegment::focus_stm(segment.into(), transition_mode.into()).into()
 }

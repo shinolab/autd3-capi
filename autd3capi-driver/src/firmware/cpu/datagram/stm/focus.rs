@@ -2,13 +2,13 @@ use std::time::Duration;
 
 use autd3_driver::datagram::{Datagram, FocusSTM};
 
-use crate::{DynamicDatagramST, Segment, TransitionMode};
+use crate::{DynamicDatagramST, Segment, TransitionModeWrap};
 
 impl DynamicDatagramST for FocusSTM {
     fn operation_with_segment(
         &mut self,
         segment: Segment,
-        transition_mode: Option<TransitionMode>,
+        transition_mode: Option<TransitionModeWrap>,
     ) -> (
         Box<dyn autd3_driver::firmware::operation::Operation>,
         Box<dyn autd3_driver::firmware::operation::Operation>,

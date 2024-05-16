@@ -1,8 +1,5 @@
 use autd3capi_driver::{
-    driver::{
-        datagram::{GainSTM, SwapSegment},
-        defined::Hz,
-    },
+    driver::{datagram::GainSTM, defined::Hz},
     *,
 };
 
@@ -20,8 +17,8 @@ pub unsafe extern "C" fn AUTDSTMGainFromFreqNearest(freq: f64) -> GainSTMPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMGainFromSamplingConfig(config: SamplingConfigPtr) -> GainSTMPtr {
-    GainSTM::<Box<G>>::from_sampling_config(*take!(config, _)).into()
+pub unsafe extern "C" fn AUTDSTMGainFromSamplingConfig(config: SamplingConfigWrap) -> GainSTMPtr {
+    GainSTM::<Box<G>>::from_sampling_config(config.into()).into()
 }
 
 #[no_mangle]
@@ -69,7 +66,7 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegmentTransition(
     stm: GainSTMPtr,
     segment: Segment,
-    transition_mode: TransitionMode,
+    transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     take!(stm, GainSTM<Box<G>>)
         .with_segment(segment, Some(transition_mode))
@@ -80,13 +77,4 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegmentTransition(
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagram(stm: GainSTMPtr) -> DatagramPtr {
     (*take!(stm, GainSTM<Box<G>>)).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSwapSegmentGainSTM(
-    segment: Segment,
-    transition_mode: TransitionMode,
-) -> DatagramPtr {
-    SwapSegment::gain_stm(segment.into(), transition_mode.into()).into()
 }

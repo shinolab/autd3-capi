@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_driver::{driver::derive::*, take, vec_from_raw, ModulationPtr, SamplingConfigPtr};
+use autd3capi_driver::{autd3::derive::*, vec_from_raw, ModulationPtr, SamplingConfigWrap};
 
 #[derive(Modulation)]
 pub struct RawModulation {
@@ -19,13 +19,13 @@ impl Modulation for RawModulation {
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDModulationRaw(
-    config: SamplingConfigPtr,
+    config: SamplingConfigWrap,
     loop_behavior: autd3capi_driver::LoopBehavior,
     ptr: *const u8,
     len: u32,
 ) -> ModulationPtr {
     RawModulation {
-        config: *take!(config, _),
+        config: config.into(),
         buf: vec_from_raw!(ptr, u8, len),
         loop_behavior: loop_behavior.into(),
     }

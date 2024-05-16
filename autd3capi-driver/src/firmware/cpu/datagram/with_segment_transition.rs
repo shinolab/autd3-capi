@@ -2,12 +2,12 @@ use std::time::Duration;
 
 use autd3_driver::firmware::operation::Operation;
 
-use crate::{DynamicDatagram, Segment, TransitionMode};
+use crate::{DynamicDatagram, Segment, TransitionModeWrap};
 
 pub struct DynamicDatagramWithSegmentTransition<D: DynamicDatagramST> {
     datagram: D,
     segment: Segment,
-    transition_mode: Option<TransitionMode>,
+    transition_mode: Option<TransitionModeWrap>,
 }
 
 pub trait DynamicDatagramST {
@@ -15,7 +15,7 @@ pub trait DynamicDatagramST {
     fn operation_with_segment(
         &mut self,
         segment: Segment,
-        transition_mode: Option<TransitionMode>,
+        transition_mode: Option<TransitionModeWrap>,
     ) -> (Box<dyn Operation>, Box<dyn Operation>);
 
     fn timeout(&self) -> Option<Duration>;
@@ -51,7 +51,7 @@ pub trait IntoDynamicDatagramWithSegmentTransition<D: DynamicDatagramST> {
     fn with_segment(
         self,
         segment: Segment,
-        transition_mode: Option<TransitionMode>,
+        transition_mode: Option<TransitionModeWrap>,
     ) -> DynamicDatagramWithSegmentTransition<D>;
 }
 
@@ -59,7 +59,7 @@ impl<D: DynamicDatagramST> IntoDynamicDatagramWithSegmentTransition<D> for D {
     fn with_segment(
         self,
         segment: Segment,
-        transition_mode: Option<TransitionMode>,
+        transition_mode: Option<TransitionModeWrap>,
     ) -> DynamicDatagramWithSegmentTransition<D> {
         DynamicDatagramWithSegmentTransition {
             datagram: self,

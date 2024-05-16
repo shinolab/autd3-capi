@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::{ConstPtr, DebugSetting, GPIOOut, GeometryPtr};
+use crate::{ConstPtr, DebugTypeWrap, GPIOOut, GeometryPtr};
 
 use super::DynamicDatagram;
 use autd3::derive::DEFAULT_TIMEOUT;
@@ -22,7 +22,7 @@ impl DynamicDatagram for DynamicDebugSettings {
                     geometry: GeometryPtr,
                     u32,
                     GPIOOut,
-                    *mut DebugSetting,
+                    *mut DebugTypeWrap,
                 ),
             >(self.f);
             let context = self.context;
@@ -30,18 +30,15 @@ impl DynamicDatagram for DynamicDebugSettings {
             (
                 Box::new(autd3_driver::firmware::operation::DebugSettingOp::new(
                     move |dev, gpio_out| {
-                        let mut debug_setting = DebugSetting {
-                            ty: crate::DebugType::None,
-                            value: 0,
-                        };
+                        let mut debug_type = DebugTypeWrap::default();
                         f(
                             context,
                             geometry,
                             dev.idx() as u32,
                             gpio_out.into(),
-                            &mut debug_setting as *mut _,
+                            &mut debug_type as *mut _,
                         );
-                        debug_setting.convert(dev)
+                        debug_type.convert(dev)
                     },
                 )),
                 Box::<autd3_driver::firmware::operation::NullOp>::default(),

@@ -1,7 +1,4 @@
-use autd3capi_driver::{
-    driver::{datagram::SwapSegment, error::AUTDInternalError},
-    *,
-};
+use autd3capi_driver::{driver::error::AUTDInternalError, *};
 
 pub mod fourier;
 pub mod radiation_pressure;
@@ -9,6 +6,7 @@ pub mod raw;
 pub mod sine;
 pub mod square;
 pub mod r#static;
+pub mod transform;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
@@ -64,7 +62,7 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
 pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegmentTransition(
     m: ModulationPtr,
     segment: Segment,
-    transition_mode: TransitionMode,
+    transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     (*take!(m, Box<M>))
         .with_segment(segment, Some(transition_mode))
@@ -99,13 +97,4 @@ pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u3
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
     let _ = take!(src, Vec<u8>);
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSwapSegmentModulation(
-    segment: Segment,
-    transition_mode: TransitionMode,
-) -> DatagramPtr {
-    SwapSegment::modulation(segment.into(), transition_mode.into()).into()
 }

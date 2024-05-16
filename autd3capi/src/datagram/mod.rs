@@ -7,3 +7,4 @@ pub mod reads_fpga_state;
 pub mod silencer;
 pub mod stm;
 pub mod synchronize;
+pub mod segment;
