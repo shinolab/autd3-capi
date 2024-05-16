@@ -9,26 +9,36 @@ enum SamplingConfigTag {
 }
 
 #[repr(C)]
+union SamplingConfigValue {
+    div: u32,
+    freq: u32,
+    freq_nearest: f64,
+}
+
+#[repr(C)]
 pub struct SamplingConfigWrap {
-    ty: SamplingConfigTag,
-    value_uint: u32,
-    value_float: f64,
+    tag: SamplingConfigTag,
+    value: SamplingConfigValue,
 }
 
 impl From<SamplingConfigWrap> for autd3_driver::firmware::fpga::SamplingConfig {
     fn from(c: SamplingConfigWrap) -> Self {
-        match c.ty {
-            SamplingConfigTag::Division => {
-                autd3_driver::firmware::fpga::SamplingConfig::Division(c.value_uint)
-            }
-            SamplingConfigTag::DivisionRaw => {
-                autd3_driver::firmware::fpga::SamplingConfig::DivisionRaw(c.value_uint)
-            }
-            SamplingConfigTag::Freq => {
-                autd3_driver::firmware::fpga::SamplingConfig::Freq(c.value_uint * Hz)
-            }
-            SamplingConfigTag::FreqNearest => {
-                autd3_driver::firmware::fpga::SamplingConfig::FreqNearest(c.value_float * Hz)
+        unsafe {
+            match c.tag {
+                SamplingConfigTag::Division => {
+                    autd3_driver::firmware::fpga::SamplingConfig::Division(c.value.div)
+                }
+                SamplingConfigTag::DivisionRaw => {
+                    autd3_driver::firmware::fpga::SamplingConfig::DivisionRaw(c.value.div)
+                }
+                SamplingConfigTag::Freq => {
+                    autd3_driver::firmware::fpga::SamplingConfig::Freq(c.value.freq * Hz)
+                }
+                SamplingConfigTag::FreqNearest => {
+                    autd3_driver::firmware::fpga::SamplingConfig::FreqNearest(
+                        c.value.freq_nearest * Hz,
+                    )
+                }
             }
         }
     }
@@ -38,24 +48,22 @@ impl From<autd3_driver::firmware::fpga::SamplingConfig> for SamplingConfigWrap {
     fn from(value: autd3_driver::firmware::fpga::SamplingConfig) -> Self {
         match value {
             autd3::derive::SamplingConfig::Freq(c) => SamplingConfigWrap {
-                ty: SamplingConfigTag::Freq,
-                value_uint: c.hz(),
-                value_float: 0.0,
+                tag: SamplingConfigTag::Freq,
+                value: SamplingConfigValue { freq: c.hz() },
             },
             autd3::derive::SamplingConfig::FreqNearest(c) => SamplingConfigWrap {
-                ty: SamplingConfigTag::FreqNearest,
-                value_uint: 0,
-                value_float: c.hz(),
+                tag: SamplingConfigTag::FreqNearest,
+                value: SamplingConfigValue {
+                    freq_nearest: c.hz(),
+                },
             },
             autd3::derive::SamplingConfig::DivisionRaw(c) => SamplingConfigWrap {
-                ty: SamplingConfigTag::DivisionRaw,
-                value_uint: c,
-                value_float: 0.0,
+                tag: SamplingConfigTag::DivisionRaw,
+                value: SamplingConfigValue { div: c },
             },
             autd3::derive::SamplingConfig::Division(c) => SamplingConfigWrap {
-                ty: SamplingConfigTag::Division,
-                value_uint: c,
-                value_float: 0.0,
+                tag: SamplingConfigTag::Division,
+                value: SamplingConfigValue { div: c },
             },
         }
     }
