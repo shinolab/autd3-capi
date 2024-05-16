@@ -46,7 +46,6 @@ impl SyncControllerBuilder {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ControllerBuilderPtr(pub ConstPtr);
 

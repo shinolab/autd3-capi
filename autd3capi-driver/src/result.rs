@@ -9,7 +9,7 @@ pub const AUTD3_TRUE: i32 = 1;
 pub const AUTD3_FALSE: i32 = 0;
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultI32 {
     pub result: i32,
     pub err_len: u32,
@@ -82,7 +82,7 @@ where
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultModulation {
     pub result: ModulationPtr,
     pub err_len: u32,
@@ -90,7 +90,7 @@ pub struct ResultModulation {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultDatagram {
     pub result: DatagramPtr,
     pub err_len: u32,

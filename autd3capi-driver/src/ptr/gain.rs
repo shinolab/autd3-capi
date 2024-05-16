@@ -2,7 +2,6 @@ use autd3_driver::derive::Gain;
 
 use crate::{ConstPtr, G};
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct GainPtr(pub ConstPtr);
 

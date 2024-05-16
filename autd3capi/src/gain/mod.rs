@@ -14,12 +14,11 @@ pub mod plane;
 pub mod raw;
 pub mod uniform;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct GainCalcDrivesMapPtr(pub ConstPtr);
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultGainCalcDrivesMap {
     pub result: GainCalcDrivesMapPtr,
     pub err_len: u32,

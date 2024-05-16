@@ -9,11 +9,9 @@ use autd3_driver::{
 
 use crate::{impl_ptr, ConstPtr};
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct LinkBuilderPtr(pub ConstPtr);
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct LinkPtr(pub ConstPtr);
 

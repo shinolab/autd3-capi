@@ -11,7 +11,7 @@ use autd3capi_driver::*;
 use autd3_link_simulator::*;
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct LinkSimulatorBuilderPtr(pub ConstPtr);
 
 impl LinkSimulatorBuilderPtr {
@@ -21,7 +21,7 @@ impl LinkSimulatorBuilderPtr {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultLinkSimulatorBuilder {
     pub result: LinkSimulatorBuilderPtr,
     pub err_len: u32,

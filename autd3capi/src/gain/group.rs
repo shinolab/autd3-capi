@@ -4,7 +4,6 @@ use autd3capi_driver::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
 
 type M = HashMap<usize, Vec<i32>>;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct GroupGainMapPtr(pub ConstPtr);
 

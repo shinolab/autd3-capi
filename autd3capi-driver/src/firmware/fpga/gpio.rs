@@ -1,5 +1,5 @@
 #[repr(u8)]
-#[derive(Debug, Clone, Copy)]
+
 pub enum GPIOIn {
     I0 = 0,
     I1 = 1,
@@ -30,7 +30,7 @@ impl From<autd3_driver::firmware::fpga::GPIOIn> for GPIOIn {
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy)]
+
 pub enum GPIOOut {
     O0 = 0,
     O1 = 1,

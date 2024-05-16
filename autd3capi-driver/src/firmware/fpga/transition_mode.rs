@@ -3,8 +3,8 @@ use autd3_driver::{
     firmware::fpga::*,
 };
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
+#[derive(Debug, Clone, Copy)]
 pub struct TransitionModeWrap {
     ty: u8,
     value: u64,

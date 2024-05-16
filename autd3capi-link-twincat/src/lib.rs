@@ -44,7 +44,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATIntoBuilder(
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct LinkRemoteTwinCATBuilderPtr(pub ConstPtr);
 
 impl LinkRemoteTwinCATBuilderPtr {
@@ -54,7 +54,7 @@ impl LinkRemoteTwinCATBuilderPtr {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultLinkRemoteTwinCATBuilder {
     pub result: LinkRemoteTwinCATBuilderPtr,
     pub err_len: u32,

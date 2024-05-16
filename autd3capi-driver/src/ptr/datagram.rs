@@ -1,6 +1,5 @@
 use crate::{take, ConstPtr, DynamicDatagram};
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct DatagramPtr(pub ConstPtr);
 

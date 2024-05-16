@@ -52,7 +52,6 @@ impl SyncController {
 type K = i32;
 type V = (Box<dyn Operation>, Box<dyn Operation>, Option<Duration>);
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct GroupKVMapPtr(pub ConstPtr);
 

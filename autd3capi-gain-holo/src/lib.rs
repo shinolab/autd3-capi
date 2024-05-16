@@ -13,12 +13,11 @@ use autd3_gain_holo::*;
 use autd3capi_driver::*;
 use constraint::EmissionConstraintWrap;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct BackendPtr(pub ConstPtr);
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultBackend {
     pub result: BackendPtr,
     pub err_len: u32,

@@ -17,7 +17,6 @@ use std::ffi::c_char;
 
 use autd3capi_driver::*;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ControllerPtr(pub ConstPtr);
 
@@ -58,7 +57,7 @@ impl SyncController {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultController {
     pub result: ControllerPtr,
     pub err_len: u32,
@@ -117,12 +116,11 @@ pub unsafe extern "C" fn AUTDControllerFPGAState(
         .into()
 }
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct FirmwareVersionListPtr(pub ConstPtr);
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultFirmwareVersionList {
     pub result: FirmwareVersionListPtr,
     pub err_len: u32,

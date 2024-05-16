@@ -8,7 +8,6 @@ pub mod square;
 pub mod r#static;
 pub mod transform;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ModulationCalcPtr(pub ConstPtr);
 
@@ -21,25 +20,27 @@ impl std::ops::Deref for ModulationCalcPtr {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
 pub struct ResultModulationCalc {
     pub result: ModulationCalcPtr,
+    pub config: SamplingConfigWrap,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<Result<Vec<u8>, AUTDInternalError>> for ResultModulationCalc {
-    fn from(r: Result<Vec<u8>, AUTDInternalError>) -> Self {
+impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultModulationCalc {
+    fn from(r: (Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)) -> Self {
         match r {
-            Ok(v) => Self {
+            (Ok(v), config) => Self {
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
+                config,
                 err_len: 0,
                 err: std::ptr::null_mut(),
             },
-            Err(e) => {
+            (Err(e), config) => {
                 let err = e.to_string();
                 Self {
                     result: ModulationCalcPtr(std::ptr::null()),
+                    config,
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: Box::into_raw(Box::new(err)) as _,
                 }
@@ -81,7 +82,9 @@ pub unsafe extern "C" fn AUTDModulationCalc(
     m: ModulationPtr,
     geometry: GeometryPtr,
 ) -> ResultModulationCalc {
-    take!(m, Box<M>).calc(&geometry).into()
+    let m = take!(m, Box<M>);
+    let config = m.sampling_config();
+    (m.calc(&geometry), config.into()).into()
 }
 
 #[no_mangle]

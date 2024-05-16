@@ -14,7 +14,6 @@ use autd3capi_driver::*;
 use autd3_link_soem::{local::link_soem::*, remote::link_soem_remote::*, EthernetAdapters};
 use timer_strategy::TimerStrategy;
 
-#[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct EthernetAdaptersPtr(pub ConstPtr);
 
@@ -209,7 +208,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMIntoBuilder(soem: LinkSOEMBuilderPtr) -> Li
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct LinkRemoteSOEMBuilderPtr(pub ConstPtr);
 
 impl LinkRemoteSOEMBuilderPtr {
@@ -219,7 +218,7 @@ impl LinkRemoteSOEMBuilderPtr {
 }
 
 #[repr(C)]
-#[derive(Debug, Clone, Copy)]
+
 pub struct ResultLinkRemoteSOEMBuilder {
     pub result: LinkRemoteSOEMBuilderPtr,
     pub err_len: u32,
