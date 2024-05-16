@@ -17,9 +17,15 @@ pub struct SyncControllerBuilder {
 }
 
 impl SyncControllerBuilder {
-    pub const fn new(ultrasound_freq: Freq<u32>) -> Self {
+    pub const fn new() -> Self {
         Self {
-            inner: Controller::builder_with_ultrasound_freq(ultrasound_freq),
+            inner: Controller::builder(),
+        }
+    }
+
+    pub fn with_ultrasound_freq(self, ultrasound_freq: Freq<u32>) -> Self {
+        Self {
+            inner: self.inner.with_ultrasound_freq(ultrasound_freq),
         }
     }
 
@@ -58,8 +64,20 @@ impl ControllerBuilderPtr {
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilder(ultrasound_freq: u32) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(SyncControllerBuilder::new(ultrasound_freq * Hz))
+pub unsafe extern "C" fn AUTDControllerBuilder() -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(SyncControllerBuilder::new())
+}
+
+#[no_mangle]
+#[must_use]
+#[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDControllerBuilderWithUltrasoundFreq(
+    builder: ControllerBuilderPtr,
+    ultrasound_freq: u32,
+) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(
+        take!(builder, SyncControllerBuilder).with_ultrasound_freq(ultrasound_freq * Hz),
+    )
 }
 
 #[no_mangle]

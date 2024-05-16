@@ -4,13 +4,13 @@ use autd3capi_driver::{autd3::derive::*, vec_from_raw, ModulationPtr, SamplingCo
 
 #[derive(Modulation)]
 pub struct RawModulation {
-    pub buf: Vec<u8>,
+    pub buf: Vec<EmitIntensity>,
     pub config: SamplingConfig,
     pub loop_behavior: LoopBehavior,
 }
 
 impl Modulation for RawModulation {
-    fn calc(&self, _geometry: &Geometry) -> Result<Vec<u8>, AUTDInternalError> {
+    fn calc(&self, _geometry: &Geometry) -> Result<Vec<EmitIntensity>, AUTDInternalError> {
         Ok(self.buf.clone())
     }
 }
@@ -26,7 +26,7 @@ pub unsafe extern "C" fn AUTDModulationRaw(
 ) -> ModulationPtr {
     RawModulation {
         config: config.into(),
-        buf: vec_from_raw!(ptr, u8, len),
+        buf: vec_from_raw!(ptr, EmitIntensity, len),
         loop_behavior: loop_behavior.into(),
     }
     .into()

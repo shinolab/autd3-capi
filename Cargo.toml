@@ -1,19 +1,31 @@
 [workspace]
 
-members = ["autd3capi", "autd3capi-driver", "autd3capi-gain-holo", "autd3capi-link-simulator", "autd3capi-link-soem", "autd3capi-link-twincat", "autd3capi-modulation-audio-file"]
+members = [
+    "autd3capi",
+    "autd3capi-driver",
+    "autd3capi-gain-holo",
+    "autd3capi-link-simulator",
+    "autd3capi-link-soem",
+    "autd3capi-link-twincat",
+    "autd3capi-modulation-audio-file",
+    "autd3capi-link-visualizer",
+    "autd3capi-backend-cuda",
+]
 
 exclude = ["tools"]
 
 resolver = "2"
 
 [workspace.dependencies]
-autd3 = { version = "24.0.0-rc.1" }
-autd3-driver = { version = "24.0.0-rc.1" }
-autd3-gain-holo = { version = "24.0.0-rc.1" }
-autd3-link-simulator = { version = "24.0.0-rc.1" }
-autd3-link-soem = { version = "24.0.0-rc.1" }
-autd3-link-twincat = { version = "24.0.0-rc.1" }
-autd3-modulation-audio-file = { version = "24.0.0-rc.1" }
+autd3 = { version = "24.0.0-rc.2" }
+autd3-driver = { version = "24.0.0-rc.2" }
+autd3-gain-holo = { version = "24.0.0-rc.2" }
+autd3-link-simulator = { version = "24.0.0-rc.2" }
+autd3-link-soem = { version = "24.0.0-rc.2" }
+autd3-link-twincat = { version = "24.0.0-rc.2" }
+autd3-modulation-audio-file = { version = "24.0.0-rc.2" }
+autd3-link-visualizer = { version = "24.0.0-rc.3" }
+autd3-backend-cuda = { version = "24.0.0-rc.2" }
 libc = "0.2.144"
 assert_approx_eq = "1.1.0"
 tokio = "1.37.0"

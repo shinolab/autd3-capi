@@ -1,4 +1,4 @@
-use autd3capi_driver::{driver::error::AUTDInternalError, *};
+use autd3capi_driver::{autd3::derive::EmitIntensity, driver::error::AUTDInternalError, *};
 
 pub mod fourier;
 pub mod radiation_pressure;
@@ -11,13 +11,7 @@ pub mod transform;
 #[repr(C)]
 pub struct ModulationCalcPtr(pub ConstPtr);
 
-impl std::ops::Deref for ModulationCalcPtr {
-    type Target = Vec<u8>;
-
-    fn deref(&self) -> &Self::Target {
-        unsafe { (self.0 as *mut Self::Target).as_ref().unwrap() }
-    }
-}
+impl_ptr!(ModulationCalcPtr, Vec<EmitIntensity>);
 
 #[repr(C)]
 pub struct ResultModulationCalc {
@@ -27,8 +21,18 @@ pub struct ResultModulationCalc {
     pub err: ConstPtr,
 }
 
-impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultModulationCalc {
-    fn from(r: (Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)) -> Self {
+impl
+    From<(
+        Result<Vec<EmitIntensity>, AUTDInternalError>,
+        SamplingConfigWrap,
+    )> for ResultModulationCalc
+{
+    fn from(
+        r: (
+            Result<Vec<EmitIntensity>, AUTDInternalError>,
+            SamplingConfigWrap,
+        ),
+    ) -> Self {
         match r {
             (Ok(v), config) => Self {
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
@@ -99,5 +103,5 @@ pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u3
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
-    let _ = take!(src, Vec<u8>);
+    let _ = take!(src, Vec<EmitIntensity>);
 }
