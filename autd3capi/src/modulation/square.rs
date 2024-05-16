@@ -66,7 +66,7 @@ pub unsafe extern "C" fn AUTDModulationSquareNearest(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareIsDefault(square: ModulationPtr) -> bool {
-    let m = take_gain!(square, Square<ExactFreqFloat>);
+    let m = take_mod!(square, Square<ExactFreqFloat>);
     let default = Square::new(0. * Hz);
     m.low() == default.low()
         && m.high() == default.high()

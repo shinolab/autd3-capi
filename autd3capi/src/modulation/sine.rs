@@ -66,7 +66,7 @@ pub unsafe extern "C" fn AUTDModulationSineNearest(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineIsDefault(sine: ModulationPtr) -> bool {
-    let m = take_gain!(sine, Sine<ExactFreqFloat>);
+    let m = take_mod!(sine, Sine<ExactFreqFloat>);
     let default = Sine::new(0. * Hz);
     m.intensity() == default.intensity()
         && m.offset() == default.offset()
