@@ -26,6 +26,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: ${{ matrix.os }}
+          shaderc: true
+          cuda: true
 
       - name: Test src on ${{ matrix.os }}
         run: |
@@ -104,6 +106,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: ubuntu-latest
+          shaderc: true
+          cuda: true
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2

@@ -56,6 +56,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: windows-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -163,6 +165,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: windows-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -251,6 +255,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: ubuntu-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -304,6 +310,8 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: ubuntu-latest
+          shaderc: true
+          cuda: true
 
       - name: Get the version
         id: get_version
@@ -456,6 +464,7 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: macos-latest
+          shaderc: true
 
       - name: Get the version
         id: get_version
@@ -508,6 +517,7 @@ jobs:
         uses: ./.github/actions/setup-build
         with:
           os: macos-latest
+          shaderc: true
 
       - name: Get the version
         id: get_version
