@@ -1,40 +1,101 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_driver::{take, ConstPtr};
 
-#[derive(Debug, Clone, Copy)]
+#[repr(u8)]
+enum EmissionConstraintTag {
+    DontCare,
+    Normalize,
+    Uniform,
+    Multiply,
+    Clamp,
+}
+
 #[repr(C)]
-pub struct EmissionConstraintPtr(pub ConstPtr);
+union EmissionConstraintValue {
+    null: (),
+    uniform: u8,
+    multiply: f64,
+    clamp: [u8; 2],
+}
 
-impl From<EmissionConstraint> for EmissionConstraintPtr {
-    fn from(c: EmissionConstraint) -> Self {
-        Self(Box::into_raw(Box::new(c)) as _)
+#[repr(C)]
+pub struct EmissionConstraintWrap {
+    tag: EmissionConstraintTag,
+    value: EmissionConstraintValue,
+}
+
+impl From<EmissionConstraintWrap> for EmissionConstraint {
+    fn from(value: EmissionConstraintWrap) -> Self {
+        match value.tag {
+            EmissionConstraintTag::DontCare => EmissionConstraint::DontCare,
+            EmissionConstraintTag::Normalize => EmissionConstraint::Normalize,
+            EmissionConstraintTag::Uniform => {
+                EmissionConstraint::Uniform(unsafe { value.value.uniform.into() })
+            }
+            EmissionConstraintTag::Multiply => {
+                EmissionConstraint::Multiply(unsafe { value.value.multiply })
+            }
+            EmissionConstraintTag::Clamp => {
+                EmissionConstraint::Clamp(unsafe { value.value.clamp[0].into() }, unsafe {
+                    value.value.clamp[1].into()
+                })
+            }
+        }
+    }
+}
+
+impl From<EmissionConstraint> for EmissionConstraintWrap {
+    fn from(value: EmissionConstraint) -> Self {
+        match value {
+            EmissionConstraint::DontCare => EmissionConstraintWrap {
+                tag: EmissionConstraintTag::DontCare,
+                value: EmissionConstraintValue { null: () },
+            },
+            EmissionConstraint::Normalize => EmissionConstraintWrap {
+                tag: EmissionConstraintTag::Normalize,
+                value: EmissionConstraintValue { null: () },
+            },
+            EmissionConstraint::Uniform(v) => EmissionConstraintWrap {
+                tag: EmissionConstraintTag::Uniform,
+                value: EmissionConstraintValue { uniform: v.value() },
+            },
+            EmissionConstraint::Multiply(v) => EmissionConstraintWrap {
+                tag: EmissionConstraintTag::Multiply,
+                value: EmissionConstraintValue { multiply: v },
+            },
+            EmissionConstraint::Clamp(min, max) => EmissionConstraintWrap {
+                tag: EmissionConstraintTag::Clamp,
+                value: EmissionConstraintValue {
+                    clamp: [min.value(), max.value()],
+                },
+            },
+        }
     }
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintDotCare() -> EmissionConstraintPtr {
-    EmissionConstraint::DontCare.into()
+pub unsafe extern "C" fn AUTDGainHoloConstraintDotCare() -> EmissionConstraintWrap {
+    autd3_gain_holo::EmissionConstraint::DontCare.into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraintPtr {
-    EmissionConstraint::Normalize.into()
+pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraintWrap {
+    autd3_gain_holo::EmissionConstraint::Normalize.into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(intensity: u8) -> EmissionConstraintPtr {
-    EmissionConstraint::Uniform(intensity.into()).into()
+pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(intensity: u8) -> EmissionConstraintWrap {
+    autd3_gain_holo::EmissionConstraint::Uniform(intensity.into()).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f64) -> EmissionConstraintPtr {
-    EmissionConstraint::Multiply(v).into()
+pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f64) -> EmissionConstraintWrap {
+    autd3_gain_holo::EmissionConstraint::Multiply(v).into()
 }
 
 #[no_mangle]
@@ -42,17 +103,6 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f64) -> EmissionConst
 pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
     min_v: u8,
     max_v: u8,
-) -> EmissionConstraintPtr {
-    EmissionConstraint::Clamp(min_v.into(), max_v.into()).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintEq(
-    a: EmissionConstraintPtr,
-    b: EmissionConstraintPtr,
-) -> bool {
-    let a = *take!(a, EmissionConstraint);
-    let b = *take!(b, EmissionConstraint);
-    a == b
+) -> EmissionConstraintWrap {
+    autd3_gain_holo::EmissionConstraint::Clamp(min_v.into(), max_v.into()).into()
 }

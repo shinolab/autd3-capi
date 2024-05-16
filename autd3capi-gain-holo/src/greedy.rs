@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{create_holo, EmissionConstraintPtr};
+use crate::{create_holo, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     driver::acoustics::directivity::{Sphere, T4010A1},
@@ -14,11 +14,11 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
     amps: *const f64,
     size: u64,
     div: u8,
-    constraint: EmissionConstraintPtr,
+    constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Greedy, Sphere, points, amps, size)
         .with_phase_div(div)
-        .with_constraint(*take!(constraint, _))
+        .with_constraint(constraint.into())
         .into()
 }
 
@@ -29,11 +29,11 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
     amps: *const f64,
     size: u64,
     div: u8,
-    constraint: EmissionConstraintPtr,
+    constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Greedy, T4010A1, points, amps, size)
         .with_phase_div(div)
-        .with_constraint(*take!(constraint, _))
+        .with_constraint(constraint.into())
         .into()
 }
 

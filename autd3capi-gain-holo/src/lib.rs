@@ -11,7 +11,7 @@ pub mod sdp;
 
 use autd3_gain_holo::*;
 use autd3capi_driver::*;
-use constraint::EmissionConstraintPtr;
+use constraint::EmissionConstraintWrap;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]

@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{create_holo, BackendPtr, EmissionConstraintPtr};
+use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     driver::{
@@ -20,13 +20,13 @@ pub unsafe extern "C" fn AUTDGainHoloSDPSphere(
     alpha: f64,
     lambda: f64,
     repeat: u32,
-    constraint: EmissionConstraintPtr,
+    constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(SDP, NalgebraBackend, Sphere, backend, points, amps, size)
         .with_alpha(alpha)
         .with_lambda(lambda)
         .with_repeat(repeat as _)
-        .with_constraint(*take!(constraint, _))
+        .with_constraint(constraint.into())
         .into()
 }
 
@@ -40,13 +40,13 @@ pub unsafe extern "C" fn AUTDGainHoloSDPT4010A1(
     alpha: f64,
     lambda: f64,
     repeat: u32,
-    constraint: EmissionConstraintPtr,
+    constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(SDP, NalgebraBackend, T4010A1, backend, points, amps, size)
         .with_alpha(alpha)
         .with_lambda(lambda)
         .with_repeat(repeat as _)
-        .with_constraint(*take!(constraint, _))
+        .with_constraint(constraint.into())
         .into()
 }
 
