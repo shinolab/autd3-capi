@@ -40,7 +40,7 @@ pub unsafe extern "C" fn AUTDModulationWav(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool {
-    let m = take_gain!(wav, Wav);
+    let m = take_mod!(wav, Wav);
     let default = Wav::new("");
     m.sampling_config() == default.sampling_config()
 }
@@ -77,7 +77,7 @@ pub unsafe extern "C" fn AUTDModulationRawPCM(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationRawPCMIsDefault(rawpcm: ModulationPtr) -> bool {
-    let m = take_gain!(rawpcm, RawPCM);
+    let m = take_mod!(rawpcm, RawPCM);
     let default = RawPCM::new("", 0 * Hz);
     m.sampling_config() == default.sampling_config()
 }
