@@ -313,3 +313,25 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaPhaseFilter(
     let d = audit.cast::<Audit>()[idx as usize].fpga().phase_filter();
     std::ptr::copy_nonoverlapping(d.as_ptr() as _, phase_filter, d.len());
 }
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
+    audit: LinkPtr,
+    idx: u32,
+    dst: *mut u8,
+) -> u16 {
+    let fpga = audit.cast::<Audit>()[idx as usize].fpga();
+    let src = fpga.pulse_width_encoder_table();
+    std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
+    fpga.pulse_width_encoder_full_width_start()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditFpgaUltrasoundFreq(audit: LinkPtr, idx: u32) -> u32 {
+    audit.cast::<Audit>()[idx as usize]
+        .fpga()
+        .ultrasound_freq()
+        .hz()
+}
