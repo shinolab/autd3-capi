@@ -13,7 +13,7 @@ enum EmissionConstraintTag {
 
 #[repr(C)]
 union EmissionConstraintValue {
-    null: (),
+    null: u8,
     uniform: u8,
     multiply: f64,
     clamp: [u8; 2],
@@ -50,11 +50,11 @@ impl From<EmissionConstraint> for EmissionConstraintWrap {
         match value {
             EmissionConstraint::DontCare => EmissionConstraintWrap {
                 tag: EmissionConstraintTag::DontCare,
-                value: EmissionConstraintValue { null: () },
+                value: EmissionConstraintValue { null: 0 },
             },
             EmissionConstraint::Normalize => EmissionConstraintWrap {
                 tag: EmissionConstraintTag::Normalize,
-                value: EmissionConstraintValue { null: () },
+                value: EmissionConstraintValue { null: 0 },
             },
             EmissionConstraint::Uniform(v) => EmissionConstraintWrap {
                 tag: EmissionConstraintTag::Uniform,
