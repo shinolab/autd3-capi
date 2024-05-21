@@ -2,10 +2,10 @@ use autd3_driver::defined::Hz;
 
 #[repr(u8)]
 enum SamplingConfigTag {
-    Division,
-    DivisionRaw,
-    Freq,
-    FreqNearest,
+    Division = 0,
+    DivisionRaw = 1,
+    Freq = 2,
+    FreqNearest = 3,
 }
 
 #[repr(C)]

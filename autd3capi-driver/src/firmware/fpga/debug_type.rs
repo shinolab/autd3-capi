@@ -4,18 +4,18 @@ use autd3::derive::Device;
 #[derive(Clone, Copy, Default)]
 enum DebugTypeTag {
     #[default]
-    None,
-    BaseSignal,
-    Thermo,
-    ForceFan,
-    Sync,
-    ModSegment,
-    ModIdx,
-    StmSegment,
-    StmIdx,
-    IsStmMode,
-    PwmOut,
-    Direct,
+    None = 0,
+    BaseSignal = 1,
+    Thermo = 2,
+    ForceFan = 3,
+    Sync = 4,
+    ModSegment = 5,
+    ModIdx = 6,
+    StmSegment = 7,
+    StmIdx = 8,
+    IsStmMode = 9,
+    PwmOut = 10,
+    Direct = 11,
 }
 
 #[repr(C)]

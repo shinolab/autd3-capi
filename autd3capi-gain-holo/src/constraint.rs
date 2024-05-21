@@ -4,11 +4,11 @@ use autd3_gain_holo::*;
 
 #[repr(u8)]
 enum EmissionConstraintTag {
-    DontCare,
-    Normalize,
-    Uniform,
-    Multiply,
-    Clamp,
+    DontCare = 0,
+    Normalize = 1,
+    Uniform = 2,
+    Multiply = 3,
+    Clamp = 4,
 }
 
 #[repr(C)]
