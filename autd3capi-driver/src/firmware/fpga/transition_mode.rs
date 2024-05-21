@@ -3,24 +3,34 @@ use autd3_driver::{
     firmware::fpga::*,
 };
 
+#[repr(u8)]
+#[derive(Debug, Clone, Copy)]
+enum TransitionModeTag {
+    SyncIdx = 0,
+    SysTime = 1,
+    Gpio = 2,
+    Ext = 3,
+    Immediate = 4,
+}
+
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct TransitionModeWrap {
-    ty: u8,
+    tag: TransitionModeTag,
     value: u64,
 }
 
 impl From<TransitionModeWrap> for autd3_driver::firmware::fpga::TransitionMode {
     fn from(mode: TransitionModeWrap) -> Self {
-        match mode.ty {
-            TRANSITION_MODE_SYNC_IDX => autd3_driver::firmware::fpga::TransitionMode::SyncIdx,
-            TRANSITION_MODE_SYS_TIME => autd3_driver::firmware::fpga::TransitionMode::SysTime(
+        match mode.tag {
+            TransitionModeTag::SyncIdx => autd3_driver::firmware::fpga::TransitionMode::SyncIdx,
+            TransitionModeTag::SysTime => autd3_driver::firmware::fpga::TransitionMode::SysTime(
                 DcSysTime::from_utc(
                     ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(mode.value),
                 )
                 .unwrap(),
             ),
-            TRANSITION_MODE_GPIO => {
+            TransitionModeTag::Gpio => {
                 autd3_driver::firmware::fpga::TransitionMode::GPIO(match mode.value {
                     0 => GPIOIn::I0,
                     1 => GPIOIn::I1,
@@ -29,9 +39,8 @@ impl From<TransitionModeWrap> for autd3_driver::firmware::fpga::TransitionMode {
                     _ => unreachable!(),
                 })
             }
-            TRANSITION_MODE_EXT => autd3_driver::firmware::fpga::TransitionMode::Ext,
-            TRANSITION_MODE_IMMEDIATE => autd3_driver::firmware::fpga::TransitionMode::Immediate,
-            _ => unreachable!(),
+            TransitionModeTag::Ext => autd3_driver::firmware::fpga::TransitionMode::Ext,
+            TransitionModeTag::Immediate => autd3_driver::firmware::fpga::TransitionMode::Immediate,
         }
     }
 }
@@ -40,15 +49,15 @@ impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionModeWrap {
     fn from(transition_mode: autd3_driver::firmware::fpga::TransitionMode) -> Self {
         match transition_mode {
             autd3::derive::TransitionMode::SyncIdx => Self {
-                ty: TRANSITION_MODE_SYNC_IDX,
+                tag: TransitionModeTag::SyncIdx,
                 value: 0,
             },
             autd3::derive::TransitionMode::SysTime(sys_time) => Self {
-                ty: TRANSITION_MODE_SYS_TIME,
+                tag: TransitionModeTag::SysTime,
                 value: sys_time.sys_time(),
             },
             autd3::derive::TransitionMode::GPIO(gpio) => Self {
-                ty: TRANSITION_MODE_GPIO,
+                tag: TransitionModeTag::Gpio,
                 value: match gpio {
                     GPIOIn::I0 => 0,
                     GPIOIn::I1 => 1,
@@ -57,11 +66,11 @@ impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionModeWrap {
                 },
             },
             autd3::derive::TransitionMode::Ext => Self {
-                ty: TRANSITION_MODE_EXT,
+                tag: TransitionModeTag::Ext,
                 value: 0,
             },
             autd3::derive::TransitionMode::Immediate => Self {
-                ty: TRANSITION_MODE_IMMEDIATE,
+                tag: TransitionModeTag::Immediate,
                 value: 0,
             },
             _ => unreachable!(),
