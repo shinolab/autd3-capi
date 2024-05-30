@@ -113,10 +113,7 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
         .map(|gen| {
             geometry
                 .devices()
-                .filter(|dev| match f(context, geometry, dev.idx() as u32) {
-                    kk if kk >= 0 && key == kk => true,
-                    _ => false,
-                })
+                .filter(|dev| matches!(f(context, geometry, dev.idx() as u32), kk if kk >= 0 && key == kk))
                 .map(|dev| gen.generate(dev))
                 .map(|(op1, op2)| (Box::new(op1) as Box<_>, Box::new(op2) as Box<_>))
                 .collect()
@@ -133,10 +130,7 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
         .map(|gen| {
             geometry
                 .devices()
-                .filter(|dev| match f(context, geometry, dev.idx() as u32) {
-                    kk if kk >= 0 && key == kk => true,
-                    _ => false,
-                })
+                .filter(|dev|matches!(f(context, geometry, dev.idx() as u32), kk if kk >= 0 && key == kk))
                 .map(|dev| gen.generate(dev))
                 .map(|(op1, op2)| (Box::new(op1) as Box<_>, Box::new(op2) as Box<_>))
                 .collect()
@@ -153,10 +147,7 @@ pub unsafe extern "C" fn AUTDControllerGroupKVMapSet(
         .map(|gen| {
             geometry
                 .devices()
-                .filter(|dev| match f(context, geometry, dev.idx() as u32) {
-                    kk if kk >= 0 && key == kk => true,
-                    _ => false,
-                })
+                .filter(|dev| matches!(f(context, geometry, dev.idx() as u32), kk if kk >= 0 && key == kk))
                 .map(|dev| gen.generate(dev))
                 .map(|(op1, op2)| (Box::new(op1) as Box<_>, Box::new(op2) as Box<_>))
                 .collect()

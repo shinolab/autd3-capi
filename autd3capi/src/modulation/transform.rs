@@ -12,7 +12,6 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
         std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, u8) -> u8>(f)(
             context, i as u32, d,
         )
-        .into()
     })
     .with_loop_behavior(loop_behavior.into())
     .into()
