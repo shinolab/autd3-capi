@@ -17,9 +17,9 @@ pub struct SyncControllerBuilder {
 }
 
 impl SyncControllerBuilder {
-    pub const fn new() -> Self {
+    pub fn new<D: IntoDevice, I: IntoIterator<Item = D>>(iter: I) -> Self {
         Self {
-            inner: Controller::builder(),
+            inner: Controller::builder(iter),
         }
     }
 
@@ -29,9 +29,9 @@ impl SyncControllerBuilder {
         }
     }
 
-    pub fn add_device<D: IntoDevice>(self, dev: D) -> Self {
+    pub fn with_parallel_threshold(self, parallel_threshold: usize) -> Self {
         Self {
-            inner: self.inner.add_device(dev),
+            inner: self.inner.with_parallel_threshold(parallel_threshold),
         }
     }
 
@@ -64,8 +64,23 @@ impl ControllerBuilderPtr {
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilder() -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(SyncControllerBuilder::new())
+pub unsafe extern "C" fn AUTDControllerBuilder(
+    params: *const f64,
+    len: u64,
+) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(SyncControllerBuilder::new((0..len as usize).map(|i| {
+        AUTD3::new(Vector3::new(
+            params.add(7 * i).read(),
+            params.add(7 * i + 1).read(),
+            params.add(7 * i + 2).read(),
+        ))
+        .with_rotation(UnitQuaternion::from_quaternion(Quaternion::new(
+            params.add(7 * i + 3).read(),
+            params.add(7 * i + 4).read(),
+            params.add(7 * i + 5).read(),
+            params.add(7 * i + 6).read(),
+        )))
+    })))
 }
 
 #[no_mangle]
@@ -81,21 +96,15 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithUltrasoundFreq(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDControllerBuilderAddDevice(
+#[must_use]
+#[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDControllerBuilderWithParallelThreshold(
     builder: ControllerBuilderPtr,
-    x: f64,
-    y: f64,
-    z: f64,
-    qw: f64,
-    qx: f64,
-    qy: f64,
-    qz: f64,
+    parallel_threshold: usize,
 ) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(take!(builder, SyncControllerBuilder).add_device(
-        AUTD3::new(Vector3::new(x, y, z)).with_rotation(UnitQuaternion::from_quaternion(
-            Quaternion::new(qw, qx, qy, qz),
-        )),
-    ))
+    ControllerBuilderPtr::new(
+        take!(builder, SyncControllerBuilder).with_parallel_threshold(parallel_threshold),
+    )
 }
 
 #[no_mangle]

@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use autd3capi_driver::{
-    driver::{datagram::GainFilter, error::AUTDInternalError},
-    *,
+    autd3::prelude::IntoDatagramWithSegment, driver::error::AUTDInternalError, *,
 };
 
 pub mod bessel;
@@ -26,20 +25,10 @@ pub struct ResultGainCalcDrivesMap {
     pub err: ConstPtr,
 }
 
-impl
-    From<
-        Result<
-            HashMap<usize, Vec<autd3capi_driver::driver::firmware::fpga::Drive>>,
-            AUTDInternalError,
-        >,
-    > for ResultGainCalcDrivesMap
+impl From<Result<HashMap<usize, Vec<autd3::prelude::Drive>>, AUTDInternalError>>
+    for ResultGainCalcDrivesMap
 {
-    fn from(
-        r: Result<
-            HashMap<usize, Vec<autd3capi_driver::driver::firmware::fpga::Drive>>,
-            AUTDInternalError,
-        >,
-    ) -> Self {
+    fn from(r: Result<HashMap<usize, Vec<autd3::prelude::Drive>>, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: GainCalcDrivesMapPtr(Box::into_raw(Box::new(v)) as _),
@@ -59,7 +48,7 @@ impl
 }
 
 impl std::ops::Deref for GainCalcDrivesMapPtr {
-    type Target = HashMap<usize, Vec<Drive>>;
+    type Target = HashMap<usize, Vec<autd3::prelude::Drive>>;
 
     fn deref(&self) -> &Self::Target {
         unsafe { (self.0 as *mut Self::Target).as_ref().unwrap() }
@@ -74,7 +63,7 @@ pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     update_segment: bool,
 ) -> DatagramPtr {
     (*take!(gain, Box<G>))
-        .with_segment(segment, update_segment)
+        .with_segment(segment.into(), update_segment)
         .into()
 }
 
@@ -90,17 +79,25 @@ pub unsafe extern "C" fn AUTDGainCalc(
     gain: GainPtr,
     geometry: GeometryPtr,
 ) -> ResultGainCalcDrivesMap {
-    take!(gain, Box<G>).calc(&geometry, GainFilter::All).into()
+    take!(gain, Box<G>)
+        .calc(&geometry)
+        .map(|res| {
+            geometry
+                .devices()
+                .map(|dev| (dev.idx(), dev.iter().map(|tr| res(dev)(tr)).collect()))
+                .collect::<HashMap<_, _>>()
+        })
+        .into()
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDGainCalcGetResult(
     src: GainCalcDrivesMapPtr,
     dst: *mut Drive,
-    idx: u32,
+    device: DevicePtr,
 ) {
-    let idx = idx as usize;
-    std::ptr::copy_nonoverlapping(src[&idx].as_ptr(), dst, src[&idx].len());
+    let src = &src[&device.idx()];
+    std::ptr::copy_nonoverlapping(src.as_ptr() as *const _, dst, src.len());
 }
 
 #[no_mangle]

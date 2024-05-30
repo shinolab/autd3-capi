@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     driver::datagram::{Silencer, SilencerFixedCompletionSteps},
-    take, DatagramPtr, ResultDatagram,
+    take, DatagramPtr,
 };
 
 #[no_mangle]
@@ -8,7 +8,7 @@ use autd3capi_driver::{
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRate(
     value_intensity: u16,
     value_phase: u16,
-) -> ResultDatagram {
+) -> DatagramPtr {
     Silencer::fixed_update_rate(value_intensity, value_phase).into()
 }
 
@@ -18,9 +18,9 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
     value_intensity: u16,
     value_phase: u16,
     strict_mode: bool,
-) -> ResultDatagram {
+) -> DatagramPtr {
     Silencer::fixed_completion_steps(value_intensity, value_phase)
-        .map(|s| s.with_strict_mode(strict_mode))
+        .with_strict_mode(strict_mode)
         .into()
 }
 

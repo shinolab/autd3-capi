@@ -1,5 +1,5 @@
-mod builder;
-mod group;
+pub mod builder;
+pub mod group;
 
 use std::time::Duration;
 
@@ -17,6 +17,7 @@ use std::ffi::c_char;
 
 use autd3capi_driver::*;
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ControllerPtr(pub ConstPtr);
 
@@ -193,25 +194,34 @@ pub unsafe extern "C" fn AUTDControllerSend(
     d1: DatagramPtr,
     d2: DatagramPtr,
     timeout_ns: i64,
+    parallel_threshold: i32,
 ) -> ResultI32 {
     let timeout = if timeout_ns < 0 {
         None
     } else {
         Some(Duration::from_nanos(timeout_ns as _))
     };
+    let parallel_threshold = if parallel_threshold < 0 {
+        None
+    } else {
+        Some(parallel_threshold as usize)
+    };
     match (d1.is_null(), d2.is_null()) {
         (false, false) => cnt.send(DynamicDatagramPack2 {
             d1: d1.into(),
             d2: d2.into(),
             timeout,
+            parallel_threshold,
         }),
         (false, true) => cnt.send(DynamicDatagramPack {
             d: d1.into(),
             timeout,
+            parallel_threshold,
         }),
         (true, false) => cnt.send(DynamicDatagramPack {
             d: d2.into(),
             timeout,
+            parallel_threshold,
         }),
         (true, true) => Err(AUTDInternalError::NotSupported("No datagram".to_owned()).into()),
     }

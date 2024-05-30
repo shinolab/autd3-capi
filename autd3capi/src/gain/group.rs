@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use autd3capi_driver::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
 
@@ -54,17 +54,23 @@ pub unsafe extern "C" fn AUTDGainGroup(
     values_ptr: *const GainPtr,
     kv_len: u32,
 ) -> GainPtr {
-    let map = take!(map, M);
+    let map: HashMap<_, _> = take!(map, M)
+        .into_iter()
+        .map(|(k, v)| (k, Arc::new(v)))
+        .collect();
     vec_from_raw!(keys_ptr, i32, kv_len)
         .iter()
         .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
         .fold(
-            Group::new(move |dev, tr| {
-                let key = map[&dev.idx()][tr.idx()];
-                if key < 0 {
-                    None
-                } else {
-                    Some(key)
+            Group::new(move |dev| {
+                let map = map[&dev.idx()].clone();
+                move |tr| {
+                    let key = map[tr.idx()];
+                    if key < 0 {
+                        None
+                    } else {
+                        Some(key)
+                    }
                 }
             }),
             |acc, (&k, v)| acc.set(k, *take!(v, Box<G>)),

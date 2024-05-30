@@ -1,4 +1,5 @@
 use autd3capi_driver::{autd3::derive::EmitIntensity, driver::error::AUTDInternalError, *};
+use driver::datagram::IntoDatagramWithSegmentTransition;
 
 pub mod fourier;
 pub mod radiation_pressure;
@@ -11,7 +12,7 @@ pub mod transform;
 #[repr(C)]
 pub struct ModulationCalcPtr(pub ConstPtr);
 
-impl_ptr!(ModulationCalcPtr, Vec<EmitIntensity>);
+impl_ptr!(ModulationCalcPtr, Vec<u8>);
 
 #[repr(C)]
 pub struct ResultModulationCalc {
@@ -21,18 +22,8 @@ pub struct ResultModulationCalc {
     pub err: ConstPtr,
 }
 
-impl
-    From<(
-        Result<Vec<EmitIntensity>, AUTDInternalError>,
-        SamplingConfigWrap,
-    )> for ResultModulationCalc
-{
-    fn from(
-        r: (
-            Result<Vec<EmitIntensity>, AUTDInternalError>,
-            SamplingConfigWrap,
-        ),
-    ) -> Self {
+impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultModulationCalc {
+    fn from(r: (Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)) -> Self {
         match r {
             (Ok(v), config) => Self {
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
@@ -59,7 +50,9 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
     m: ModulationPtr,
     segment: Segment,
 ) -> DatagramPtr {
-    (*take!(m, Box<M>)).with_segment(segment, None).into()
+    (*take!(m, Box<M>))
+        .with_segment(segment.into(), None)
+        .into()
 }
 
 #[no_mangle]
@@ -70,7 +63,7 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegmentTransition(
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     (*take!(m, Box<M>))
-        .with_segment(segment, Some(transition_mode))
+        .with_segment(segment.into(), Some(transition_mode.into()))
         .into()
 }
 

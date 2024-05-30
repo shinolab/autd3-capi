@@ -1,10 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use autd3capi_driver::{driver::derive::*, take_gain, vec_from_raw, GainPtr, G};
 
 #[derive(Gain, Default)]
 pub struct RawGain {
-    drives: HashMap<usize, Vec<Drive>>,
+    drives: HashMap<usize, Arc<Vec<Drive>>>,
 }
 
 impl RawGain {
@@ -16,18 +16,18 @@ impl RawGain {
 
     pub fn set(self, dev_idx: usize, drives: Vec<Drive>) -> Self {
         let mut new = self;
-        new.drives.insert(dev_idx, drives);
+        new.drives.insert(dev_idx, Arc::new(drives));
         new
     }
 }
 
 impl Gain for RawGain {
-    fn calc(
-        &self,
-        _geometry: &Geometry,
-        _filter: GainFilter,
-    ) -> Result<HashMap<usize, Vec<Drive>>, AUTDInternalError> {
-        Ok(self.drives.clone())
+    fn calc(&self, _geometry: &Geometry) -> GainCalcResult {
+        let drives = &self.drives;
+        Ok(Box::new(|dev| {
+            let drives = drives[&dev.idx()].clone();
+            Box::new(move |tr| drives[tr.idx()])
+        }))
     }
 }
 

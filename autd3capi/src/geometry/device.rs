@@ -107,3 +107,36 @@ pub unsafe extern "C" fn AUTDDeviceWavelength(dev: DevicePtr) -> f64 {
 pub unsafe extern "C" fn AUTDDeviceWavenumber(dev: DevicePtr) -> f64 {
     dev.wavenumber()
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDDeviceRotation(dev: DevicePtr, rot: *mut f64) {
+    let r = dev.rotation();
+    rot.add(0).write(r.w);
+    rot.add(1).write(r.i);
+    rot.add(2).write(r.j);
+    rot.add(3).write(r.k);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDDeviceDirectionX(dev: DevicePtr, dir: *mut f64) {
+    let d = dev.x_direction();
+    dir.add(0).write(d.x);
+    dir.add(1).write(d.y);
+    dir.add(2).write(d.z);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDDeviceDirectionY(dev: DevicePtr, dir: *mut f64) {
+    let d = dev.y_direction();
+    dir.add(0).write(d.x);
+    dir.add(1).write(d.y);
+    dir.add(2).write(d.z);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDDeviceDirectionAxial(dev: DevicePtr, dir: *mut f64) {
+    let d = dev.axial_direction();
+    dir.add(0).write(d.x);
+    dir.add(1).write(d.y);
+    dir.add(2).write(d.z);
+}

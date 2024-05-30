@@ -10,9 +10,7 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
 ) -> ModulationPtr {
     ModulationTransform::new(*take!(m, Box<M>), move |i, d| {
         std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, u8) -> u8>(f)(
-            context,
-            i as u32,
-            d.value(),
+            context, i as u32, d,
         )
         .into()
     })

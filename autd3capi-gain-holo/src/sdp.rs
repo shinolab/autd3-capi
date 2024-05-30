@@ -54,7 +54,7 @@ pub unsafe extern "C" fn AUTDGainHoloSDPT4010A1(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainSDPIsDefault(gs: GainPtr) -> bool {
     let g = take_gain!(gs, SDP<Sphere,NalgebraBackend<Sphere>>);
-    let default = SDP::new(std::sync::Arc::new(NalgebraBackend::default()));
+    let default = SDP::new(std::sync::Arc::new(NalgebraBackend::default()), []);
     g.constraint() == default.constraint()
         && g.alpha() == default.alpha()
         && g.lambda() == default.lambda()

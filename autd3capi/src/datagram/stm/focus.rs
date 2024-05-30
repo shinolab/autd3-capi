@@ -2,35 +2,19 @@ use autd3capi_driver::{
     driver::{datagram::FocusSTM, defined::Hz, geometry::Vector3},
     *,
 };
+use driver::datagram::IntoDatagramWithSegmentTransition;
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromFreq(freq: f64) -> FocusSTMPtr {
-    FocusSTM::from_freq(freq * Hz).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(freq: f64) -> FocusSTMPtr {
-    FocusSTM::from_freq_nearest(freq * Hz).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(config: SamplingConfigWrap) -> FocusSTMPtr {
-    FocusSTM::from_sampling_config(config.into()).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusAddFoci(
-    stm: FocusSTMPtr,
+pub unsafe extern "C" fn AUTDSTMFocusFromFreq(
+    freq: f64,
     points: *const f64,
     intensities: *const u8,
     size: u64,
-) -> FocusSTMPtr {
-    take!(stm, FocusSTM)
-        .add_foci_from_iter((0..size as usize).map(|i| {
+) -> ResultFocusSTM {
+    FocusSTM::from_freq(
+        freq * Hz,
+        (0..size as usize).map(|i| {
             let p = Vector3::new(
                 points.add(i * 3).read(),
                 points.add(i * 3 + 1).read(),
@@ -38,8 +22,55 @@ pub unsafe extern "C" fn AUTDSTMFocusAddFoci(
             );
             let intensity = *intensities.add(i);
             (p, intensity)
-        }))
-        .into()
+        }),
+    )
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(
+    freq: f64,
+    points: *const f64,
+    intensities: *const u8,
+    size: u64,
+) -> ResultFocusSTM {
+    FocusSTM::from_freq_nearest(
+        freq * Hz,
+        (0..size as usize).map(|i| {
+            let p = Vector3::new(
+                points.add(i * 3).read(),
+                points.add(i * 3 + 1).read(),
+                points.add(i * 3 + 2).read(),
+            );
+            let intensity = *intensities.add(i);
+            (p, intensity)
+        }),
+    )
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(
+    config: SamplingConfigWrap,
+    points: *const f64,
+    intensities: *const u8,
+    size: u64,
+) -> FocusSTMPtr {
+    FocusSTM::from_sampling_config(
+        config.into(),
+        (0..size as usize).map(|i| {
+            let p = Vector3::new(
+                points.add(i * 3).read(),
+                points.add(i * 3 + 1).read(),
+                points.add(i * 3 + 2).read(),
+            );
+            let intensity = *intensities.add(i);
+            (p, intensity)
+        }),
+    )
+    .into()
 }
 
 #[no_mangle]
@@ -59,7 +90,9 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
     stm: FocusSTMPtr,
     segment: Segment,
 ) -> DatagramPtr {
-    take!(stm, FocusSTM).with_segment(segment, None).into()
+    take!(stm, FocusSTM)
+        .with_segment(segment.into(), None)
+        .into()
 }
 
 #[no_mangle]
@@ -70,7 +103,7 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     take!(stm, FocusSTM)
-        .with_segment(segment, Some(transition_mode))
+        .with_segment(segment.into(), Some(transition_mode.into()))
         .into()
 }
 

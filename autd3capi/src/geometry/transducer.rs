@@ -15,36 +15,3 @@ pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr, pos: *mut f64
     pos.add(1).write(p.y);
     pos.add(2).write(p.z);
 }
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerRotation(tr: TransducerPtr, rot: *mut f64) {
-    let r = tr.rotation();
-    rot.add(0).write(r.w);
-    rot.add(1).write(r.i);
-    rot.add(2).write(r.j);
-    rot.add(3).write(r.k);
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionX(tr: TransducerPtr, dir: *mut f64) {
-    let d = tr.x_direction();
-    dir.add(0).write(d.x);
-    dir.add(1).write(d.y);
-    dir.add(2).write(d.z);
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionY(tr: TransducerPtr, dir: *mut f64) {
-    let d = tr.y_direction();
-    dir.add(0).write(d.x);
-    dir.add(1).write(d.y);
-    dir.add(2).write(d.z);
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerDirectionZ(tr: TransducerPtr, dir: *mut f64) {
-    let d = tr.z_direction();
-    dir.add(0).write(d.x);
-    dir.add(1).write(d.y);
-    dir.add(2).write(d.z);
-}

@@ -27,13 +27,13 @@ pub struct ResultBackend {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f64) -> f64 {
-    (value * dB).as_pascal()
+    (value * dB).pascal()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f64) -> f64 {
-    (value * Pa).as_spl()
+    (value * Pa).spl()
 }
 
 #[macro_export]
@@ -44,20 +44,20 @@ macro_rules! create_holo {
                 .as_ref()
                 .unwrap()
                 .clone(),
+            (0..$size as usize).map(|i| {
+                let p = Vector3::new(
+                    $points.add(i * 3).read(),
+                    $points.add(i * 3 + 1).read(),
+                    $points.add(i * 3 + 2).read(),
+                );
+                let amp = *$amps.add(i) * Pa;
+                (p, amp)
+            }),
         )
-        .add_foci_from_iter((0..$size as usize).map(|i| {
-            let p = Vector3::new(
-                $points.add(i * 3).read(),
-                $points.add(i * 3 + 1).read(),
-                $points.add(i * 3 + 2).read(),
-            );
-            let amp = *$amps.add(i) * Pa;
-            (p, amp)
-        }))
     };
 
     ($type:tt, $direcivity:tt, $points:expr, $amps:expr, $size:expr) => {
-        $type::<$direcivity>::new().add_foci_from_iter((0..$size as usize).map(|i| {
+        $type::<$direcivity>::new((0..$size as usize).map(|i| {
             let p = Vector3::new(
                 $points.add(i * 3).read(),
                 $points.add(i * 3 + 1).read(),

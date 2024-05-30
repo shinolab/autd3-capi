@@ -14,12 +14,9 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
     components: *const ModulationPtr,
     size: u32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
-    Fourier::new(**take_mod!(components.read(), Sine<ExactFreq>))
-        .add_components_from_iter(
-            (1..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<ExactFreq>)),
-        )
-        .with_loop_behavior(loop_behavior.into())
+) -> ResultModulation {
+    Fourier::new((0..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<ExactFreq>)))
+        .map(|f| f.with_loop_behavior(loop_behavior.into()))
         .into()
 }
 
@@ -29,13 +26,12 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
     components: *const ModulationPtr,
     size: u32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
-    Fourier::new(**take_mod!(components.read(), Sine<ExactFreqFloat>))
-        .add_components_from_iter(
-            (1..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<ExactFreqFloat>)),
-        )
-        .with_loop_behavior(loop_behavior.into())
-        .into()
+) -> ResultModulation {
+    Fourier::new(
+        (0..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<ExactFreqFloat>)),
+    )
+    .map(|f| f.with_loop_behavior(loop_behavior.into()))
+    .into()
 }
 
 #[no_mangle]
@@ -44,11 +40,10 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
     components: *const ModulationPtr,
     size: u32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
-    Fourier::new(**take_mod!(components.read(), Sine<NearestFreq>))
-        .add_components_from_iter(
-            (1..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<NearestFreq>)),
-        )
-        .with_loop_behavior(loop_behavior.into())
-        .into()
+) -> ResultModulation {
+    Fourier::new(
+        (0..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<NearestFreq>)),
+    )
+    .map(|f| f.with_loop_behavior(loop_behavior.into()))
+    .into()
 }

@@ -1,11 +1,16 @@
-use autd3capi_driver::{ConstPtr, DatagramPtr, DynamicForceFan, GeometryPtr};
+use autd3capi_driver::{
+    autd3::derive::Device, driver::datagram::ForceFan, ConstPtr, ContextPtr, DatagramPtr,
+    GeometryPtr,
+};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramForceFan(
     f: ConstPtr,
-    context: ConstPtr,
+    context: ContextPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    DynamicForceFan::new(f, context, geometry).into()
+    let f = std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u32) -> bool>(f);
+    ForceFan::new(Box::new(move |dev: &Device| f(context, geometry, dev.idx() as u32)) as Box<_>)
+        .into()
 }

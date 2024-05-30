@@ -1,17 +1,17 @@
-use autd3capi_driver::{driver::datagram::GainTransform2, *};
+use autd3capi_driver::{driver::datagram::GainTransform, *};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainWithTransform(
     g: GainPtr,
     f: ConstPtr,
-    context: ConstPtr,
+    context: ContextPtr,
     geometry: GeometryPtr,
 ) -> GainPtr {
     let f = std::mem::transmute::<
         _,
         unsafe extern "C" fn(
-            ConstPtr,
+            ContextPtr,
             GeometryPtr,
             u32,
             u8,
@@ -19,7 +19,7 @@ pub unsafe extern "C" fn AUTDGainWithTransform(
             *mut driver::firmware::fpga::Drive,
         ),
     >(f);
-    GainTransform2::new(*take!(g, Box<G>), move |dev| {
+    GainTransform::new(*take!(g, Box<G>), move |dev| {
         let dev_idx = dev.idx() as u32;
         move |tr, d| {
             let mut dst = driver::firmware::fpga::Drive::null();

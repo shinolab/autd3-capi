@@ -1,6 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 mod autd3_device;
+mod datagram;
 mod ethercat;
 mod firmware;
 mod link;
@@ -8,6 +9,7 @@ mod ptr;
 mod result;
 
 pub use autd3_device::*;
+pub use datagram::*;
 pub use ethercat::*;
 pub use firmware::*;
 pub use link::*;
@@ -42,3 +44,10 @@ macro_rules! take {
         Box::from_raw($ptr.0 as *mut $type)
     };
 }
+
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct ContextPtr(pub ConstPtr);
+
+unsafe impl Send for ContextPtr {}
+unsafe impl Sync for ContextPtr {}

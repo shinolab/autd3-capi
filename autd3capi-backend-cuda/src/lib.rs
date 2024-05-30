@@ -13,16 +13,16 @@ macro_rules! create_holo {
                 .as_ref()
                 .unwrap()
                 .clone(),
+            (0..$size as usize).map(|i| {
+                let p = Vector3::new(
+                    $points.add(i * 3).read(),
+                    $points.add(i * 3 + 1).read(),
+                    $points.add(i * 3 + 2).read(),
+                );
+                let amp = *$amps.add(i) * Pa;
+                (p, amp)
+            }),
         )
-        .add_foci_from_iter((0..$size as usize).map(|i| {
-            let p = Vector3::new(
-                $points.add(i * 3).read(),
-                $points.add(i * 3 + 1).read(),
-                $points.add(i * 3 + 2).read(),
-            );
-            let amp = *$amps.add(i) * Pa;
-            (p, amp)
-        }))
     };
 }
 

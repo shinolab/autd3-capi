@@ -42,6 +42,6 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainNaiveIsDefault(gs: GainPtr) -> bool {
     let g = take_gain!(gs, Naive<Sphere,NalgebraBackend<Sphere>>);
-    let default = Naive::new(std::sync::Arc::new(NalgebraBackend::default()));
+    let default = Naive::new(std::sync::Arc::new(NalgebraBackend::default()), []);
     g.constraint() == default.constraint()
 }

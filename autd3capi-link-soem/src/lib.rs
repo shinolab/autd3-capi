@@ -143,18 +143,22 @@ pub enum Status {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkSOEMStatusGetMsg(src: Status, dst: *mut c_char) {
-    let c_string = CString::new(format!(
+pub unsafe extern "C" fn AUTDLinkSOEMStatusGetMsg(src: Status, dst: *mut c_char) -> u32 {
+    let msg = format!(
         "{}",
         match src {
             Status::Error => autd3_link_soem::Status::Error,
             Status::StateChanged => autd3_link_soem::Status::StateChanged,
             Status::Lost => autd3_link_soem::Status::Lost,
         }
-    ))
-    .unwrap();
+    );
+    if dst.is_null() {
+        return msg.as_bytes().len() as u32 + 1;
+    }
+    let c_string = CString::new(msg).unwrap();
     let c_str: &CStr = c_string.as_c_str();
     libc::strcpy(dst, c_str.as_ptr());
+    0
 }
 
 #[no_mangle]

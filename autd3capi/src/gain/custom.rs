@@ -1,12 +1,5 @@
 use autd3capi_driver::{autd3::gain::Custom, *};
 
-#[derive(Clone, Copy)]
-#[repr(C)]
-pub struct ContextPtr(pub ConstPtr);
-
-unsafe impl Send for ContextPtr {}
-unsafe impl Sync for ContextPtr {}
-
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCustom(
