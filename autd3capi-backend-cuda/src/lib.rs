@@ -55,11 +55,11 @@ pub unsafe extern "C" fn AUTDCUDABackendDelete(backend: BackendPtr) {
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
-    alpha: f64,
-    lambda: f64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
+    alpha: f32,
+    lambda: f32,
     repeat: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
@@ -75,9 +75,9 @@ pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     repeat: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
@@ -91,9 +91,9 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     repeat: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
@@ -107,9 +107,9 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Naive, CUDABackend, Sphere, backend, points, amps, size)
@@ -121,15 +121,15 @@ pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDALM(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
-    eps_1: f64,
-    eps_2: f64,
-    tau: f64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
+    eps_1: f32,
+    eps_2: f32,
+    tau: f32,
     k_max: u32,
     constraint: EmissionConstraintWrap,
-    initial_ptr: *const f64,
+    initial_ptr: *const f32,
     initial_len: u64,
 ) -> GainPtr {
     create_holo!(LM, CUDABackend, Sphere, backend, points, amps, size)
@@ -137,7 +137,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDALM(
         .with_eps_2(eps_2)
         .with_tau(tau)
         .with_k_max(k_max as _)
-        .with_initial(vec_from_raw!(initial_ptr, f64, initial_len))
+        .with_initial(vec_from_raw!(initial_ptr, f32, initial_len))
         .with_constraint(constraint.into())
         .into()
 }

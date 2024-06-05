@@ -1,8 +1,6 @@
 pub mod builder;
 pub mod group;
 
-use std::time::Duration;
-
 use autd3::{error::AUTDError, Controller};
 use autd3capi_driver::{
     driver::{
@@ -23,13 +21,13 @@ pub struct ControllerPtr(pub ConstPtr);
 
 impl std::ops::Deref for ControllerPtr {
     type Target = SyncController;
-    fn deref(&self) -> &Self::Target {
+    fn deref(&self) -> &'static Self::Target {
         unsafe { (self.0 as *const SyncController).as_ref().unwrap() }
     }
 }
 
 impl std::ops::DerefMut for ControllerPtr {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+    fn deref_mut(&mut self) -> &'static mut Self::Target {
         unsafe { (self.0 as *mut SyncController).as_mut().unwrap() }
     }
 }
@@ -193,36 +191,14 @@ pub unsafe extern "C" fn AUTDControllerSend(
     mut cnt: ControllerPtr,
     d1: DatagramPtr,
     d2: DatagramPtr,
-    timeout_ns: i64,
-    parallel_threshold: i32,
 ) -> ResultI32 {
-    let timeout = if timeout_ns < 0 {
-        None
-    } else {
-        Some(Duration::from_nanos(timeout_ns as _))
-    };
-    let parallel_threshold = if parallel_threshold < 0 {
-        None
-    } else {
-        Some(parallel_threshold as usize)
-    };
     match (d1.is_null(), d2.is_null()) {
         (false, false) => cnt.send(DynamicDatagramPack2 {
             d1: d1.into(),
             d2: d2.into(),
-            timeout,
-            parallel_threshold,
         }),
-        (false, true) => cnt.send(DynamicDatagramPack {
-            d: d1.into(),
-            timeout,
-            parallel_threshold,
-        }),
-        (true, false) => cnt.send(DynamicDatagramPack {
-            d: d2.into(),
-            timeout,
-            parallel_threshold,
-        }),
+        (false, true) => cnt.send(DynamicDatagramPack { d: d1.into() }),
+        (true, false) => cnt.send(DynamicDatagramPack { d: d2.into() }),
         (true, true) => Err(AUTDInternalError::NotSupported("No datagram".to_owned()).into()),
     }
     .into()

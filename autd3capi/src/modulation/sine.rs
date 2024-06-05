@@ -13,7 +13,7 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
     config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
-    phase: f64,
+    phase: f32,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
@@ -28,11 +28,11 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineExactFloat(
-    freq: f64,
+    freq: f32,
     config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
-    phase: f64,
+    phase: f32,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::new(freq * Hz)
@@ -47,11 +47,11 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineNearest(
-    freq: f64,
+    freq: f32,
     config: SamplingConfigWrap,
     intensity: u8,
     offset: u8,
-    phase: f64,
+    phase: f32,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Sine::with_freq_nearest(freq * Hz)

@@ -20,6 +20,6 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: u32) -> SamplingConfigWra
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f64) -> SamplingConfigWrap {
+pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingConfigWrap {
     SamplingConfig::FreqNearest(f * Hz).into()
 }

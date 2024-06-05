@@ -11,11 +11,11 @@ pub unsafe extern "C" fn AUTDDatagramSwapSegmentModulation(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSwapSegmentFocusSTM(
+pub unsafe extern "C" fn AUTDDatagramSwapSegmentFociSTM(
     segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
-    SwapSegment::FocusSTM(segment.into(), transition_mode.into()).into()
+    SwapSegment::FociSTM(segment.into(), transition_mode.into()).into()
 }
 
 #[no_mangle]

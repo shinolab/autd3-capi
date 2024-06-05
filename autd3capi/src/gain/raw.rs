@@ -43,9 +43,9 @@ pub unsafe extern "C" fn AUTDGainRaw() -> GainPtr {
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainRawSet(
     custom: GainPtr,
-    dev_idx: u32,
+    dev_idx: u16,
     ptr: *const Drive,
-    len: u32,
+    len: u8,
 ) -> GainPtr {
     take_gain!(custom, RawGain)
         .set(

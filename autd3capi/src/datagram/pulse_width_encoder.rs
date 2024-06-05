@@ -11,13 +11,13 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder(
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f =
-        std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u32, u64) -> u16>(f);
+        std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u16, u16) -> u16>(f);
     PulseWidthEncoder::<
         Box<dyn Fn(usize) -> u16 + Send + Sync>,
         Box<dyn Fn(&Device) -> Box<dyn Fn(usize) -> u16 + Send + Sync>>,
     >::new(Box::new(move |dev: &Device| {
-        let dev_idx = dev.idx() as u32;
-        Box::new(move |i| f(context, geometry, dev_idx, i as u64))
+        let dev_idx = dev.idx() as _;
+        Box::new(move |i| f(context, geometry, dev_idx, i as u16))
     }))
     .into()
 }

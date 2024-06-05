@@ -7,9 +7,9 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainPlane(
-    nx: f64,
-    ny: f64,
-    nz: f64,
+    nx: f32,
+    ny: f32,
+    nz: f32,
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {

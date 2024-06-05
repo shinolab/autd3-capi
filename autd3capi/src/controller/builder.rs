@@ -65,8 +65,8 @@ impl ControllerBuilderPtr {
 #[must_use]
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilder(
-    params: *const f64,
-    len: u64,
+    params: *const f32,
+    len: u32,
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(SyncControllerBuilder::new((0..len as usize).map(|i| {
         AUTD3::new(Vector3::new(

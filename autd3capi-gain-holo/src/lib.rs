@@ -26,13 +26,13 @@ pub struct ResultBackend {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f64) -> f64 {
+pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f32) -> f32 {
     (value * dB).pascal()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f64) -> f64 {
+pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f32) -> f32 {
     (value * Pa).spl()
 }
 

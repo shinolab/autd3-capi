@@ -12,7 +12,7 @@ pub struct GroupGainMapPtr(pub ConstPtr);
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainGroupCreateMap(
     device_indices_ptr: *const u32,
-    num_devices: u32,
+    num_devices: u16,
 ) -> GroupGainMapPtr {
     GroupGainMapPtr(Box::into_raw(Box::new(
         (0..num_devices as usize)
@@ -29,7 +29,7 @@ pub unsafe extern "C" fn AUTDGainGroupCreateMap(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGroupMapSet(
     map: GroupGainMapPtr,
-    dev_idx: u32,
+    dev_idx: u16,
     map_data: *const i32,
 ) -> GroupGainMapPtr {
     let dev_idx = dev_idx as usize;

@@ -1,13 +1,13 @@
 use autd3::derive::AUTDInternalError;
-use autd3_driver::datagram::{FocusSTM, GainSTM};
+use autd3_driver::datagram::{FociSTM, GainSTM};
 
 use crate::{ConstPtr, G};
 
 #[repr(C)]
-pub struct FocusSTMPtr(pub ConstPtr);
+pub struct FociSTMPtr(pub ConstPtr);
 
-impl From<FocusSTM> for FocusSTMPtr {
-    fn from(stm: FocusSTM) -> Self {
+impl<const N: usize> From<FociSTM<N>> for FociSTMPtr {
+    fn from(stm: FociSTM<N>) -> Self {
         Self(Box::into_raw(Box::new(stm)) as _)
     }
 }
@@ -23,13 +23,13 @@ impl From<GainSTM<Box<G>>> for GainSTMPtr {
 
 #[repr(C)]
 pub struct ResultFocusSTM {
-    pub result: FocusSTMPtr,
+    pub result: FociSTMPtr,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<Result<FocusSTM, AUTDInternalError>> for ResultFocusSTM {
-    fn from(r: Result<FocusSTM, AUTDInternalError>) -> Self {
+impl<const N: usize> From<Result<FociSTM<N>, AUTDInternalError>> for ResultFocusSTM {
+    fn from(r: Result<FociSTM<N>, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: v.into(),
@@ -39,7 +39,7 @@ impl From<Result<FocusSTM, AUTDInternalError>> for ResultFocusSTM {
             Err(e) => {
                 let err = e.to_string();
                 Self {
-                    result: FocusSTMPtr(std::ptr::null()),
+                    result: FociSTMPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: Box::into_raw(Box::new(err)) as _,
                 }

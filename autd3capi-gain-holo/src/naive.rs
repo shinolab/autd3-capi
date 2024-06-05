@@ -14,9 +14,9 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Naive, NalgebraBackend, Sphere, backend, points, amps, size)
@@ -28,9 +28,9 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Naive, NalgebraBackend, T4010A1, backend, points, amps, size)

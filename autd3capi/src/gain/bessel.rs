@@ -10,13 +10,13 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
-    x: f64,
-    y: f64,
-    z: f64,
-    nx: f64,
-    ny: f64,
-    nz: f64,
-    theta_z: f64,
+    x: f32,
+    y: f32,
+    z: f32,
+    nx: f32,
+    ny: f32,
+    nz: f32,
+    theta_z: f32,
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {

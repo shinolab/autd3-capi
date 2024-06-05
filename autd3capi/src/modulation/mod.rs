@@ -2,6 +2,7 @@ use autd3capi_driver::{autd3::derive::EmitIntensity, driver::error::AUTDInternal
 use driver::datagram::IntoDatagramWithSegmentTransition;
 
 pub mod fourier;
+pub mod mixer;
 pub mod radiation_pressure;
 pub mod raw;
 pub mod sine;
@@ -90,8 +91,8 @@ pub unsafe extern "C" fn AUTDModulationCalcGetResult(src: ModulationCalcPtr, dst
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u32 {
-    src.len() as u32
+pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u16 {
+    src.len() as _
 }
 
 #[no_mangle]

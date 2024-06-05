@@ -77,13 +77,13 @@ macro_rules! match_visualizer_plot {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRange(
-    x_min: f64,
-    x_max: f64,
-    y_min: f64,
-    y_max: f64,
-    z_min: f64,
-    z_max: f64,
-    resolution: f64,
+    x_min: f32,
+    x_max: f32,
+    y_min: f32,
+    y_max: f32,
+    z_min: f32,
+    z_max: f32,
+    resolution: f32,
 ) -> PlotRangePtr {
     PlotRangePtr(Box::into_raw(Box::new(PlotRange {
         x_range: x_min..x_max,
@@ -96,7 +96,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRange(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePointsLen(range: PlotRangePtr) -> u64 {
-    let n = |range: &std::ops::Range<f64>, resolution: f64| -> usize {
+    let n = |range: &std::ops::Range<f32>, resolution: f32| -> usize {
         ((range.end - range.start) / resolution).floor() as usize + 1
     };
     let nx = n(&range.x_range, range.resolution);
@@ -108,12 +108,12 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePointsLen(range: Plot
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRangeObservePoints(
     range: PlotRangePtr,
-    points: *mut f64,
+    points: *mut f32,
 ) {
     let range = take!(range, PlotRange);
     let observe_points = range.observe_points();
     std::ptr::copy_nonoverlapping(
-        observe_points.as_ptr() as *const f64,
+        observe_points.as_ptr() as *const f32,
         points,
         observe_points.len() * 3,
     );
@@ -125,7 +125,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPhasesOf(
     backend: Backend,
     directivity: Directivity,
     segment: Segment,
-    idx: u32,
+    idx: u16,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerIntensities(
     backend: Backend,
     directivity: Directivity,
     segment: Segment,
-    idx: u32,
+    idx: u16,
     buf: *mut u8,
 ) -> u32 {
     let idx = idx as usize;
@@ -197,12 +197,12 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
-    points: *const f64,
+    points: *const f32,
     points_len: u32,
     geometry: GeometryPtr,
     segment: Segment,
-    idx: u32,
-    buf: *mut f64,
+    idx: u16,
+    buf: *mut f32,
 ) -> ResultI32 {
     let idx = idx as usize;
     let segment = segment.into();
@@ -234,7 +234,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotField(
     range: PlotRangePtr,
     geometry: GeometryPtr,
     segment: Segment,
-    idx: u32,
+    idx: u16,
 ) -> ResultI32 {
     let idx = idx as usize;
     let segment = segment.into();
@@ -260,7 +260,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhase(
     config: ConfigPtr,
     geometry: GeometryPtr,
     segment: Segment,
-    idx: u32,
+    idx: u16,
 ) -> ResultI32 {
     let idx = idx as usize;
     let segment = segment.into();

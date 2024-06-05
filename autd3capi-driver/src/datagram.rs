@@ -79,8 +79,6 @@ impl OperationGenerator for DynamicOperationGeneratorPack {
 
 pub struct DynamicDatagramPack {
     pub d: Box<Box<dyn DynamicDatagram>>,
-    pub timeout: Option<std::time::Duration>,
-    pub parallel_threshold: Option<usize>,
 }
 
 impl Datagram for DynamicDatagramPack {
@@ -95,11 +93,11 @@ impl Datagram for DynamicDatagramPack {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        self.timeout.or(self.d.timeout())
+        self.d.timeout()
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
-        self.parallel_threshold.or(self.d.parallel_threshold())
+        self.d.parallel_threshold()
     }
 }
 
@@ -123,8 +121,6 @@ impl OperationGenerator for DynamicOperationGeneratorPack2 {
 pub struct DynamicDatagramPack2 {
     pub d1: Box<Box<dyn DynamicDatagram>>,
     pub d2: Box<Box<dyn DynamicDatagram>>,
-    pub timeout: Option<std::time::Duration>,
-    pub parallel_threshold: Option<usize>,
 }
 
 impl Datagram for DynamicDatagramPack2 {
@@ -140,14 +136,13 @@ impl Datagram for DynamicDatagramPack2 {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        self.timeout.or(self.d1.timeout().or(self.d2.timeout()))
+        self.d1.timeout().or(self.d2.timeout())
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
-        self.parallel_threshold.or(self
-            .d1
+        self.d1
             .parallel_threshold()
-            .or(self.d2.parallel_threshold()))
+            .or(self.d2.parallel_threshold())
     }
 }
 

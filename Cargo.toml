@@ -17,15 +17,15 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.dependencies]
-autd3 = { version = "25.0.0-rc.4" }
-autd3-driver = { version = "25.0.0-rc.4" }
-autd3-gain-holo = { version = "25.0.0-rc.4" }
-autd3-link-simulator = { version = "25.0.0-rc.4" }
-autd3-link-soem = { version = "25.0.0-rc.4" }
-autd3-link-twincat = { version = "25.0.0-rc.4" }
-autd3-modulation-audio-file = { version = "25.0.0-rc.4" }
-autd3-link-visualizer = { version = "25.0.0-rc.1" }
-autd3-backend-cuda = { version = "25.0.0-rc.1" }
+autd3 = { version = "25.0.0-rc.9" }
+autd3-driver = { version = "25.0.0-rc.9" }
+autd3-gain-holo = { version = "25.0.0-rc.9" }
+autd3-link-simulator = { version = "25.0.0-rc.9" }
+autd3-link-soem = { version = "25.0.0-rc.9" }
+autd3-link-twincat = { version = "25.0.0-rc.9" }
+autd3-modulation-audio-file = { version = "25.0.0-rc.9" }
+autd3-link-visualizer = { version = "25.0.0-rc.9" }
+autd3-backend-cuda = { version = "25.0.0-rc.9" }
 libc = "0.2.144"
 assert_approx_eq = "1.1.0"
 tokio = "1.37.0"

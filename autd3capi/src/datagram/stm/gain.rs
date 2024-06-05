@@ -7,9 +7,9 @@ use driver::datagram::IntoDatagramWithSegmentTransition;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainFromFreq(
-    freq: f64,
+    freq: f32,
     gains: *const GainPtr,
-    size: u32,
+    size: u16,
 ) -> ResultGainSTM {
     GainSTM::<Box<G>>::from_freq(
         freq * Hz,
@@ -21,9 +21,9 @@ pub unsafe extern "C" fn AUTDSTMGainFromFreq(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainFromFreqNearest(
-    freq: f64,
+    freq: f32,
     gains: *const GainPtr,
-    size: u32,
+    size: u16,
 ) -> ResultGainSTM {
     GainSTM::<Box<G>>::from_freq_nearest(
         freq * Hz,
@@ -37,7 +37,7 @@ pub unsafe extern "C" fn AUTDSTMGainFromFreqNearest(
 pub unsafe extern "C" fn AUTDSTMGainFromSamplingConfig(
     config: SamplingConfigWrap,
     gains: *const GainPtr,
-    size: u32,
+    size: u16,
 ) -> GainSTMPtr {
     GainSTM::<Box<G>>::from_sampling_config(
         config.into(),

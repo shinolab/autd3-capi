@@ -14,15 +14,15 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
-    eps_1: f64,
-    eps_2: f64,
-    tau: f64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
+    eps_1: f32,
+    eps_2: f32,
+    tau: f32,
     k_max: u32,
-    initial_ptr: *const f64,
-    initial_len: u64,
+    initial_ptr: *const f32,
+    initial_len: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(LM, NalgebraBackend, Sphere, backend, points, amps, size)
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
         .with_eps_2(eps_2)
         .with_tau(tau)
         .with_k_max(k_max as _)
-        .with_initial(vec_from_raw!(initial_ptr, f64, initial_len))
+        .with_initial(vec_from_raw!(initial_ptr, f32, initial_len))
         .with_constraint(constraint.into())
         .into()
 }
@@ -39,15 +39,15 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
-    eps_1: f64,
-    eps_2: f64,
-    tau: f64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
+    eps_1: f32,
+    eps_2: f32,
+    tau: f32,
     k_max: u32,
-    initial_ptr: *const f64,
-    initial_len: u64,
+    initial_ptr: *const f32,
+    initial_len: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(LM, NalgebraBackend, T4010A1, backend, points, amps, size)
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
         .with_eps_2(eps_2)
         .with_tau(tau)
         .with_k_max(k_max as _)
-        .with_initial(vec_from_raw!(initial_ptr, f64, initial_len))
+        .with_initial(vec_from_raw!(initial_ptr, f32, initial_len))
         .with_constraint(constraint.into())
         .into()
 }

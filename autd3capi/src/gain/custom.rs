@@ -9,10 +9,10 @@ pub unsafe extern "C" fn AUTDGainCustom(
 ) -> GainPtr {
     let f = std::mem::transmute::<
         _,
-        unsafe extern "C" fn(ContextPtr, GeometryPtr, u32, u8, *mut Drive),
+        unsafe extern "C" fn(ContextPtr, GeometryPtr, u16, u8, *mut Drive),
     >(f);
     Custom::new(move |dev| {
-        let dev_idx = dev.idx() as u32;
+        let dev_idx = dev.idx() as _;
         move |tr| {
             let mut d = driver::firmware::fpga::Drive::null();
             f(

@@ -22,7 +22,7 @@ pub unsafe extern "C" fn AUTDModulationRaw(
     config: SamplingConfigWrap,
     loop_behavior: autd3capi_driver::LoopBehavior,
     ptr: *const u8,
-    len: u32,
+    len: u16,
 ) -> ModulationPtr {
     RawModulation {
         config: config.into(),

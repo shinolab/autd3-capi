@@ -13,7 +13,7 @@ pub unsafe extern "C" fn AUTDDatagramDebugSettings(
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
         _,
-        unsafe extern "C" fn(ContextPtr, geometry: GeometryPtr, u32, GPIOOut, *mut DebugTypeWrap),
+        unsafe extern "C" fn(ContextPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
     >(f);
     DebugSettings::<
         Box<dyn Fn(&Device, autd3capi_driver::autd3::prelude::GPIOOut) -> DebugType + Send + Sync>,
@@ -23,7 +23,7 @@ pub unsafe extern "C" fn AUTDDatagramDebugSettings(
             f(
                 context,
                 geometry,
-                dev.idx() as u32,
+                dev.idx() as _,
                 gpio.into(),
                 &mut debug_type as *mut _,
             );

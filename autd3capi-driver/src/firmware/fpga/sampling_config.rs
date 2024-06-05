@@ -12,7 +12,7 @@ enum SamplingConfigTag {
 union SamplingConfigValue {
     div: u32,
     freq: u32,
-    freq_nearest: f64,
+    freq_nearest: f32,
 }
 
 #[repr(C)]

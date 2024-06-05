@@ -35,7 +35,7 @@ mod tests {
             let d2 = modulation::AUTDModulationIntoDatagram(m);
             assert_eq!(
                 AUTD3_TRUE,
-                controller::AUTDControllerSend(cnt, d1, d2, -1, -1).result
+                controller::AUTDControllerSend(cnt, d1, d2).result
             );
 
             assert_eq!(AUTD3_TRUE, controller::AUTDControllerClose(cnt).result);

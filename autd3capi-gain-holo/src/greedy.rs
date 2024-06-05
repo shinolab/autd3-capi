@@ -10,9 +10,9 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     div: u8,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
@@ -25,9 +25,9 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     div: u8,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {

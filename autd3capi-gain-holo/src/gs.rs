@@ -11,9 +11,9 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGSSphere(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     repeat: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
@@ -27,9 +27,9 @@ pub unsafe extern "C" fn AUTDGainHoloGSSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGST4010A1(
     backend: BackendPtr,
-    points: *const f64,
-    amps: *const f64,
-    size: u64,
+    points: *const f32,
+    amps: *const f32,
+    size: u32,
     repeat: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {

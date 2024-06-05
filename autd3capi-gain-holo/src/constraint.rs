@@ -15,7 +15,7 @@ enum EmissionConstraintTag {
 union EmissionConstraintValue {
     null: u8,
     uniform: u8,
-    multiply: f64,
+    multiply: f32,
     clamp: [u8; 2],
 }
 
@@ -94,7 +94,7 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(intensity: u8) -> Emissio
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f64) -> EmissionConstraintWrap {
+pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f32) -> EmissionConstraintWrap {
     autd3_gain_holo::EmissionConstraint::Multiply(v).into()
 }
 

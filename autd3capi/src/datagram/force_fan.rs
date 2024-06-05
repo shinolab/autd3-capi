@@ -10,7 +10,7 @@ pub unsafe extern "C" fn AUTDDatagramForceFan(
     context: ContextPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
-    let f = std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u32) -> bool>(f);
-    ForceFan::new(Box::new(move |dev: &Device| f(context, geometry, dev.idx() as u32)) as Box<_>)
+    let f = std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u16) -> bool>(f);
+    ForceFan::new(Box::new(move |dev: &Device| f(context, geometry, dev.idx() as _)) as Box<_>)
         .into()
 }
