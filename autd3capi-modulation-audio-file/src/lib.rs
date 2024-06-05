@@ -50,14 +50,12 @@ pub unsafe extern "C" fn AUTDModulationWavIsDefault(wav: ModulationPtr) -> bool 
 pub unsafe extern "C" fn AUTDModulationRawPCM(
     path: *const c_char,
     sample_rate: u32,
-    config: SamplingConfigWrap,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path).to_str().map(|path| {
-        RawPCM::new(path, sample_rate * Hz)
-            .with_sampling_config(config.into())
-            .with_loop_behavior(loop_behavior.into())
-    }) {
+    match CStr::from_ptr(path)
+        .to_str()
+        .map(|path| RawPCM::new(path, sample_rate * Hz).with_loop_behavior(loop_behavior.into()))
+    {
         Ok(v) => ResultModulation {
             result: v.into(),
             err_len: 0,
@@ -87,12 +85,12 @@ pub unsafe extern "C" fn AUTDModulationRawPCMIsDefault(rawpcm: ModulationPtr) ->
 pub unsafe extern "C" fn AUTDModulationCsv(
     path: *const c_char,
     sample_rate: u32,
-    config: SamplingConfigWrap,
+    deliminator: u8,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     match CStr::from_ptr(path).to_str().map(|path| {
         Csv::new(path, sample_rate * Hz)
-            .with_sampling_config(config.into())
+            .with_deliminator(deliminator)
             .with_loop_behavior(loop_behavior.into())
     }) {
         Ok(v) => ResultModulation {
