@@ -66,7 +66,7 @@ impl ControllerBuilderPtr {
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilder(
     params: *const f32,
-    len: u32,
+    len: u16,
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(SyncControllerBuilder::new((0..len as usize).map(|i| {
         AUTD3::new(Vector3::new(
@@ -100,10 +100,10 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithUltrasoundFreq(
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilderWithParallelThreshold(
     builder: ControllerBuilderPtr,
-    parallel_threshold: usize,
+    parallel_threshold: u16,
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(
-        take!(builder, SyncControllerBuilder).with_parallel_threshold(parallel_threshold),
+        take!(builder, SyncControllerBuilder).with_parallel_threshold(parallel_threshold as _),
     )
 }
 
