@@ -33,7 +33,7 @@ unsafe fn control_points<const N: usize>(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromFreq(
+pub unsafe extern "C" fn AUTDSTMFociFromFreq(
     freq: f32,
     points: *const f32,
     offsets: *const u8,
@@ -88,7 +88,7 @@ pub unsafe extern "C" fn AUTDSTMFocusFromFreq(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(
+pub unsafe extern "C" fn AUTDSTMFociFromFreqNearest(
     freq: f32,
     points: *const f32,
     offsets: *const u8,
@@ -143,7 +143,7 @@ pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(
+pub unsafe extern "C" fn AUTDSTMFociFromSamplingConfig(
     config: SamplingConfigWrap,
     points: *const f32,
     offsets: *const u8,
@@ -198,7 +198,7 @@ pub unsafe extern "C" fn AUTDSTMFocusFromSamplingConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusWithLoopBehavior(
+pub unsafe extern "C" fn AUTDSTMFociWithLoopBehavior(
     stm: FociSTMPtr,
     n: u8,
     loop_behavior: LoopBehavior,
@@ -234,7 +234,7 @@ pub unsafe extern "C" fn AUTDSTMFocusWithLoopBehavior(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
+pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
     stm: FociSTMPtr,
     n: u8,
     segment: Segment,
@@ -270,7 +270,7 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegment(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
+pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegmentTransition(
     stm: FociSTMPtr,
     n: u8,
     segment: Segment,
@@ -307,7 +307,7 @@ pub unsafe extern "C" fn AUTDSTMFocusIntoDatagramWithSegmentTransition(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFocusIntoDatagram(stm: FociSTMPtr, n: u8) -> DatagramPtr {
+pub unsafe extern "C" fn AUTDSTMFociIntoDatagram(stm: FociSTMPtr, n: u8) -> DatagramPtr {
     match n {
         1 => (*take!(stm, FociSTM<1>)).into(),
         2 => (*take!(stm, FociSTM<2>)).into(),
