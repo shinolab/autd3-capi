@@ -22,13 +22,13 @@ impl From<GainSTM<Box<G>>> for GainSTMPtr {
 }
 
 #[repr(C)]
-pub struct ResultFocusSTM {
+pub struct ResultFociSTM {
     pub result: FociSTMPtr,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl<const N: usize> From<Result<FociSTM<N>, AUTDInternalError>> for ResultFocusSTM {
+impl<const N: usize> From<Result<FociSTM<N>, AUTDInternalError>> for ResultFociSTM {
     fn from(r: Result<FociSTM<N>, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {

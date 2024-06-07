@@ -40,7 +40,7 @@ pub unsafe extern "C" fn AUTDSTMFocusFromFreq(
     intensities: *const u8,
     size: u16,
     n: u8,
-) -> ResultFocusSTM {
+) -> ResultFociSTM {
     match n {
         1 => FociSTM::from_freq(
             freq * Hz,
@@ -95,7 +95,7 @@ pub unsafe extern "C" fn AUTDSTMFocusFromFreqNearest(
     intensities: *const u8,
     size: u16,
     n: u8,
-) -> ResultFocusSTM {
+) -> ResultFociSTM {
     match n {
         1 => FociSTM::from_freq_nearest(
             freq * Hz,
