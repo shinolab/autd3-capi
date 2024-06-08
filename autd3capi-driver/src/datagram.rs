@@ -136,13 +136,17 @@ impl Datagram for DynamicDatagramPack2 {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        self.d1.timeout().or(self.d2.timeout())
+        match (self.d1.timeout(), self.d2.timeout()) {
+            (Some(t1), Some(t2)) => Some(t1.max(t2)),
+            (a, b) => a.or(b),
+        }
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
-        self.d1
-            .parallel_threshold()
-            .or(self.d2.parallel_threshold())
+        match (self.d1.parallel_threshold(), self.d2.parallel_threshold()) {
+            (Some(t1), Some(t2)) => Some(t1.min(t2)),
+            (a, b) => a.or(b),
+        }
     }
 }
 
