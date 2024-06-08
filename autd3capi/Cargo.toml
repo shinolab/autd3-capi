@@ -9,6 +9,7 @@ crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
 autd3capi-driver = { path = "../autd3capi-driver" }
+seq-macro = "0.3.5"
 
 [dev-dependencies]
 assert_approx_eq = { workspace = true }

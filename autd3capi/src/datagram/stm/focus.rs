@@ -41,49 +41,16 @@ pub unsafe extern "C" fn AUTDSTMFociFromFreq(
     size: u16,
     n: u8,
 ) -> ResultFociSTM {
-    match n {
-        1 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<1>(points, offsets, intensities, size),
-        )
-        .into(),
-        2 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<2>(points, offsets, intensities, size),
-        )
-        .into(),
-        3 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<3>(points, offsets, intensities, size),
-        )
-        .into(),
-        4 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<4>(points, offsets, intensities, size),
-        )
-        .into(),
-        5 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<5>(points, offsets, intensities, size),
-        )
-        .into(),
-        6 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<6>(points, offsets, intensities, size),
-        )
-        .into(),
-        7 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<7>(points, offsets, intensities, size),
-        )
-        .into(),
-        8 => FociSTM::from_freq(
-            freq * Hz,
-            control_points::<8>(points, offsets, intensities, size),
-        )
-        .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => FociSTM::from_freq(
+                    freq * Hz,
+                    control_points::<N>(points, offsets, intensities, size),
+                )
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
@@ -96,49 +63,16 @@ pub unsafe extern "C" fn AUTDSTMFociFromFreqNearest(
     size: u16,
     n: u8,
 ) -> ResultFociSTM {
-    match n {
-        1 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<1>(points, offsets, intensities, size),
-        )
-        .into(),
-        2 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<2>(points, offsets, intensities, size),
-        )
-        .into(),
-        3 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<3>(points, offsets, intensities, size),
-        )
-        .into(),
-        4 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<4>(points, offsets, intensities, size),
-        )
-        .into(),
-        5 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<5>(points, offsets, intensities, size),
-        )
-        .into(),
-        6 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<6>(points, offsets, intensities, size),
-        )
-        .into(),
-        7 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<7>(points, offsets, intensities, size),
-        )
-        .into(),
-        8 => FociSTM::from_freq_nearest(
-            freq * Hz,
-            control_points::<8>(points, offsets, intensities, size),
-        )
-        .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => FociSTM::from_freq_nearest(
+                    freq * Hz,
+                    control_points::<N>(points, offsets, intensities, size),
+                )
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
@@ -151,49 +85,16 @@ pub unsafe extern "C" fn AUTDSTMFociFromSamplingConfig(
     size: u16,
     n: u8,
 ) -> FociSTMPtr {
-    match n {
-        1 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<1>(points, offsets, intensities, size),
-        )
-        .into(),
-        2 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<2>(points, offsets, intensities, size),
-        )
-        .into(),
-        3 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<3>(points, offsets, intensities, size),
-        )
-        .into(),
-        4 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<4>(points, offsets, intensities, size),
-        )
-        .into(),
-        5 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<5>(points, offsets, intensities, size),
-        )
-        .into(),
-        6 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<6>(points, offsets, intensities, size),
-        )
-        .into(),
-        7 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<7>(points, offsets, intensities, size),
-        )
-        .into(),
-        8 => FociSTM::from_sampling_config(
-            config.into(),
-            control_points::<8>(points, offsets, intensities, size),
-        )
-        .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => FociSTM::from_sampling_config(
+                    config.into(),
+                    control_points::<N>(points, offsets, intensities, size),
+                )
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
@@ -203,33 +104,14 @@ pub unsafe extern "C" fn AUTDSTMFociWithLoopBehavior(
     n: u8,
     loop_behavior: LoopBehavior,
 ) -> FociSTMPtr {
-    match n {
-        1 => take!(stm, FociSTM<1>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        2 => take!(stm, FociSTM<2>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        3 => take!(stm, FociSTM<3>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        4 => take!(stm, FociSTM<4>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        5 => take!(stm, FociSTM<5>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        6 => take!(stm, FociSTM<6>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        7 => take!(stm, FociSTM<7>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        8 => take!(stm, FociSTM<8>)
-            .with_loop_behavior(loop_behavior.into())
-            .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => take!(stm, FociSTM<N>)
+                .with_loop_behavior(loop_behavior.into())
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
@@ -239,33 +121,14 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
     n: u8,
     segment: Segment,
 ) -> DatagramPtr {
-    match n {
-        1 => take!(stm, FociSTM<1>)
-            .with_segment(segment.into(), None)
-            .into(),
-        2 => take!(stm, FociSTM<2>)
-            .with_segment(segment.into(), None)
-            .into(),
-        3 => take!(stm, FociSTM<3>)
-            .with_segment(segment.into(), None)
-            .into(),
-        4 => take!(stm, FociSTM<4>)
-            .with_segment(segment.into(), None)
-            .into(),
-        5 => take!(stm, FociSTM<5>)
-            .with_segment(segment.into(), None)
-            .into(),
-        6 => take!(stm, FociSTM<6>)
-            .with_segment(segment.into(), None)
-            .into(),
-        7 => take!(stm, FociSTM<7>)
-            .with_segment(segment.into(), None)
-            .into(),
-        8 => take!(stm, FociSTM<8>)
-            .with_segment(segment.into(), None)
-            .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => take!(stm, FociSTM<N>)
+                .with_segment(segment.into(), None)
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
@@ -276,47 +139,23 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegmentTransition(
     segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
-    match n {
-        1 => take!(stm, FociSTM<1>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        2 => take!(stm, FociSTM<2>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        3 => take!(stm, FociSTM<3>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        4 => take!(stm, FociSTM<4>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        5 => take!(stm, FociSTM<5>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        6 => take!(stm, FociSTM<6>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        7 => take!(stm, FociSTM<7>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        8 => take!(stm, FociSTM<8>)
-            .with_segment(segment.into(), Some(transition_mode.into()))
-            .into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => take!(stm, FociSTM<N>)
+                .with_segment(segment.into(), Some(transition_mode.into()))
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFociIntoDatagram(stm: FociSTMPtr, n: u8) -> DatagramPtr {
-    match n {
-        1 => (*take!(stm, FociSTM<1>)).into(),
-        2 => (*take!(stm, FociSTM<2>)).into(),
-        3 => (*take!(stm, FociSTM<3>)).into(),
-        4 => (*take!(stm, FociSTM<4>)).into(),
-        5 => (*take!(stm, FociSTM<5>)).into(),
-        6 => (*take!(stm, FociSTM<6>)).into(),
-        7 => (*take!(stm, FociSTM<7>)).into(),
-        8 => (*take!(stm, FociSTM<8>)).into(),
-        _ => unreachable!(),
-    }
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => (*take!(stm, FociSTM<1>)).into(),)*
+            _ => unreachable!(),
+        }
+    })
 }
