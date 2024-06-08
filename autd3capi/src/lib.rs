@@ -12,6 +12,7 @@ pub mod result;
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::AUTD3_TRUE;
+    use datagram::AUTDDatagramTuple;
 
     use super::*;
 
@@ -33,10 +34,8 @@ mod tests {
 
             let d1 = gain::AUTDGainIntoDatagram(g);
             let d2 = modulation::AUTDModulationIntoDatagram(m);
-            assert_eq!(
-                AUTD3_TRUE,
-                controller::AUTDControllerSend(cnt, d1, d2).result
-            );
+            let d = AUTDDatagramTuple(d1, d2);
+            assert_eq!(AUTD3_TRUE, controller::AUTDControllerSend(cnt, d).result);
 
             assert_eq!(AUTD3_TRUE, controller::AUTDControllerClose(cnt).result);
 

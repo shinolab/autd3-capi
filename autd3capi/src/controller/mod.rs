@@ -5,7 +5,6 @@ use autd3::{error::AUTDError, Controller};
 use autd3capi_driver::{
     driver::{
         datagram::Datagram,
-        error::AUTDInternalError,
         firmware::{fpga::FPGAState, version::FirmwareVersion},
     },
     tokio,
@@ -196,19 +195,6 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerSend(
-    mut cnt: ControllerPtr,
-    d1: DatagramPtr,
-    d2: DatagramPtr,
-) -> ResultI32 {
-    match (d1.is_null(), d2.is_null()) {
-        (false, false) => cnt.send(DynamicDatagramPack2 {
-            d1: d1.into(),
-            d2: d2.into(),
-        }),
-        (false, true) => cnt.send(DynamicDatagramPack { d: d1.into() }),
-        (true, false) => cnt.send(DynamicDatagramPack { d: d2.into() }),
-        (true, true) => Err(AUTDInternalError::NotSupported("No datagram".to_owned()).into()),
-    }
-    .into()
+pub unsafe extern "C" fn AUTDControllerSend(mut cnt: ControllerPtr, d: DatagramPtr) -> ResultI32 {
+    cnt.send(DynamicDatagramPack { d: d.into() }).into()
 }

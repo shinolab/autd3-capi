@@ -1,6 +1,6 @@
 use autd3capi_driver::{
-    autd3::derive::Device, ConstPtr, ContextPtr, DatagramPtr, DynamicDatagramPack,
-    DynamicDatagramPack2, GeometryPtr, ResultI32,
+    autd3::derive::Device, ConstPtr, ContextPtr, DatagramPtr, DynamicDatagramPack, GeometryPtr,
+    ResultI32,
 };
 
 use super::ControllerPtr;
@@ -13,8 +13,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
     context: ContextPtr,
     geometry: GeometryPtr,
     keys: *const i32,
-    d1: *const DatagramPtr,
-    d2: *const DatagramPtr,
+    d: *const DatagramPtr,
     n: u16,
 ) -> ResultI32 {
     let runtime = cnt.runtime.handle().clone();
@@ -29,20 +28,8 @@ pub unsafe extern "C" fn AUTDControllerGroup(
             }) as Box<_>),
             |acc, i| {
                 let k = keys.add(i as _).read();
-                let d1 = d1.add(i as _).read();
-                let d2 = d2.add(i as _).read();
-                match (d1.is_null(), d2.is_null()) {
-                    (false, false) => acc.set(
-                        k,
-                        DynamicDatagramPack2 {
-                            d1: d1.into(),
-                            d2: d2.into(),
-                        },
-                    ),
-                    (false, true) => acc.set(k, DynamicDatagramPack { d: d1.into() }),
-                    (true, false) => acc.set(k, DynamicDatagramPack { d: d2.into() }),
-                    _ => unreachable!(),
-                }
+                let d = d.add(i as _).read();
+                acc.set(k, DynamicDatagramPack { d: d.into() })
             },
         )
         .map(|g| runtime.block_on(g.send()))
