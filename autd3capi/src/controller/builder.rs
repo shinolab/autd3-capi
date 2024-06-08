@@ -14,24 +14,28 @@ use super::{ResultController, SyncController};
 
 pub struct SyncControllerBuilder {
     inner: ControllerBuilder,
+    parallel_threshold: usize,
 }
 
 impl SyncControllerBuilder {
     pub fn new<D: IntoDevice, I: IntoIterator<Item = D>>(iter: I) -> Self {
         Self {
             inner: Controller::builder(iter),
+            parallel_threshold: 4,
         }
     }
 
     pub fn with_ultrasound_freq(self, ultrasound_freq: Freq<u32>) -> Self {
         Self {
             inner: self.inner.with_ultrasound_freq(ultrasound_freq),
+            ..self
         }
     }
 
     pub fn with_parallel_threshold(self, parallel_threshold: usize) -> Self {
         Self {
             inner: self.inner.with_parallel_threshold(parallel_threshold),
+            parallel_threshold,
         }
     }
 
@@ -47,6 +51,8 @@ impl SyncControllerBuilder {
         let runtime = link_builder.runtime.take().unwrap();
         Ok(SyncController {
             inner: runtime.block_on(self.inner.open_with_timeout(link_builder, timeout))?,
+            parallel_threshold: self.parallel_threshold,
+            last_parallel_threshold: self.parallel_threshold,
             runtime,
         })
     }

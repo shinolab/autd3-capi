@@ -34,11 +34,14 @@ impl std::ops::DerefMut for ControllerPtr {
 
 pub struct SyncController {
     runtime: tokio::runtime::Runtime,
+    parallel_threshold: usize,
+    last_parallel_threshold: usize,
     pub inner: Controller<SyncLink>,
 }
 
 impl SyncController {
     pub fn send<S: Datagram>(&mut self, s: S) -> Result<(), AUTDError> {
+        self.last_parallel_threshold = s.parallel_threshold().unwrap_or(self.parallel_threshold);
         self.runtime.block_on(self.inner.send(s))
     }
 
@@ -97,6 +100,12 @@ pub unsafe extern "C" fn AUTDControllerDelete(mut cnt: ControllerPtr) -> ResultI
             r
         })
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDControllerLastParallelThreshold(cnt: ControllerPtr) -> u16 {
+    cnt.last_parallel_threshold as u16
 }
 
 #[no_mangle]
