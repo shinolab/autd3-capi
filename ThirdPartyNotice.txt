@@ -74,7 +74,7 @@ autd3 25.1.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-backend-cuda 25.1.0 (MIT)
+autd3-backend-cuda 25.0.0 (MIT)
 https://github.com/shinolab/autd3-backend-cuda
 ---------------------------------------------------------
 
@@ -216,7 +216,7 @@ SOFTWARE.
 
 ---------------------------------------------------------
 
-autd3-link-visualizer 25.1.0 (MIT)
+autd3-link-visualizer 25.0.0 (MIT)
 https://github.com/shinolab/autd3-link-visualizer
 ---------------------------------------------------------
 
