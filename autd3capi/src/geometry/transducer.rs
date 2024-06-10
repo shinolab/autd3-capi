@@ -9,9 +9,6 @@ pub unsafe extern "C" fn AUTDTransducer(dev: DevicePtr, idx: u8) -> TransducerPt
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr, pos: *mut f32) {
-    let p = tr.position();
-    pos.add(0).write(p.x);
-    pos.add(1).write(p.y);
-    pos.add(2).write(p.z);
+pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr) -> Vector3 {
+    *tr.position()
 }

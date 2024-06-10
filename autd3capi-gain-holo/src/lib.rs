@@ -45,12 +45,8 @@ macro_rules! create_holo {
                 .unwrap()
                 .clone(),
             (0..$size as usize).map(|i| {
-                let p = Vector3::new(
-                    $points.add(i * 3).read(),
-                    $points.add(i * 3 + 1).read(),
-                    $points.add(i * 3 + 2).read(),
-                );
-                let amp = *$amps.add(i) * Pa;
+                let p = $points.add(i).read();
+                let amp = $amps.add(i).read() * Pa;
                 (p, amp)
             }),
         )
@@ -58,12 +54,8 @@ macro_rules! create_holo {
 
     ($type:tt, $direcivity:tt, $points:expr, $amps:expr, $size:expr) => {
         $type::<$direcivity>::new((0..$size as usize).map(|i| {
-            let p = Vector3::new(
-                $points.add(i * 3).read(),
-                $points.add(i * 3 + 1).read(),
-                $points.add(i * 3 + 2).read(),
-            );
-            let amp = *$amps.add(i) * Pa;
+            let p = $points.add(i).read();
+            let amp = $amps.add(i).read() * Pa;
             (p, amp)
         }))
     };

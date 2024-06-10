@@ -197,7 +197,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
     visualizer: LinkPtr,
     backend: Backend,
     directivity: Directivity,
-    points: *const f32,
+    points: *const Vector3,
     points_len: u32,
     geometry: GeometryPtr,
     segment: Segment,

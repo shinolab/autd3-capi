@@ -7,7 +7,7 @@ use autd3capi_driver::{
         defined::{Freq, Hz},
         geometry::{IntoDevice, Quaternion, UnitQuaternion, Vector3},
     },
-    take, ConstPtr, LinkBuilderPtr, SyncLinkBuilder,
+    take, vec_from_raw, ConstPtr, LinkBuilderPtr, SyncLinkBuilder,
 };
 
 use super::{ResultController, SyncController};
@@ -71,22 +71,17 @@ impl ControllerBuilderPtr {
 #[must_use]
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilder(
-    params: *const f32,
+    pos: *const Vector3,
+    rot: *const Quaternion,
     len: u16,
 ) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(SyncControllerBuilder::new((0..len as usize).map(|i| {
-        AUTD3::new(Vector3::new(
-            params.add(7 * i).read(),
-            params.add(7 * i + 1).read(),
-            params.add(7 * i + 2).read(),
-        ))
-        .with_rotation(UnitQuaternion::from_quaternion(Quaternion::new(
-            params.add(7 * i + 3).read(),
-            params.add(7 * i + 4).read(),
-            params.add(7 * i + 5).read(),
-            params.add(7 * i + 6).read(),
-        )))
-    })))
+    let pos = vec_from_raw!(pos, Vector3, len);
+    let rot = vec_from_raw!(rot, Quaternion, len);
+    ControllerBuilderPtr::new(SyncControllerBuilder::new(
+        pos.into_iter()
+            .zip(rot.into_iter())
+            .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
+    ))
 }
 
 #[no_mangle]

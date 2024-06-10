@@ -6,14 +6,8 @@ use autd3capi_driver::{
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainPlane(
-    nx: f32,
-    ny: f32,
-    nz: f32,
-    intensity: u8,
-    phase_offset: u8,
-) -> GainPtr {
-    Plane::new(Vector3::new(nx, ny, nz))
+pub unsafe extern "C" fn AUTDGainPlane(n: Vector3, intensity: u8, phase_offset: u8) -> GainPtr {
+    Plane::new(n)
         .with_intensity(intensity)
         .with_phase_offset(Phase::from(phase_offset))
         .into()

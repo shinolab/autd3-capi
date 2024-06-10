@@ -14,7 +14,7 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     constraint: EmissionConstraintWrap,
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     constraint: EmissionConstraintWrap,

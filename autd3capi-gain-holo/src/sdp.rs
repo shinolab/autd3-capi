@@ -14,7 +14,7 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSDPSphere(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     alpha: f32,
@@ -34,7 +34,7 @@ pub unsafe extern "C" fn AUTDGainHoloSDPSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSDPT4010A1(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     alpha: f32,

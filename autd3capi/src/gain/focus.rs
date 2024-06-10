@@ -6,14 +6,8 @@ use autd3capi_driver::{
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainFocus(
-    x: f32,
-    y: f32,
-    z: f32,
-    intensity: u8,
-    phase_offset: u8,
-) -> GainPtr {
-    Focus::new(Vector3::new(x, y, z))
+pub unsafe extern "C" fn AUTDGainFocus(p: Vector3, intensity: u8, phase_offset: u8) -> GainPtr {
+    Focus::new(p)
         .with_intensity(intensity)
         .with_phase_offset(Phase::new(phase_offset))
         .into()

@@ -14,12 +14,8 @@ macro_rules! create_holo {
                 .unwrap()
                 .clone(),
             (0..$size as usize).map(|i| {
-                let p = Vector3::new(
-                    $points.add(i * 3).read(),
-                    $points.add(i * 3 + 1).read(),
-                    $points.add(i * 3 + 2).read(),
-                );
-                let amp = *$amps.add(i) * Pa;
+                let p = $points.add(i).read();
+                let amp = $amps.add(i).read() * Pa;
                 (p, amp)
             }),
         )
@@ -55,7 +51,7 @@ pub unsafe extern "C" fn AUTDCUDABackendDelete(backend: BackendPtr) {
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     alpha: f32,
@@ -75,7 +71,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     repeat: u32,
@@ -91,7 +87,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     repeat: u32,
@@ -107,7 +103,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDAGSPAT(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     constraint: EmissionConstraintWrap,
@@ -121,7 +117,7 @@ pub unsafe extern "C" fn AUTDGainHoloCUDANaive(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDALM(
     backend: BackendPtr,
-    points: *const f32,
+    points: *const Vector3,
     amps: *const f32,
     size: u32,
     eps_1: f32,
