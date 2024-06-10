@@ -79,7 +79,7 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
     let rot = vec_from_raw!(rot, Quaternion, len);
     ControllerBuilderPtr::new(SyncControllerBuilder::new(
         pos.into_iter()
-            .zip(rot.into_iter())
+            .zip(rot)
             .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
     ))
 }
