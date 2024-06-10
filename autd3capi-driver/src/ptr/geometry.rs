@@ -10,6 +10,7 @@ unsafe impl Send for GeometryPtr {}
 unsafe impl Sync for GeometryPtr {}
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 pub struct DevicePtr(pub ConstPtr);
 
 impl_ptr!(DevicePtr, autd3_driver::geometry::Device);
