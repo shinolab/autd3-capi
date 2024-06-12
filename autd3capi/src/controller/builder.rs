@@ -83,7 +83,17 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
     builder: ControllerBuilderPtr,
     resolution: u32,
 ) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(take!(builder, ControllerBuilder).with_timer_resolution(resolution))
+    #[cfg(target_os = "windows")]
+    {
+        ControllerBuilderPtr::new(
+            take!(builder, ControllerBuilder).with_timer_resolution(resolution),
+        )
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = resolution;
+        builder
+    }
 }
 
 #[no_mangle]
