@@ -208,7 +208,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimeout(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMIntoBuilder(soem: LinkSOEMBuilderPtr) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(soem, SOEMBuilder))
+    DynamicLinkBuilder::new(*take!(soem, SOEMBuilder))
 }
 
 #[repr(C)]
@@ -277,5 +277,5 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEMWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteSOEMIntoBuilder(
     soem: LinkRemoteSOEMBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(soem, RemoteSOEMBuilder))
+    DynamicLinkBuilder::new(*take!(soem, RemoteSOEMBuilder))
 }

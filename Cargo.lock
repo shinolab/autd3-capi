@@ -97,6 +97,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-ffi"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4de21c0feef7e5a556e51af767c953f0501f7f300ba785cc99c47bdc8081a50"
+
+[[package]]
 name = "async-stream"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -360,6 +366,7 @@ name = "autd3capi-driver"
 version = "25.2.0"
 dependencies = [
  "assert_approx_eq",
+ "async-ffi",
  "autd3",
  "autd3-driver",
  "libc",

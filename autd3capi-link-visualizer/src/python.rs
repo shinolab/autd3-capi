@@ -18,7 +18,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerSpherePython(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    SyncLinkBuilder::new(builder)
+    DynamicLinkBuilder::new(builder)
 }
 
 #[no_mangle]
@@ -33,7 +33,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Python(
     if use_gpu {
         builder = builder.with_gpu(gpu_idx);
     }
-    SyncLinkBuilder::new(builder)
+    DynamicLinkBuilder::new(builder)
 }
 
 #[derive(Debug, Clone, Copy)]

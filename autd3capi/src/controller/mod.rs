@@ -3,11 +3,11 @@ pub mod group;
 
 use autd3::{error::AUTDError, Controller};
 use autd3capi_driver::{
+    async_ffi::{FfiFuture, FutureExt},
     driver::{
         datagram::Datagram,
         firmware::{fpga::FPGAState, version::FirmwareVersion},
     },
-    tokio,
 };
 
 use std::ffi::c_char;
@@ -18,42 +18,34 @@ use autd3capi_driver::*;
 #[repr(C)]
 pub struct ControllerPtr(pub ConstPtr);
 
-impl std::ops::Deref for ControllerPtr {
-    type Target = SyncController;
-    fn deref(&self) -> &'static Self::Target {
-        unsafe { (self.0 as *const SyncController).as_ref().unwrap() }
-    }
-}
+unsafe impl Send for ControllerPtr {}
+unsafe impl Sync for ControllerPtr {}
 
-impl std::ops::DerefMut for ControllerPtr {
-    fn deref_mut(&mut self) -> &'static mut Self::Target {
-        unsafe { (self.0 as *mut SyncController).as_mut().unwrap() }
-    }
-}
+impl_ptr!(ControllerPtr, ControllerWrap);
 
-pub struct SyncController {
-    runtime: tokio::runtime::Runtime,
+// Wrapper for Controller to debug parallel_threshold
+pub struct ControllerWrap {
     parallel_threshold: usize,
     last_parallel_threshold: usize,
-    pub inner: Controller<SyncLink>,
+    pub inner: Controller<Box<L>>,
 }
 
-impl SyncController {
-    pub fn send<S: Datagram>(&mut self, s: S) -> Result<(), AUTDError> {
+impl ControllerWrap {
+    pub async fn send<S: Datagram>(&mut self, s: S) -> Result<(), AUTDError> {
         self.last_parallel_threshold = s.parallel_threshold().unwrap_or(self.parallel_threshold);
-        self.runtime.block_on(self.inner.send(s))
+        self.inner.send(s).await
     }
 
-    pub fn close(&mut self) -> Result<(), AUTDError> {
-        self.runtime.block_on(self.inner.close())
+    pub async fn close(&mut self) -> Result<(), AUTDError> {
+        self.inner.close().await
     }
 
-    pub fn firmware_version(&mut self) -> Result<Vec<FirmwareVersion>, AUTDError> {
-        self.runtime.block_on(self.inner.firmware_version())
+    pub async fn firmware_version(&mut self) -> Result<Vec<FirmwareVersion>, AUTDError> {
+        self.inner.firmware_version().await
     }
 
-    pub fn fpga_state(&mut self) -> Result<Vec<Option<FPGAState>>, AUTDError> {
-        self.runtime.block_on(self.inner.fpga_state())
+    pub async fn fpga_state(&mut self) -> Result<Vec<Option<FPGAState>>, AUTDError> {
+        self.inner.fpga_state().await
     }
 }
 
@@ -65,8 +57,8 @@ pub struct ResultController {
     pub err: ConstPtr,
 }
 
-impl From<Result<SyncController, AUTDError>> for ResultController {
-    fn from(r: Result<SyncController, AUTDError>) -> Self {
+impl From<Result<ControllerWrap, AUTDError>> for ResultController {
+    fn from(r: Result<ControllerWrap, AUTDError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: ControllerPtr(Box::into_raw(Box::new(v)) as _),
@@ -87,18 +79,17 @@ impl From<Result<SyncController, AUTDError>> for ResultController {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> ResultI32 {
-    cnt.close().into()
+pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> FfiFuture<ResultI32> {
+    async move {
+        let r: ResultI32 = cnt.close().await.into();
+        r
+    }
+    .into_ffi()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDControllerDelete(mut cnt: ControllerPtr) -> ResultI32 {
-    cnt.close()
-        .map(|r| {
-            let _ = take!(cnt, SyncController);
-            r
-        })
-        .into()
+pub unsafe extern "C" fn AUTDControllerDelete(cnt: ControllerPtr) {
+    let _ = take!(cnt, ControllerWrap);
 }
 
 #[no_mangle]
@@ -107,20 +98,65 @@ pub unsafe extern "C" fn AUTDControllerLastParallelThreshold(cnt: ControllerPtr)
     cnt.last_parallel_threshold as u16
 }
 
+#[repr(C)]
+pub struct FPGAStateListPtr(pub ConstPtr);
+
+#[repr(C)]
+
+pub struct ResultFPGAStateList {
+    pub result: FPGAStateListPtr,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl std::ops::Deref for FPGAStateListPtr {
+    type Target = Vec<Option<FPGAState>>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { (self.0 as *const Self::Target).as_ref().unwrap() }
+    }
+}
+
+impl From<Result<Vec<Option<FPGAState>>, AUTDError>> for ResultFPGAStateList {
+    fn from(r: Result<Vec<Option<FPGAState>>, AUTDError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: FPGAStateListPtr(Box::into_raw(Box::new(v)) as _),
+                err_len: 0,
+                err: std::ptr::null_mut(),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: FPGAStateListPtr(std::ptr::null()),
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: Box::into_raw(Box::new(err)) as _,
+                }
+            }
+        }
+    }
+}
+
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerFPGAState(
     mut cnt: ControllerPtr,
-    out: *mut i32,
-) -> ResultI32 {
-    cnt.fpga_state()
-        .map(|states| {
-            states.iter().enumerate().for_each(|(i, state)| {
-                out.add(i).write(state.map_or(-1, |s| s.state() as i32));
-            });
-            true
-        })
-        .into()
+) -> FfiFuture<ResultFPGAStateList> {
+    async move {
+        let r: ResultFPGAStateList = cnt.fpga_state().await.into();
+        r
+    }
+    .into_ffi()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDControllerFPGAStateGet(p: FPGAStateListPtr, idx: u32) -> i16 {
+    p[idx as usize].map_or(-1, |v| v.state() as i16)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDControllerFPGAStateDelete(p: FPGAStateListPtr) {
+    let _ = take!(p, Vec<Option<FPGAState>>);
 }
 
 #[repr(C)]
@@ -166,8 +202,12 @@ impl From<Result<Vec<FirmwareVersion>, AUTDError>> for ResultFirmwareVersionList
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerFirmwareVersionListPointer(
     mut cnt: ControllerPtr,
-) -> ResultFirmwareVersionList {
-    cnt.firmware_version().into()
+) -> FfiFuture<ResultFirmwareVersionList> {
+    async move {
+        let r: ResultFirmwareVersionList = cnt.firmware_version().await.into();
+        r
+    }
+    .into_ffi()
 }
 
 #[no_mangle]
@@ -195,6 +235,13 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerSend(mut cnt: ControllerPtr, d: DatagramPtr) -> ResultI32 {
-    cnt.send(DynamicDatagramPack { d: d.into() }).into()
+pub unsafe extern "C" fn AUTDControllerSend(
+    mut cnt: ControllerPtr,
+    d: DatagramPtr,
+) -> FfiFuture<ResultI32> {
+    async move {
+        let r: ResultI32 = cnt.send(DynamicDatagramPack { d: d.into() }).await.into();
+        r
+    }
+    .into_ffi()
 }

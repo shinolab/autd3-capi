@@ -1,9 +1,9 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_driver::{autd3::link::Nop, LinkBuilderPtr, SyncLinkBuilder};
+use autd3capi_driver::{autd3::link::Nop, DynamicLinkBuilder, LinkBuilderPtr};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkNop() -> LinkBuilderPtr {
-    SyncLinkBuilder::new(Nop::builder())
+    DynamicLinkBuilder::new(Nop::builder())
 }

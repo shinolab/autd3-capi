@@ -16,6 +16,7 @@ pub use link::*;
 pub use ptr::*;
 pub use result::*;
 
+pub use async_ffi;
 pub use autd3;
 pub use autd3_driver as driver;
 pub use libc;

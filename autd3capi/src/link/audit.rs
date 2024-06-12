@@ -32,7 +32,7 @@ pub unsafe extern "C" fn AUTDLinkAuditWithTimeout(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIntoBuilder(audit: LinkAuditBuilderPtr) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(audit, AuditBuilder))
+    DynamicLinkBuilder::new(*take!(audit, AuditBuilder))
 }
 
 #[no_mangle]

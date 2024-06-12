@@ -40,7 +40,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkTwinCATIntoBuilder(
     twincat: LinkTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(twincat, TwinCATBuilder))
+    DynamicLinkBuilder::new(*take!(twincat, TwinCATBuilder))
 }
 
 #[repr(C)]
@@ -125,5 +125,5 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteTwinCATIntoBuilder(
     twincat: LinkRemoteTwinCATBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(twincat, RemoteTwinCATBuilder))
+    DynamicLinkBuilder::new(*take!(twincat, RemoteTwinCATBuilder))
 }

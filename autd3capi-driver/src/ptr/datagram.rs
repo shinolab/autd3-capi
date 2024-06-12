@@ -5,6 +5,9 @@ use crate::{take, ConstPtr, DynamicDatagram};
 #[repr(C)]
 pub struct DatagramPtr(pub ConstPtr);
 
+unsafe impl Send for DatagramPtr {}
+unsafe impl Sync for DatagramPtr {}
+
 impl DatagramPtr {
     pub fn is_null(&self) -> bool {
         self.0.is_null()

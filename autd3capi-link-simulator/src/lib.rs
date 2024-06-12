@@ -6,6 +6,7 @@ use std::{
     time::Duration,
 };
 
+use async_ffi::{FfiFuture, FutureExt};
 use autd3capi_driver::*;
 
 use autd3_link_simulator::*;
@@ -87,7 +88,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
 pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
     simulator: LinkSimulatorBuilderPtr,
 ) -> LinkBuilderPtr {
-    SyncLinkBuilder::new(*take!(simulator, SimulatorBuilder))
+    DynamicLinkBuilder::new(*take!(simulator, SimulatorBuilder))
 }
 
 #[no_mangle]
@@ -95,9 +96,14 @@ pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
 pub unsafe extern "C" fn AUTDLinkSimulatorUpdateGeometry(
     mut simulator: LinkPtr,
     geometry: GeometryPtr,
-) -> ResultI32 {
-    simulator
-        .runtime()
-        .block_on(simulator.cast_mut::<Simulator>().update_geometry(&geometry))
-        .into()
+) -> FfiFuture<ResultI32> {
+    async move {
+        let r: ResultI32 = simulator
+            .cast_mut::<Simulator>()
+            .update_geometry(&geometry)
+            .await
+            .into();
+        r
+    }
+    .into_ffi()
 }
