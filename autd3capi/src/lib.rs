@@ -78,6 +78,26 @@ pub unsafe extern "C" fn AUTDWaitResultFirmwareVersionList(
     runtime.block_on(future)
 }
 
+pub const TRACE_LEVEL_ERROR: u8 = 1;
+pub const TRACE_LEVEL_WARN: u8 = 2;
+pub const TRACE_LEVEL_INFO: u8 = 3;
+pub const TRACE_LEVEL_DEBUG: u8 = 4;
+pub const TRACE_LEVEL_TRACE: u8 = 5;
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDTracingInit(level: u8) {
+    tracing_subscriber::fmt()
+        .with_max_level(match level {
+            TRACE_LEVEL_ERROR => tracing::Level::ERROR,
+            TRACE_LEVEL_WARN => tracing::Level::WARN,
+            TRACE_LEVEL_INFO => tracing::Level::INFO,
+            TRACE_LEVEL_DEBUG => tracing::Level::DEBUG,
+            TRACE_LEVEL_TRACE => tracing::Level::TRACE,
+            _ => tracing::Level::INFO,
+        })
+        .init();
+}
+
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::{driver::geometry::Quaternion, Vector3, AUTD3_TRUE};
