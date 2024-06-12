@@ -39,6 +39,28 @@ impl SyncControllerBuilder {
         }
     }
 
+    pub fn with_send_interval(self, interval: std::time::Duration) -> Self {
+        Self {
+            inner: self.inner.with_send_interval(interval),
+            ..self
+        }
+    }
+
+    pub fn with_timer_resolution(self, resolution: u32) -> Self {
+        #[cfg(target_os = "windows")]
+        {
+            Self {
+                inner: self.inner.with_timer_resolution(resolution),
+                ..self
+            }
+        }
+        #[cfg(not(target_os = "windows"))]
+        {
+            let _ = resolution;
+            self
+        }
+    }
+
     pub fn open(self, link_builder: SyncLinkBuilder) -> Result<SyncController, AUTDError> {
         Self::open_with_timeout(self, link_builder, std::time::Duration::from_millis(200))
     }
@@ -105,6 +127,31 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithParallelThreshold(
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(
         take!(builder, SyncControllerBuilder).with_parallel_threshold(parallel_threshold as _),
+    )
+}
+
+#[no_mangle]
+#[must_use]
+#[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDControllerBuilderWithSendInterval(
+    builder: ControllerBuilderPtr,
+    interval_ns: u64,
+) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(
+        take!(builder, SyncControllerBuilder)
+            .with_send_interval(std::time::Duration::from_nanos(interval_ns)),
+    )
+}
+
+#[no_mangle]
+#[must_use]
+#[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
+    builder: ControllerBuilderPtr,
+    resolution: u32,
+) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(
+        take!(builder, SyncControllerBuilder).with_timer_resolution(resolution),
     )
 }
 
