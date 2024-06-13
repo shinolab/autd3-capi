@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_driver::{
-    async_ffi::FfiFuture,
+    async_ffi::{FfiFuture, LocalFfiFuture},
     impl_ptr,
     tokio::{self, runtime::Runtime},
     ConstPtr, ResultI32,
@@ -47,6 +47,15 @@ pub unsafe extern "C" fn AUTDDeleteRuntime(runtime: RuntimePtr) {
 pub unsafe extern "C" fn AUTDWaitResultI32(
     runtime: RuntimePtr,
     future: FfiFuture<ResultI32>,
+) -> ResultI32 {
+    runtime.block_on(future)
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDWaitLocalResultI32(
+    runtime: RuntimePtr,
+    future: LocalFfiFuture<ResultI32>,
 ) -> ResultI32 {
     runtime.block_on(future)
 }
