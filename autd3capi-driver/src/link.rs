@@ -1,7 +1,11 @@
+use std::time::Duration;
+
 use async_ffi::BorrowingFfiFuture;
 
 use autd3_driver::{
+    async_trait,
     error::AUTDInternalError,
+    firmware::cpu::{RxMessage, TxDatagram},
     geometry::Geometry,
     link::{Link, LinkBuilder},
 };
@@ -63,5 +67,57 @@ impl LinkBuilder for DynamicLinkBuilder {
 
     async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDInternalError> {
         (self.gen)(geometry).await
+    }
+}
+
+pub struct SyncLink<T: Link> {
+    pub runtime: tokio::runtime::Runtime,
+    pub inner: T,
+}
+
+#[async_trait]
+impl<T: Link> Link for SyncLink<T> {
+    async fn close(&mut self) -> Result<(), AUTDInternalError> {
+        self.runtime.block_on(self.inner.close())
+    }
+
+    async fn send(&mut self, tx: &TxDatagram) -> Result<bool, AUTDInternalError> {
+        self.runtime.block_on(self.inner.send(tx))
+    }
+
+    async fn receive(&mut self, rx: &mut [RxMessage]) -> Result<bool, AUTDInternalError> {
+        self.runtime.block_on(self.inner.receive(rx))
+    }
+
+    #[must_use]
+    fn is_open(&self) -> bool {
+        self.inner.is_open()
+    }
+
+    fn timeout(&self) -> Duration {
+        self.inner.timeout()
+    }
+
+    #[inline(always)]
+    fn trace(&mut self, tx: &TxDatagram, rx: &mut [RxMessage], timeout: Option<Duration>) {
+        self.inner.trace(tx, rx, timeout)
+    }
+}
+
+pub struct SyncLinkBuilder<L: Link, T: LinkBuilder<L = L>> {
+    pub runtime: tokio::runtime::Runtime,
+    pub inner: T,
+}
+
+#[async_trait]
+impl<L: Link, T: LinkBuilder<L = L>> LinkBuilder for SyncLinkBuilder<L, T> {
+    type L = SyncLink<L>;
+
+    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDInternalError> {
+        let inner = self.runtime.block_on(self.inner.open(geometry))?;
+        Ok(SyncLink {
+            runtime: self.runtime,
+            inner,
+        })
     }
 }

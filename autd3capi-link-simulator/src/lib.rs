@@ -88,7 +88,13 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
 pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
     simulator: LinkSimulatorBuilderPtr,
 ) -> LinkBuilderPtr {
-    DynamicLinkBuilder::new(*take!(simulator, SimulatorBuilder))
+    DynamicLinkBuilder::new(SyncLinkBuilder {
+        runtime: tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap(),
+        inner: *take!(simulator, SimulatorBuilder),
+    })
 }
 
 #[no_mangle]
@@ -98,10 +104,10 @@ pub unsafe extern "C" fn AUTDLinkSimulatorUpdateGeometry(
     geometry: GeometryPtr,
 ) -> FfiFuture<ResultI32> {
     async move {
-        let r: ResultI32 = simulator
-            .cast_mut::<Simulator>()
-            .update_geometry(&geometry)
-            .await
+        let link = simulator.cast_mut::<SyncLink<Simulator>>();
+        let r: ResultI32 = link
+            .runtime
+            .block_on(link.inner.update_geometry(&geometry))
             .into();
         r
     }
