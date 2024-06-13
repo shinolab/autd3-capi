@@ -167,8 +167,8 @@ class Config:
             command.append("autd3capi-link-visualizer")
         return command
 
-    def cargo_clippy_capi_command(self):
-        command = self.cargo_build_capi_command()
+    def cargo_clippy_capi_command(self, extra_features=None):
+        command = self.cargo_build_capi_command(extra_features)
         command[1] = "clippy"
         command.append("--")
         command.append("-D")
@@ -286,7 +286,9 @@ def capi_lint(args):
 
     with working_dir("."):
         config.setup_linker()
-        subprocess.run(config.cargo_clippy_capi_command()).check_returncode()
+        subprocess.run(
+            config.cargo_clippy_capi_command(args.features)
+        ).check_returncode()
 
 
 def capi_clear(_):
@@ -382,6 +384,11 @@ if __name__ == "__main__":
         # lint
         parser_lint = subparsers.add_parser("lint", help="see lint -h`")
         parser_lint.add_argument("--release", action="store_true", help="release build")
+        parser_lint.add_argument(
+            "--features",
+            help="features to build",
+            default=None,
+        )
         parser_lint.set_defaults(handler=capi_lint)
 
         # clear

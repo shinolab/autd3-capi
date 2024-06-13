@@ -46,7 +46,7 @@ jobs:
 
   publish_win:
     needs: [release]
-    name: upload-release-asset-windows
+    name: upload-release-asset-windows-x64
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -72,6 +72,7 @@ jobs:
         run: |
           python3 build.py build --release
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_x64-dll.zip
+          python3 build.py build --release --features "static"
           Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets_x64-static.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -101,7 +102,7 @@ jobs:
 
   publish_win_arm:
     needs: [release]
-    name: upload-release-asset-windows
+    name: upload-release-asset-windows-arm
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -126,6 +127,7 @@ jobs:
         run: |
           python3 build.py build --release --arch aarch64
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_arm-dll.zip
+          python3 build.py build --release --arch aarch64 --features "static"
           Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets_arm-static.zip
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1
@@ -201,7 +203,7 @@ jobs:
 
   publish_win_arm-unity:
     needs: [release]
-    name: upload-release-asset-windows
+    name: upload-release-asset-windows-arm-for-unity
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -271,6 +273,7 @@ jobs:
         run: |
           python3 build.py build --release
           tar -zcvf assets_x64-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
+          python3 build.py build --release --features "static"
           tar -zcvf assets_x64-static.tar.gz lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
@@ -371,6 +374,7 @@ jobs:
         run: |
           python3 build.py build --release --arch arm32
           tar -zcvf assets_arm32-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
+          python3 build.py build --release --arch arm32 --features "static"
           tar -zcvf assets_arm32-static.tar.gz lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
@@ -425,6 +429,7 @@ jobs:
         run: |
           python3 build.py build --release --arch aarch64
           tar -zcvf assets_aarch64-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
+          python3 build.py build --release --arch aarch64 --features "static"
           tar -zcvf assets_aarch64-static.tar.gz lib LICENSE ThirdPartyNotice.txt
         shell: bash
       - name: Load Release URL File from release job
@@ -479,6 +484,7 @@ jobs:
         run: |
           python3 build.py build --release
           tar -zcvf assets-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
+          python3 build.py build --release --features "static"
           tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
       - name: Load Release URL File from release job
         uses: actions/download-artifact@v1

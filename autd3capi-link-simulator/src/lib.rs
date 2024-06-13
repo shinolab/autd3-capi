@@ -88,13 +88,20 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
 pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
     simulator: LinkSimulatorBuilderPtr,
 ) -> LinkBuilderPtr {
-    DynamicLinkBuilder::new(SyncLinkBuilder {
-        runtime: tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap(),
-        inner: *take!(simulator, SimulatorBuilder),
-    })
+    #[cfg(feature = "static")]
+    {
+        DynamicLinkBuilder::new(*take!(simulator, SimulatorBuilder))
+    }
+    #[cfg(not(feature = "static"))]
+    {
+        DynamicLinkBuilder::new(SyncLinkBuilder {
+            runtime: tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .unwrap(),
+            inner: *take!(simulator, SimulatorBuilder),
+        })
+    }
 }
 
 #[no_mangle]
@@ -103,13 +110,28 @@ pub unsafe extern "C" fn AUTDLinkSimulatorUpdateGeometry(
     mut simulator: LinkPtr,
     geometry: GeometryPtr,
 ) -> FfiFuture<ResultI32> {
-    async move {
-        let link = simulator.cast_mut::<SyncLink<Simulator>>();
-        let r: ResultI32 = link
-            .runtime
-            .block_on(link.inner.update_geometry(&geometry))
-            .into();
-        r
+    #[cfg(feature = "static")]
+    {
+        async move {
+            let r: ResultI32 = simulator
+                .cast_mut::<Simulator>()
+                .update_geometry(&geometry)
+                .await
+                .into();
+            r
+        }
+        .into_ffi()
     }
-    .into_ffi()
+    #[cfg(not(feature = "static"))]
+    {
+        async move {
+            let link = simulator.cast_mut::<SyncLink<Simulator>>();
+            let r: ResultI32 = link
+                .runtime
+                .block_on(link.inner.update_geometry(&geometry))
+                .into();
+            r
+        }
+        .into_ffi()
+    }
 }

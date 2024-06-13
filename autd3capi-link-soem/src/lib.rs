@@ -277,11 +277,18 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEMWithTimeout(
 pub unsafe extern "C" fn AUTDLinkRemoteSOEMIntoBuilder(
     soem: LinkRemoteSOEMBuilderPtr,
 ) -> LinkBuilderPtr {
-    DynamicLinkBuilder::new(SyncLinkBuilder {
-        runtime: tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap(),
-        inner: *take!(soem, RemoteSOEMBuilder),
-    })
+    #[cfg(feature = "static")]
+    {
+        DynamicLinkBuilder::new(*take!(soem, RemoteSOEMBuilder))
+    }
+    #[cfg(not(feature = "static"))]
+    {
+        DynamicLinkBuilder::new(SyncLinkBuilder {
+            runtime: tokio::runtime::Builder::new_multi_thread()
+                .enable_all()
+                .build()
+                .unwrap(),
+            inner: *take!(soem, RemoteSOEMBuilder),
+        })
+    }
 }

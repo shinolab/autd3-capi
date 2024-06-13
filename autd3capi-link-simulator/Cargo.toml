@@ -7,6 +7,9 @@ license = "MIT"
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
+[features]
+static = []
+
 [dependencies]
 autd3-link-simulator = { workspace = true, features = ["async-trait"] }
 autd3capi-driver = { path = "../autd3capi-driver" }
