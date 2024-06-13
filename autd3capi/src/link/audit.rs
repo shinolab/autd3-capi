@@ -63,8 +63,18 @@ pub unsafe extern "C" fn AUTDLinkAuditDown(mut audit: LinkPtr) {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDLinkAuditUp(mut audit: LinkPtr) {
+    audit.cast_mut::<Audit>().up()
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditBreakDown(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().break_down()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
+    audit.cast_mut::<Audit>().repair()
 }
 
 #[no_mangle]
