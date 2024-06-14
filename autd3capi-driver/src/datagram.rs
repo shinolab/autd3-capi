@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use autd3::derive::{AUTDInternalError, Geometry};
+use autd3::derive::{tracing, AUTDInternalError, Geometry};
 use autd3_driver::{
     datagram::Datagram,
     firmware::operation::{Operation, OperationGenerator},
@@ -33,6 +33,7 @@ pub trait DynamicDatagram {
     >;
     fn timeout(&self) -> Option<Duration>;
     fn parallel_threshold(&self) -> Option<usize>;
+    fn trace(&self, geometry: &Geometry);
 }
 
 impl<
@@ -61,6 +62,11 @@ impl<
 
     fn parallel_threshold(&self) -> Option<usize> {
         <Self as Datagram>::parallel_threshold(self)
+    }
+
+    #[tracing::instrument(skip(self, geometry))]
+    fn trace(&self, geometry: &Geometry) {
+        <Self as Datagram>::trace(self, geometry)
     }
 }
 
@@ -98,6 +104,11 @@ impl Datagram for DynamicDatagramPack {
 
     fn parallel_threshold(&self) -> Option<usize> {
         self.d.parallel_threshold()
+    }
+
+    #[tracing::instrument(skip(self, geometry))]
+    fn trace(&self, geometry: &Geometry) {
+        self.d.trace(geometry)
     }
 }
 

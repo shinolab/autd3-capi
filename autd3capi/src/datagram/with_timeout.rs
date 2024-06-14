@@ -29,6 +29,12 @@ impl DynamicDatagram for DynamicDatagramWithTimeout {
     fn parallel_threshold(&self) -> Option<usize> {
         self.d.parallel_threshold()
     }
+
+    #[tracing::instrument(skip(self, geometry))]
+    fn trace(&self, geometry: &Geometry) {
+        tracing::info!("DynamicDatagramWithTimeout ({:?})", self.timeout);
+        self.d.trace(geometry)
+    }
 }
 
 #[no_mangle]

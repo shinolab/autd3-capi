@@ -64,6 +64,12 @@ impl DynamicDatagram for DynamicDatagramTuple {
             (a, b) => a.or(b),
         }
     }
+
+    #[tracing::instrument(skip(self, geometry))]
+    fn trace(&self, geometry: &Geometry) {
+        self.d1.trace(geometry);
+        self.d2.trace(geometry);
+    }
 }
 
 #[no_mangle]

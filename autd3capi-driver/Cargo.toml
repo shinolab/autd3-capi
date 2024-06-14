@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-driver"
-version = "25.2.1"
+version = "25.2.3"
 edition = "2021"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 
@@ -15,7 +15,7 @@ crate-type = ["rlib"]
 
 [dependencies]
 async-ffi = "0.5.0"
-autd3 = { workspace = true, features = ["async-trait"] }
+autd3 = { workspace = true, features = ["capi", "async-trait"] }
 autd3-driver = { workspace = true, features = ["capi", "derive", "async-trait"] }
 libc = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }

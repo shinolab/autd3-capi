@@ -29,6 +29,15 @@ impl DynamicDatagram for DynamicDatagramWithParallelThreshold {
     fn parallel_threshold(&self) -> Option<usize> {
         Some(self.parallel_threshold)
     }
+
+    #[tracing::instrument(skip(self, geometry))]
+    fn trace(&self, geometry: &Geometry) {
+        tracing::info!(
+            "DynamicDatagramWithParallelThreshold ({:?})",
+            self.parallel_threshold
+        );
+        self.d.trace(geometry)
+    }
 }
 
 #[no_mangle]
