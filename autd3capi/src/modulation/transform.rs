@@ -9,7 +9,7 @@ pub unsafe extern "C" fn AUTDModulationWithTransform(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     ModulationTransform::new(*take!(m, Box<M>), move |i, d| {
-        std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u16, u8) -> u8>(f)(
+        std::mem::transmute::<*const std::ffi::c_void, unsafe extern "C" fn(ConstPtr, u16, u8) -> u8>(f)(
             context, i as _, d,
         )
     })

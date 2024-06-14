@@ -177,7 +177,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
         let (out_f, context) = {
             let ptr = ptr.lock().unwrap();
             (
-                std::mem::transmute::<_, unsafe extern "C" fn(ConstPtr, u32, Status)>(ptr.0),
+                std::mem::transmute::<*const std::ffi::c_void, unsafe extern "C" fn(ConstPtr, u32, Status)>(ptr.0),
                 ptr.1,
             )
         };

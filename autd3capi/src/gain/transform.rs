@@ -9,7 +9,7 @@ pub unsafe extern "C" fn AUTDGainWithTransform(
     geometry: GeometryPtr,
 ) -> GainPtr {
     let f = std::mem::transmute::<
-        _,
+        *const std::ffi::c_void,
         unsafe extern "C" fn(
             ContextPtr,
             GeometryPtr,

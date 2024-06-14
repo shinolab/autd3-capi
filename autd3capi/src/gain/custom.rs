@@ -8,7 +8,7 @@ pub unsafe extern "C" fn AUTDGainCustom(
     geometry: GeometryPtr,
 ) -> GainPtr {
     let f = std::mem::transmute::<
-        _,
+        *const std::ffi::c_void,
         unsafe extern "C" fn(ContextPtr, GeometryPtr, u16, u8, *mut Drive),
     >(f);
     Custom::new(move |dev| {

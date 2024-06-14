@@ -11,7 +11,7 @@ pub unsafe extern "C" fn AUTDDatagramReadsFPGAState(
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
-        _,
+        *const std::ffi::c_void,
         unsafe extern "C" fn(ContextPtr, geometry: GeometryPtr, u16) -> bool,
     >(f);
     ReadsFPGAState::<Box<dyn Fn(&Device) -> bool>>::new(Box::new(move |dev| {

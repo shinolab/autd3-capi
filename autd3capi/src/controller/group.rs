@@ -16,7 +16,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
     d: *const DatagramPtr,
     n: u16,
 ) -> LocalFfiFuture<ResultI32> {
-    let f = std::mem::transmute::<_, unsafe extern "C" fn(ContextPtr, GeometryPtr, u16) -> i32>(f);
+    let f = std::mem::transmute::<*const std::ffi::c_void, unsafe extern "C" fn(ContextPtr, GeometryPtr, u16) -> i32>(f);
     LocalFfiFuture::new(async move {
         let r: ResultI32 = match (0..n).try_fold(
             cnt.inner.group(Box::new(move |dev: &Device| {

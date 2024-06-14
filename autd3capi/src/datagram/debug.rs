@@ -12,7 +12,7 @@ pub unsafe extern "C" fn AUTDDatagramDebugSettings(
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
-        _,
+        *const std::ffi::c_void,
         unsafe extern "C" fn(ContextPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
     >(f);
     DebugSettings::<
