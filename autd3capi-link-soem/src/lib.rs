@@ -20,6 +20,13 @@ pub struct EthernetAdaptersPtr(pub ConstPtr);
 impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit(level: u8) {
+    tracing_subscriber::fmt()
+        .with_max_level(trace_level_into(level))
+        .init();
+}
+
+#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDAdapterPointer() -> EthernetAdaptersPtr {
     EthernetAdaptersPtr(Box::into_raw(Box::new(EthernetAdapters::new())) as _)

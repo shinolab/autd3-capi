@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use autd3capi_driver::{
     autd3::derive::{Geometry, Operation},
-    driver::{error::AUTDInternalError, firmware::operation::OperationGenerator},
+    driver::{derive::tracing, error::AUTDInternalError, firmware::operation::OperationGenerator},
     DatagramPtr, DynamicDatagram,
 };
 

@@ -8,6 +8,9 @@ mod link;
 mod ptr;
 mod result;
 
+use core::panic;
+
+use autd3::derive::tracing;
 pub use autd3_device::*;
 pub use datagram::*;
 pub use ethercat::*;
@@ -52,3 +55,20 @@ pub struct ContextPtr(pub ConstPtr);
 
 unsafe impl Send for ContextPtr {}
 unsafe impl Sync for ContextPtr {}
+
+pub const TRACE_LEVEL_ERROR: u8 = 1;
+pub const TRACE_LEVEL_WARN: u8 = 2;
+pub const TRACE_LEVEL_INFO: u8 = 3;
+pub const TRACE_LEVEL_DEBUG: u8 = 4;
+pub const TRACE_LEVEL_TRACE: u8 = 5;
+
+pub fn trace_level_into(level: u8) -> tracing::Level {
+    match level {
+        TRACE_LEVEL_ERROR => tracing::Level::ERROR,
+        TRACE_LEVEL_WARN => tracing::Level::WARN,
+        TRACE_LEVEL_INFO => tracing::Level::INFO,
+        TRACE_LEVEL_DEBUG => tracing::Level::DEBUG,
+        TRACE_LEVEL_TRACE => tracing::Level::TRACE,
+        _ => panic!("Invalid trace level: {}", level),
+    }
+}

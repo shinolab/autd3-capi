@@ -13,7 +13,7 @@ pub mod with_timeout;
 use std::time::Duration;
 
 use autd3capi_driver::{
-    autd3::derive::{Device, Geometry, Operation},
+    autd3::derive::{tracing, Device, Geometry, Operation},
     driver::{error::AUTDInternalError, firmware::operation::OperationGenerator},
     DatagramPtr, DynamicDatagram,
 };

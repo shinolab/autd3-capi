@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-soem"
-version = "25.3.0"
+version = "25.3.1"
 edition = "2021"
 license = "MIT"
 
@@ -13,3 +13,4 @@ static = []
 [dependencies]
 autd3capi-driver = { path = "../autd3capi-driver" }
 autd3-link-soem = { workspace = true, features = ["local", "remote", "async-trait"] }
+tracing-subscriber = { workspace = true }
