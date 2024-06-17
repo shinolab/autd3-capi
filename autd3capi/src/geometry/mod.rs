@@ -11,7 +11,7 @@ use crate::controller::ControllerPtr;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGeometry(cnt: ControllerPtr) -> GeometryPtr {
-    GeometryPtr(&cnt.inner.geometry as *const _ as _)
+    GeometryPtr(&cnt.geometry as *const _ as _)
 }
 
 #[no_mangle]

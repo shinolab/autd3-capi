@@ -4,11 +4,9 @@ pub mod group;
 use autd3::{error::AUTDError, Controller};
 use autd3capi_driver::{
     async_ffi::{FfiFuture, FutureExt},
-    driver::{
-        datagram::Datagram,
-        firmware::{fpga::FPGAState, version::FirmwareVersion},
-    },
+    driver::firmware::{fpga::FPGAState, version::FirmwareVersion},
 };
+use driver::link::Link;
 
 use std::ffi::c_char;
 
@@ -21,33 +19,7 @@ pub struct ControllerPtr(pub ConstPtr);
 unsafe impl Send for ControllerPtr {}
 unsafe impl Sync for ControllerPtr {}
 
-impl_ptr!(ControllerPtr, ControllerWrap);
-
-// Wrapper for Controller to debug parallel_threshold
-pub struct ControllerWrap {
-    parallel_threshold: usize,
-    last_parallel_threshold: usize,
-    pub inner: Controller<Box<L>>,
-}
-
-impl ControllerWrap {
-    pub async fn send<S: Datagram>(&mut self, s: S) -> Result<(), AUTDError> {
-        self.last_parallel_threshold = s.parallel_threshold().unwrap_or(self.parallel_threshold);
-        self.inner.send(s).await
-    }
-
-    pub async fn close(&mut self) -> Result<(), AUTDError> {
-        self.inner.close().await
-    }
-
-    pub async fn firmware_version(&mut self) -> Result<Vec<FirmwareVersion>, AUTDError> {
-        self.inner.firmware_version().await
-    }
-
-    pub async fn fpga_state(&mut self) -> Result<Vec<Option<FPGAState>>, AUTDError> {
-        self.inner.fpga_state().await
-    }
-}
+impl_ptr!(ControllerPtr, Controller<Box<dyn Link>>);
 
 #[repr(C)]
 
@@ -57,8 +29,8 @@ pub struct ResultController {
     pub err: ConstPtr,
 }
 
-impl From<Result<ControllerWrap, AUTDError>> for ResultController {
-    fn from(r: Result<ControllerWrap, AUTDError>) -> Self {
+impl From<Result<Controller<Box<dyn Link>>, AUTDError>> for ResultController {
+    fn from(r: Result<Controller<Box<dyn Link>>, AUTDError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: ControllerPtr(Box::into_raw(Box::new(v)) as _),
@@ -89,13 +61,13 @@ pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> FfiFutur
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDControllerDelete(cnt: ControllerPtr) {
-    let _ = take!(cnt, ControllerWrap);
+    let _ = take!(cnt, Controller<Box<dyn Link>>);
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerLastParallelThreshold(cnt: ControllerPtr) -> u16 {
-    cnt.last_parallel_threshold as u16
+    cnt.last_parallel_threshold() as u16
 }
 
 #[repr(C)]

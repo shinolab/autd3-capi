@@ -11,7 +11,7 @@ use autd3capi_driver::{
     take, vec_from_raw, ConstPtr, DynamicLinkBuilder, LinkBuilderPtr,
 };
 
-use super::{ControllerWrap, ResultController};
+use super::ResultController;
 
 #[repr(C)]
 pub struct ControllerBuilderPtr(pub ConstPtr);
@@ -104,7 +104,6 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     timeout_ns: i64,
 ) -> FfiFuture<ResultController> {
     let builder = take!(builder, ControllerBuilder);
-    let parallel_threshold = builder.parallel_threshold();
     let link_builder = take!(link_builder, DynamicLinkBuilder);
     async move {
         match timeout_ns {
@@ -115,11 +114,6 @@ pub unsafe extern "C" fn AUTDControllerOpen(
                     .await
             }
         }
-        .map(|c| ControllerWrap {
-            inner: c,
-            parallel_threshold,
-            last_parallel_threshold: parallel_threshold,
-        })
         .into()
     }
     .into_ffi()

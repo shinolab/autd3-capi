@@ -13,14 +13,12 @@ use autd3_modulation_audio_file::{Csv, RawPCM, Wav};
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationWav(
     path: *const c_char,
-    config: SamplingConfigWrap,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path).to_str().map(|path| {
-        Wav::new(path)
-            .with_sampling_config(config.into())
-            .with_loop_behavior(loop_behavior.into())
-    }) {
+    match CStr::from_ptr(path)
+        .to_str()
+        .map(|path| Wav::new(path).with_loop_behavior(loop_behavior.into()))
+    {
         Ok(v) => ResultModulation {
             result: v.into(),
             err_len: 0,

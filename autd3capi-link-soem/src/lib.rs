@@ -103,11 +103,24 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimerStrategy(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkSOEMWithSyncMode(
+pub unsafe extern "C" fn AUTDLinkSOEMWithSyncTolerance(
     soem: LinkSOEMBuilderPtr,
-    mode: SyncMode,
+    tolerance_ns: u64,
 ) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_sync_mode(mode.into()))
+    LinkSOEMBuilderPtr::new(
+        take!(soem, SOEMBuilder).with_sync_tolerance(std::time::Duration::from_nanos(tolerance_ns)),
+    )
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkSOEMWithSyncTimeout(
+    soem: LinkSOEMBuilderPtr,
+    timeout_ns: u64,
+) -> LinkSOEMBuilderPtr {
+    LinkSOEMBuilderPtr::new(
+        take!(soem, SOEMBuilder).with_sync_timeout(std::time::Duration::from_nanos(timeout_ns)),
+    )
 }
 
 #[no_mangle]
@@ -177,7 +190,10 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
         let (out_f, context) = {
             let ptr = ptr.lock().unwrap();
             (
-                std::mem::transmute::<*const std::ffi::c_void, unsafe extern "C" fn(ConstPtr, u32, Status)>(ptr.0),
+                std::mem::transmute::<
+                    *const std::ffi::c_void,
+                    unsafe extern "C" fn(ConstPtr, u32, Status),
+                >(ptr.0),
                 ptr.1,
             )
         };
