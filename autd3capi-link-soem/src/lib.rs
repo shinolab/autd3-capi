@@ -110,6 +110,15 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimerStrategy(
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDLinkSOEMWithSyncMode(
+    soem: LinkSOEMBuilderPtr,
+    mode: SyncMode,
+) -> LinkSOEMBuilderPtr {
+    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_sync_mode(mode.into()))
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMWithSyncTolerance(
     soem: LinkSOEMBuilderPtr,
     tolerance_ns: u64,
