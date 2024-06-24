@@ -10,12 +10,17 @@ use autd3capi_driver::*;
 use autd3_link_twincat::{local::twincat_link::*, remote::remote_twincat_link::*};
 
 #[repr(C)]
-pub struct LinkTwinCATBuilderPtr(pub ConstPtr);
+pub struct LinkTwinCATBuilderPtr(pub *const libc::c_void);
 
 impl LinkTwinCATBuilderPtr {
     pub fn new(builder: TwinCATBuilder) -> Self {
         Self(Box::into_raw(Box::new(builder)) as _)
     }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkTwinCATSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
 }
 
 #[no_mangle]
@@ -45,7 +50,7 @@ pub unsafe extern "C" fn AUTDLinkTwinCATIntoBuilder(
 
 #[repr(C)]
 
-pub struct LinkRemoteTwinCATBuilderPtr(pub ConstPtr);
+pub struct LinkRemoteTwinCATBuilderPtr(pub *const libc::c_void);
 
 impl LinkRemoteTwinCATBuilderPtr {
     pub fn new(builder: RemoteTwinCATBuilder) -> Self {
@@ -72,7 +77,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCAT(
             ResultLinkRemoteTwinCATBuilder {
                 result: LinkRemoteTwinCATBuilderPtr::new(builder),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut()),
             }
         }
         Err(e) => {
@@ -80,7 +85,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCAT(
             ResultLinkRemoteTwinCATBuilder {
                 result: LinkRemoteTwinCATBuilderPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             }
         }
     }

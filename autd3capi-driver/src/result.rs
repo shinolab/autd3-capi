@@ -1,6 +1,7 @@
-use crate::ConstPtr;
 use autd3::prelude::*;
 use autd3_driver::error::AUTDInternalError;
+
+use crate::ConstPtr;
 
 pub const AUTD3_ERR: i32 = -1;
 pub const AUTD3_TRUE: i32 = 1;
@@ -19,7 +20,7 @@ impl From<()> for ResultI32 {
         Self {
             result: AUTD3_TRUE,
             err_len: 0,
-            err: std::ptr::null_mut(),
+            err: ConstPtr(std::ptr::null_mut()),
         }
     }
 }
@@ -29,7 +30,7 @@ impl From<bool> for ResultI32 {
         Self {
             result: if v { AUTD3_TRUE } else { AUTD3_FALSE },
             err_len: 0,
-            err: std::ptr::null_mut(),
+            err: ConstPtr(std::ptr::null_mut()),
         }
     }
 }
@@ -39,7 +40,7 @@ impl From<usize> for ResultI32 {
         Self {
             result: v as i32,
             err_len: 0,
-            err: std::ptr::null_mut(),
+            err: ConstPtr(std::ptr::null_mut()),
         }
     }
 }
@@ -50,7 +51,7 @@ impl From<AUTDInternalError> for ResultI32 {
         Self {
             result: AUTD3_ERR,
             err_len: err.as_bytes().len() as u32 + 1,
-            err: Box::into_raw(Box::new(err)) as _,
+            err: ConstPtr(Box::into_raw(Box::new(err)) as _),
         }
     }
 }
@@ -61,7 +62,7 @@ impl From<AUTDError> for ResultI32 {
         Self {
             result: AUTD3_ERR,
             err_len: err.as_bytes().len() as u32 + 1,
-            err: Box::into_raw(Box::new(err)) as _,
+            err: ConstPtr(Box::into_raw(Box::new(err)) as _),
         }
     }
 }
@@ -75,6 +76,90 @@ where
         match r {
             Ok(t) => t.into(),
             Err(e) => e.into(),
+        }
+    }
+}
+
+#[repr(C)]
+
+pub struct ResultU32 {
+    pub result: u32,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<u32, AUTDInternalError>> for ResultU32 {
+    fn from(r: Result<u32, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v,
+                err_len: 0,
+                err: ConstPtr(std::ptr::null_mut()),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: 0,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                }
+            }
+        }
+    }
+}
+
+#[repr(C)]
+
+pub struct ResultF32 {
+    pub result: f32,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<f32, AUTDInternalError>> for ResultF32 {
+    fn from(r: Result<f32, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v,
+                err_len: 0,
+                err: ConstPtr(std::ptr::null_mut()),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: 0.,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                }
+            }
+        }
+    }
+}
+
+#[repr(C)]
+
+pub struct ResultU64 {
+    pub result: u64,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<u64, AUTDInternalError>> for ResultU64 {
+    fn from(r: Result<u64, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v,
+                err_len: 0,
+                err: ConstPtr(std::ptr::null_mut()),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: 0,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                }
+            }
         }
     }
 }

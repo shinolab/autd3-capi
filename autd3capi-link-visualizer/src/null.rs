@@ -36,7 +36,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Null(
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct NullPlotConfigPtr(pub ConstPtr);
+pub struct NullPlotConfigPtr(pub *const libc::c_void);
 
 #[no_mangle]
 #[must_use]

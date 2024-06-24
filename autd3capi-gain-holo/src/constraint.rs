@@ -4,7 +4,6 @@ use autd3_gain_holo::*;
 
 #[repr(u8)]
 enum EmissionConstraintTag {
-    DontCare = 0,
     Normalize = 1,
     Uniform = 2,
     Multiply = 3,
@@ -28,7 +27,6 @@ pub struct EmissionConstraintWrap {
 impl From<EmissionConstraintWrap> for EmissionConstraint {
     fn from(value: EmissionConstraintWrap) -> Self {
         match value.tag {
-            EmissionConstraintTag::DontCare => EmissionConstraint::DontCare,
             EmissionConstraintTag::Normalize => EmissionConstraint::Normalize,
             EmissionConstraintTag::Uniform => {
                 EmissionConstraint::Uniform(unsafe { value.value.uniform.into() })
@@ -48,10 +46,6 @@ impl From<EmissionConstraintWrap> for EmissionConstraint {
 impl From<EmissionConstraint> for EmissionConstraintWrap {
     fn from(value: EmissionConstraint) -> Self {
         match value {
-            EmissionConstraint::DontCare => EmissionConstraintWrap {
-                tag: EmissionConstraintTag::DontCare,
-                value: EmissionConstraintValue { null: 0 },
-            },
             EmissionConstraint::Normalize => EmissionConstraintWrap {
                 tag: EmissionConstraintTag::Normalize,
                 value: EmissionConstraintValue { null: 0 },
@@ -70,14 +64,9 @@ impl From<EmissionConstraint> for EmissionConstraintWrap {
                     clamp: [min.value(), max.value()],
                 },
             },
+            _ => unimplemented!(),
         }
     }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainHoloConstraintDotCare() -> EmissionConstraintWrap {
-    autd3_gain_holo::EmissionConstraint::DontCare.into()
 }
 
 #[no_mangle]

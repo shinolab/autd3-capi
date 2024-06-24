@@ -25,10 +25,16 @@ pub use autd3_driver as driver;
 pub use libc;
 pub use tokio;
 
-pub type ConstPtr = *const libc::c_void;
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct ConstPtr(pub *const libc::c_void);
+
+unsafe impl Send for ConstPtr {}
+unsafe impl Sync for ConstPtr {}
+
 pub type L = dyn autd3_driver::link::Link;
-pub type G = dyn autd3_driver::datagram::Gain;
-pub type M = dyn autd3_driver::datagram::Modulation;
+pub type G = dyn autd3_driver::datagram::Gain + Send + Sync;
+pub type M = dyn autd3_driver::datagram::Modulation + Send + Sync;
 
 pub use autd3_driver::geometry::Vector3;
 
@@ -48,13 +54,6 @@ macro_rules! take {
         Box::from_raw($ptr.0 as *mut $type)
     };
 }
-
-#[derive(Clone, Copy)]
-#[repr(C)]
-pub struct ContextPtr(pub ConstPtr);
-
-unsafe impl Send for ContextPtr {}
-unsafe impl Sync for ContextPtr {}
 
 pub const TRACE_LEVEL_ERROR: u8 = 1;
 pub const TRACE_LEVEL_WARN: u8 = 2;

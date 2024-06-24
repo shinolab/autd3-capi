@@ -38,9 +38,9 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Python(
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct PyPlotConfigPtr(pub ConstPtr);
+pub struct PyPlotConfigPtr(pub *const libc::c_void);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ResultPyPlotConfig {
     pub result: PyPlotConfigPtr,
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfig(
                     return ResultPyPlotConfig {
                         result: PyPlotConfigPtr(std::ptr::null()),
                         err_len: err.as_bytes().len() as u32 + 1,
-                        err: Box::into_raw(Box::new(err)) as _,
+                        err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                     };
                 }
             }
@@ -98,7 +98,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPyPlotConfig(
             fname: fname.into(),
         })) as _),
         err_len: 0,
-        err: std::ptr::null_mut(),
+        err: ConstPtr(std::ptr::null_mut()),
     }
 }
 

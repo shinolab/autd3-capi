@@ -5,13 +5,13 @@ use autd3capi_driver::{driver::datagram::GainTransform, *};
 pub unsafe extern "C" fn AUTDGainWithTransform(
     g: GainPtr,
     f: ConstPtr,
-    context: ContextPtr,
+    context: ConstPtr,
     geometry: GeometryPtr,
 ) -> GainPtr {
     let f = std::mem::transmute::<
-        *const std::ffi::c_void,
+        ConstPtr,
         unsafe extern "C" fn(
-            ContextPtr,
+            ConstPtr,
             GeometryPtr,
             u32,
             u8,

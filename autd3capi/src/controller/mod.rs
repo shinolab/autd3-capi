@@ -14,7 +14,7 @@ use autd3capi_driver::*;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct ControllerPtr(pub ConstPtr);
+pub struct ControllerPtr(pub *const libc::c_void);
 
 unsafe impl Send for ControllerPtr {}
 unsafe impl Sync for ControllerPtr {}
@@ -35,14 +35,14 @@ impl From<Result<Controller<Box<dyn Link>>, AUTDError>> for ResultController {
             Ok(v) => Self {
                 result: ControllerPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut())
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: ControllerPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
                 }
             }
         }
@@ -71,7 +71,7 @@ pub unsafe extern "C" fn AUTDControllerLastParallelThreshold(cnt: ControllerPtr)
 }
 
 #[repr(C)]
-pub struct FPGAStateListPtr(pub ConstPtr);
+pub struct FPGAStateListPtr(pub *const libc::c_void);
 
 #[repr(C)]
 
@@ -95,14 +95,14 @@ impl From<Result<Vec<Option<FPGAState>>, AUTDError>> for ResultFPGAStateList {
             Ok(v) => Self {
                 result: FPGAStateListPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut())
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: FPGAStateListPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
                 }
             }
         }
@@ -132,7 +132,7 @@ pub unsafe extern "C" fn AUTDControllerFPGAStateDelete(p: FPGAStateListPtr) {
 }
 
 #[repr(C)]
-pub struct FirmwareVersionListPtr(pub ConstPtr);
+pub struct FirmwareVersionListPtr(pub *const libc::c_void);
 
 #[repr(C)]
 
@@ -156,14 +156,14 @@ impl From<Result<Vec<FirmwareVersion>, AUTDError>> for ResultFirmwareVersionList
             Ok(v) => Self {
                 result: FirmwareVersionListPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut())
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: FirmwareVersionListPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
                 }
             }
         }

@@ -5,7 +5,6 @@ mod timer_strategy;
 use std::{
     ffi::{c_char, CStr, CString},
     net::SocketAddr,
-    sync::{Arc, Mutex},
     time::Duration,
 };
 
@@ -15,9 +14,14 @@ use autd3_link_soem::{local::link_soem::*, remote::link_soem_remote::*, Ethernet
 use timer_strategy::TimerStrategy;
 
 #[repr(C)]
-pub struct EthernetAdaptersPtr(pub ConstPtr);
+pub struct EthernetAdaptersPtr(pub *const libc::c_void);
 
 impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkSOEMSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit(level: u8) {
@@ -58,7 +62,7 @@ pub unsafe extern "C" fn AUTDAdapterPointerDelete(adapters: EthernetAdaptersPtr)
 }
 
 #[repr(C)]
-pub struct LinkSOEMBuilderPtr(pub ConstPtr);
+pub struct LinkSOEMBuilderPtr(pub *const libc::c_void);
 
 impl LinkSOEMBuilderPtr {
     pub fn new(builder: SOEMBuilder) -> Self {
@@ -161,9 +165,6 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithStateCheckInterval(
     )
 }
 
-struct SOEMCallbackPtr(ConstPtr, ConstPtr);
-unsafe impl Send for SOEMCallbackPtr {}
-
 #[repr(u8)]
 pub enum Status {
     Error = 0,
@@ -197,20 +198,17 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
     handler: ConstPtr,
     context: ConstPtr,
 ) -> LinkSOEMBuilderPtr {
-    if handler.is_null() {
+    if handler.0.is_null() {
         return soem;
     }
 
-    let ptr = Arc::new(Mutex::new(SOEMCallbackPtr(handler, context)));
     let out_func = move |slave: usize, status: autd3_link_soem::Status| {
         let (out_f, context) = {
-            let ptr = ptr.lock().unwrap();
             (
-                std::mem::transmute::<
-                    *const std::ffi::c_void,
-                    unsafe extern "C" fn(ConstPtr, u32, Status),
-                >(ptr.0),
-                ptr.1,
+                std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ConstPtr, u32, Status)>(
+                    handler,
+                ),
+                context,
             )
         };
         match status {
@@ -245,7 +243,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMIntoBuilder(soem: LinkSOEMBuilderPtr) -> Li
 
 #[repr(C)]
 
-pub struct LinkRemoteSOEMBuilderPtr(pub ConstPtr);
+pub struct LinkRemoteSOEMBuilderPtr(pub *const libc::c_void);
 
 impl LinkRemoteSOEMBuilderPtr {
     pub fn new(builder: RemoteSOEMBuilder) -> Self {
@@ -271,7 +269,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEM(addr: *const c_char) -> ResultLinkRe
             return ResultLinkRemoteSOEMBuilder {
                 result: LinkRemoteSOEMBuilderPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
     };
@@ -282,14 +280,14 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEM(addr: *const c_char) -> ResultLinkRe
             return ResultLinkRemoteSOEMBuilder {
                 result: LinkRemoteSOEMBuilderPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
     };
     ResultLinkRemoteSOEMBuilder {
         result: LinkRemoteSOEMBuilderPtr::new(RemoteSOEM::builder(addr)),
         err_len: 0,
-        err: std::ptr::null_mut(),
+        err: ConstPtr(std::ptr::null_mut()),
     }
 }
 

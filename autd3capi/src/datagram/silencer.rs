@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use autd3capi_driver::{
     driver::datagram::{Silencer, SilencerFixedCompletionSteps},
     take, DatagramPtr,
@@ -5,23 +7,38 @@ use autd3capi_driver::{
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRate(
+pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
     value_intensity: u16,
     value_phase: u16,
 ) -> DatagramPtr {
-    Silencer::fixed_update_rate(value_intensity, value_phase).into()
+    Silencer::from_update_rate(value_intensity, value_phase).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionSteps(
+pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionSteps(
     value_intensity: u16,
     value_phase: u16,
     strict_mode: bool,
 ) -> DatagramPtr {
-    Silencer::fixed_completion_steps(value_intensity, value_phase)
+    Silencer::from_completion_steps(value_intensity, value_phase)
         .with_strict_mode(strict_mode)
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
+    value_intensity: u64,
+    value_phase: u64,
+    strict_mode: bool,
+) -> DatagramPtr {
+    Silencer::from_completion_time(
+        Duration::from_nanos(value_intensity),
+        Duration::from_nanos(value_phase),
+    )
+    .with_strict_mode(strict_mode)
+    .into()
 }
 
 #[no_mangle]

@@ -14,7 +14,7 @@ use autd3capi_driver::*;
 use constraint::EmissionConstraintWrap;
 
 #[repr(C)]
-pub struct BackendPtr(pub ConstPtr);
+pub struct BackendPtr(pub *const libc::c_void);
 
 #[repr(C)]
 
@@ -22,6 +22,11 @@ pub struct ResultBackend {
     pub result: BackendPtr,
     pub err_len: u32,
     pub err: ConstPtr,
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDGainHoloSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
 }
 
 #[no_mangle]

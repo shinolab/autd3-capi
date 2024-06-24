@@ -13,7 +13,7 @@ use autd3_link_simulator::*;
 
 #[repr(C)]
 
-pub struct LinkSimulatorBuilderPtr(pub ConstPtr);
+pub struct LinkSimulatorBuilderPtr(pub *const libc::c_void);
 
 impl LinkSimulatorBuilderPtr {
     pub fn new(builder: SimulatorBuilder) -> Self {
@@ -27,6 +27,11 @@ pub struct ResultLinkSimulatorBuilder {
     pub result: LinkSimulatorBuilderPtr,
     pub err_len: u32,
     pub err: ConstPtr,
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkSimulatorSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
 }
 
 #[no_mangle]
@@ -48,7 +53,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
             return ResultLinkSimulatorBuilder {
                 result: LinkSimulatorBuilderPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
     };
@@ -59,7 +64,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
             return ResultLinkSimulatorBuilder {
                 result: LinkSimulatorBuilderPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
     };
@@ -68,7 +73,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
             take!(simulator, SimulatorBuilder).with_server_ip(addr),
         ),
         err_len: 0,
-        err: std::ptr::null_mut(),
+        err: ConstPtr(std::ptr::null_mut()),
     }
 }
 

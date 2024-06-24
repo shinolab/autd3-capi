@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use autd3capi_driver::{
     driver::{datagram::GainSTM, defined::Hz},
     *,
@@ -34,16 +36,66 @@ pub unsafe extern "C" fn AUTDSTMGainFromFreqNearest(
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDSTMGainFromPeriod(
+    period: u64,
+    gains: *const GainPtr,
+    size: u16,
+) -> ResultGainSTM {
+    GainSTM::<Box<G>>::from_period(
+        Duration::from_nanos(period),
+        (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
+    )
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainFromPeriodNearest(
+    period: u64,
+    gains: *const GainPtr,
+    size: u16,
+) -> ResultGainSTM {
+    GainSTM::<Box<G>>::from_period_nearest(
+        Duration::from_nanos(period),
+        (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
+    )
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDSTMGainFromSamplingConfig(
     config: SamplingConfigWrap,
     gains: *const GainPtr,
     size: u16,
 ) -> GainSTMPtr {
     GainSTM::<Box<G>>::from_sampling_config(
-        config.into(),
+        config,
         (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
     )
     .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainFreq(stm: GainSTMPtr) -> ResultF32 {
+    (stm.0 as *const GainSTM<Box<G>>)
+        .as_ref()
+        .unwrap()
+        .freq()
+        .map(|v| v.hz())
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainPeriod(stm: GainSTMPtr) -> ResultU64 {
+    (stm.0 as *const GainSTM<Box<G>>)
+        .as_ref()
+        .unwrap()
+        .period()
+        .map(|v| v.as_nanos() as u64)
+        .into()
 }
 
 #[no_mangle]

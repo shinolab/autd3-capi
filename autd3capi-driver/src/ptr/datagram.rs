@@ -3,7 +3,7 @@ use autd3::derive::AUTDInternalError;
 use crate::{take, ConstPtr, DynamicDatagram};
 
 #[repr(C)]
-pub struct DatagramPtr(pub ConstPtr);
+pub struct DatagramPtr(pub *const libc::c_void);
 
 unsafe impl Send for DatagramPtr {}
 unsafe impl Sync for DatagramPtr {}
@@ -43,14 +43,14 @@ impl<T: DynamicDatagram> From<Result<T, AUTDInternalError>> for ResultDatagram {
             Ok(v) => Self {
                 result: v.into(),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: DatagramPtr::NULL,
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }

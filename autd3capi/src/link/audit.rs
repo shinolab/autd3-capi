@@ -4,7 +4,7 @@ use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
 use std::time::Duration;
 
 #[repr(C)]
-pub struct LinkAuditBuilderPtr(pub ConstPtr);
+pub struct LinkAuditBuilderPtr(pub *const libc::c_void);
 
 impl LinkAuditBuilderPtr {
     pub fn new(builder: AuditBuilder) -> Self {

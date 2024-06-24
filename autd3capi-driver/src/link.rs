@@ -10,13 +10,13 @@ use autd3_driver::{
     link::{Link, LinkBuilder},
 };
 
-use crate::{impl_ptr, ConstPtr, L};
+use crate::{impl_ptr, L};
 
 #[repr(C)]
-pub struct LinkBuilderPtr(pub ConstPtr);
+pub struct LinkBuilderPtr(pub *const libc::c_void);
 
 #[repr(C)]
-pub struct LinkPtr(pub ConstPtr);
+pub struct LinkPtr(pub *const libc::c_void);
 
 unsafe impl Send for LinkPtr {}
 unsafe impl Sync for LinkPtr {}

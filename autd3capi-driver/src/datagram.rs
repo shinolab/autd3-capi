@@ -36,13 +36,7 @@ pub trait DynamicDatagram {
     fn trace(&self, geometry: &Geometry);
 }
 
-impl<
-        O1: Operation + 'static,
-        O2: Operation + 'static,
-        G: OperationGenerator + 'static,
-        D: Datagram<O1 = O1, O2 = O2, G = G> + Default,
-    > DynamicDatagram for D
-{
+impl<G: OperationGenerator + 'static, D: Datagram<G = G> + Default> DynamicDatagram for D {
     fn operation_generator(
         &mut self,
         geometry: &Geometry,
@@ -88,8 +82,6 @@ pub struct DynamicDatagramPack {
 }
 
 impl Datagram for DynamicDatagramPack {
-    type O1 = Box<dyn Operation>;
-    type O2 = Box<dyn Operation>;
     type G = DynamicOperationGeneratorPack;
 
     fn operation_generator(mut self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {

@@ -17,7 +17,7 @@ pub unsafe extern "C" fn AUTDModulationSquareExact(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(config.into())
+        .with_sampling_config(config)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -36,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Square::new(freq * Hz)
-        .with_sampling_config(config.into())
+        .with_sampling_config(config)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
@@ -54,8 +54,8 @@ pub unsafe extern "C" fn AUTDModulationSquareNearest(
     duty: f32,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
-    Square::with_freq_nearest(freq * Hz)
-        .with_sampling_config(config.into())
+    Square::from_freq_nearest(freq * Hz)
+        .with_sampling_config(config)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)

@@ -11,7 +11,7 @@ pub mod r#static;
 pub mod transform;
 
 #[repr(C)]
-pub struct ModulationCalcPtr(pub ConstPtr);
+pub struct ModulationCalcPtr(pub *const libc::c_void);
 
 impl_ptr!(ModulationCalcPtr, Vec<u8>);
 
@@ -30,7 +30,7 @@ impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultMo
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
                 config,
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut())
             },
             (Err(e), config) => {
                 let err = e.to_string();
@@ -38,7 +38,7 @@ impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultMo
                     result: ModulationCalcPtr(std::ptr::null()),
                     config,
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
                 }
             }
         }

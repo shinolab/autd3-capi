@@ -4,12 +4,12 @@ use autd3capi_driver::{autd3::gain::Custom, *};
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCustom(
     f: ConstPtr,
-    context: ContextPtr,
+    context: ConstPtr,
     geometry: GeometryPtr,
 ) -> GainPtr {
     let f = std::mem::transmute::<
-        *const std::ffi::c_void,
-        unsafe extern "C" fn(ContextPtr, GeometryPtr, u16, u8, *mut Drive),
+        ConstPtr,
+        unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u8, *mut Drive),
     >(f);
     Custom::new(move |dev| {
         let dev_idx = dev.idx() as _;

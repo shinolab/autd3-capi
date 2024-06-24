@@ -38,9 +38,9 @@ pub unsafe extern "C" fn AUTDLinkVisualizerT4010A1Plotters(
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct PlotConfigPtr(pub ConstPtr);
+pub struct PlotConfigPtr(pub *const libc::c_void);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ResultPlotConfig {
     pub result: PlotConfigPtr,
@@ -106,7 +106,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfig(
             return ResultPlotConfig {
                 result: PlotConfigPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
     };
@@ -122,7 +122,7 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotConfig(
             fname: fname.into(),
         })) as _),
         err_len: 0,
-        err: std::ptr::null_mut(),
+        err: ConstPtr(std::ptr::null_mut()),
     }
 }
 

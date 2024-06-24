@@ -1,18 +1,17 @@
 use autd3capi_driver::{
-    autd3::derive::Device, driver::datagram::PulseWidthEncoder, ConstPtr, ContextPtr, DatagramPtr,
-    GeometryPtr,
+    autd3::derive::Device, driver::datagram::PulseWidthEncoder, ConstPtr, DatagramPtr, GeometryPtr,
 };
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder(
     f: ConstPtr,
-    context: ContextPtr,
+    context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
-        *const std::ffi::c_void,
-        unsafe extern "C" fn(ContextPtr, GeometryPtr, u16, u16) -> u16,
+        ConstPtr,
+        unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u16) -> u16,
     >(f);
     PulseWidthEncoder::<
         Box<dyn Fn(usize) -> u16 + Send + Sync>,

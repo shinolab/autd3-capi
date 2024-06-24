@@ -5,16 +5,15 @@ use autd3capi_driver::{
     autd3::{controller::ControllerBuilder, Controller},
     driver::{
         autd3_device::AUTD3,
-        defined::Hz,
         geometry::{Quaternion, UnitQuaternion, Vector3},
     },
-    take, vec_from_raw, ConstPtr, DynamicLinkBuilder, LinkBuilderPtr,
+    take, vec_from_raw, DynamicLinkBuilder, LinkBuilderPtr,
 };
 
 use super::ResultController;
 
 #[repr(C)]
-pub struct ControllerBuilderPtr(pub ConstPtr);
+pub struct ControllerBuilderPtr(pub *const libc::c_void);
 
 impl ControllerBuilderPtr {
     pub fn new(builder: ControllerBuilder) -> Self {
@@ -37,18 +36,6 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
             .zip(rot)
             .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
     ))
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithUltrasoundFreq(
-    builder: ControllerBuilderPtr,
-    ultrasound_freq: u32,
-) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(
-        take!(builder, ControllerBuilder).with_ultrasound_freq(ultrasound_freq * Hz),
-    )
 }
 
 #[no_mangle]

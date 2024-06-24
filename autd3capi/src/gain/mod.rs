@@ -15,7 +15,7 @@ pub mod transform;
 pub mod uniform;
 
 #[repr(C)]
-pub struct GainCalcDrivesMapPtr(pub ConstPtr);
+pub struct GainCalcDrivesMapPtr(pub *const libc::c_void);
 
 #[repr(C)]
 
@@ -33,14 +33,14 @@ impl From<Result<HashMap<usize, Vec<autd3::prelude::Drive>>, AUTDInternalError>>
             Ok(v) => Self {
                 result: GainCalcDrivesMapPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut())
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: GainCalcDrivesMapPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
                 }
             }
         }

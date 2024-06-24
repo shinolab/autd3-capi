@@ -1,6 +1,6 @@
 [package]
 name = "autd3capi-link-simulator"
-version = "25.3.2"
+version = "26.0.0-alpha.1"
 edition = "2021"
 license = "MIT"
 

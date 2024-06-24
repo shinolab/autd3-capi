@@ -1,19 +1,19 @@
 use autd3capi_driver::{
     autd3::derive::Device,
     driver::{datagram::DebugSettings, firmware::fpga::DebugType},
-    ConstPtr, ContextPtr, DatagramPtr, DebugTypeWrap, GPIOOut, GeometryPtr,
+    ConstPtr, DatagramPtr, DebugTypeWrap, GPIOOut, GeometryPtr,
 };
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramDebugSettings(
     f: ConstPtr,
-    context: ContextPtr,
+    context: ConstPtr,
     geometry: GeometryPtr,
 ) -> DatagramPtr {
     let f = std::mem::transmute::<
-        *const std::ffi::c_void,
-        unsafe extern "C" fn(ContextPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
+        ConstPtr,
+        unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
     >(f);
     DebugSettings::<
         Box<dyn Fn(&Device, autd3capi_driver::autd3::prelude::GPIOOut) -> DebugType + Send + Sync>,

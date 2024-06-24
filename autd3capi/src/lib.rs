@@ -4,7 +4,7 @@ use autd3capi_driver::{
     async_ffi::{FfiFuture, LocalFfiFuture},
     impl_ptr,
     tokio::{self, runtime::Runtime},
-    trace_level_into, ConstPtr, ResultI32,
+    trace_level_into, ResultI32,
 };
 use controller::{ResultController, ResultFPGAStateList, ResultFirmwareVersionList};
 
@@ -19,12 +19,17 @@ pub mod result;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct RuntimePtr(pub ConstPtr);
+pub struct RuntimePtr(pub *const libc::c_void);
 
 unsafe impl Send for RuntimePtr {}
 unsafe impl Sync for RuntimePtr {}
 
 impl_ptr!(RuntimePtr, Runtime);
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
+}
 
 #[no_mangle]
 #[must_use]

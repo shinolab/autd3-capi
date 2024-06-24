@@ -1,11 +1,11 @@
 use autd3_driver::derive::Gain;
 
-use crate::{ConstPtr, G};
+use crate::G;
 
 #[repr(C)]
-pub struct GainPtr(pub ConstPtr);
+pub struct GainPtr(pub *const libc::c_void);
 
-impl<T: Gain + 'static> From<T> for GainPtr {
+impl<T: Gain + Send + Sync + 'static> From<T> for GainPtr {
     fn from(g: T) -> Self {
         let g: Box<Box<G>> = Box::new(Box::new(g));
         Self(Box::into_raw(g) as _)

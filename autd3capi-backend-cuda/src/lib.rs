@@ -23,20 +23,25 @@ macro_rules! create_holo {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDCUDASetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
+}
+
+#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDCUDABackend() -> ResultBackend {
     match CUDABackend::new() {
         Ok(b) => ResultBackend {
             result: BackendPtr(Box::into_raw(Box::new(b)) as _),
             err_len: 0,
-            err: std::ptr::null_mut(),
+            err: ConstPtr(std::ptr::null_mut()),
         },
         Err(e) => {
             let err = e.to_string();
             ResultBackend {
                 result: BackendPtr(std::ptr::null()),
                 err_len: err.as_bytes().len() as u32 + 1,
-                err: Box::into_raw(Box::new(err)) as _,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             }
         }
     }

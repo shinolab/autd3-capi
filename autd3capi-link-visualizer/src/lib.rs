@@ -28,11 +28,11 @@ pub enum Directivity {
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct ConfigPtr(pub ConstPtr);
+pub struct ConfigPtr(pub *const libc::c_void);
 
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
-pub struct PlotRangePtr(pub ConstPtr);
+pub struct PlotRangePtr(pub *const libc::c_void);
 
 impl_ptr!(PlotRangePtr, PlotRange);
 
@@ -72,6 +72,11 @@ macro_rules! match_visualizer_plot {
             },
         }
     };
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDLinkVisualizerSetUltrasoundFreq(f: u32) {
+    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
 }
 
 #[no_mangle]
@@ -177,14 +182,14 @@ macro_rules! into_result {
             Ok(_) => ResultI32 {
                 result: AUTD3_TRUE,
                 err_len: 0,
-                err: std::ptr::null_mut(),
+                err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 ResultI32 {
                     result: 0,
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: Box::into_raw(Box::new(err)) as _,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }

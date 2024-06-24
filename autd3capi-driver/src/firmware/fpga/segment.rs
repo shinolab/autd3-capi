@@ -19,6 +19,7 @@ impl From<autd3::prelude::Segment> for Segment {
         match segment {
             autd3::prelude::Segment::S0 => Segment::S0,
             autd3::prelude::Segment::S1 => Segment::S1,
+            _ => unimplemented!(),
         }
     }
 }
