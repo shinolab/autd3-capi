@@ -86,13 +86,10 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagram(m: ModulationPtr) -> Datagra
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationCalc(
-    m: ModulationPtr,
-    geometry: GeometryPtr,
-) -> ResultModulationCalc {
+pub unsafe extern "C" fn AUTDModulationCalc(m: ModulationPtr) -> ResultModulationCalc {
     let m = take!(m, Box<M>);
     let config = m.sampling_config();
-    (m.calc(&geometry), config.into()).into()
+    (m.calc(), config.into()).into()
 }
 
 #[no_mangle]

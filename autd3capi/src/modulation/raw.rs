@@ -10,7 +10,7 @@ pub struct RawModulation {
 }
 
 impl Modulation for RawModulation {
-    fn calc(&self, _geometry: &Geometry) -> ModulationCalcResult {
+    fn calc(&self) -> ModulationCalcResult {
         Ok(self.buf.clone())
     }
 }

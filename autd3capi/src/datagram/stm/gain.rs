@@ -8,7 +8,7 @@ pub unsafe extern "C" fn AUTDSTMGain(
     gains: *const GainPtr,
     size: u16,
 ) -> ResultGainSTM {
-    GainSTM::<Box<G>>::from_stm_sampling_config::<(), _>(
+    GainSTM::<Box<G>>::from_stm_sampling_config(
         config.into(),
         (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
     )
