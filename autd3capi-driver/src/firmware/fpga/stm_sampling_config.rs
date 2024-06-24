@@ -14,7 +14,7 @@ enum STMSamplingConfigTag {
 }
 
 #[repr(C)]
-union SamplingConfigValue {
+union STMSamplingConfigValue {
     freq: f32,
     period_ns: u64,
     sampling_config: SamplingConfigWrap,
@@ -23,7 +23,7 @@ union SamplingConfigValue {
 #[repr(C)]
 pub struct STMSamplingConfigWrap {
     tag: STMSamplingConfigTag,
-    value: SamplingConfigValue,
+    value: STMSamplingConfigValue,
 }
 
 impl From<STMSamplingConfigWrap> for autd3_driver::firmware::fpga::STMSamplingConfig {
@@ -61,27 +61,27 @@ impl From<autd3_driver::firmware::fpga::STMSamplingConfig> for STMSamplingConfig
         match value {
             STMSamplingConfig::Freq(c) => STMSamplingConfigWrap {
                 tag: STMSamplingConfigTag::Freq,
-                value: SamplingConfigValue { freq: c.hz() },
+                value: STMSamplingConfigValue { freq: c.hz() },
             },
             STMSamplingConfig::FreqNearest(c) => STMSamplingConfigWrap {
                 tag: STMSamplingConfigTag::FreqNearest,
-                value: SamplingConfigValue { freq: c.hz() },
+                value: STMSamplingConfigValue { freq: c.hz() },
             },
             STMSamplingConfig::Period(c) => STMSamplingConfigWrap {
                 tag: STMSamplingConfigTag::Period,
-                value: SamplingConfigValue {
+                value: STMSamplingConfigValue {
                     period_ns: c.as_nanos() as u64,
                 },
             },
             STMSamplingConfig::PeriodNearest(c) => STMSamplingConfigWrap {
                 tag: STMSamplingConfigTag::PeriodNearest,
-                value: SamplingConfigValue {
+                value: STMSamplingConfigValue {
                     period_ns: c.as_nanos() as u64,
                 },
             },
             STMSamplingConfig::SamplingConfig(c) => STMSamplingConfigWrap {
                 tag: STMSamplingConfigTag::SamplingConfig,
-                value: SamplingConfigValue {
+                value: STMSamplingConfigValue {
                     sampling_config: c.into(),
                 },
             },
