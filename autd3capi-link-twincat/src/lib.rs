@@ -19,11 +19,6 @@ impl LinkTwinCATBuilderPtr {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkTwinCATSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkTwinCAT() -> LinkTwinCATBuilderPtr {
     LinkTwinCATBuilderPtr::new(TwinCAT::builder())

@@ -27,11 +27,6 @@ unsafe impl Sync for RuntimePtr {}
 impl_ptr!(RuntimePtr, Runtime);
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDCreateRuntime() -> RuntimePtr {
     RuntimePtr(Box::into_raw(Box::new(

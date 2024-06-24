@@ -25,11 +25,6 @@ pub struct ResultBackend {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDGainHoloSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f32) -> f32 {
     (value * dB).pascal()

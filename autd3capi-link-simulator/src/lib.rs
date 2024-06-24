@@ -30,11 +30,6 @@ pub struct ResultLinkSimulatorBuilder {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkSimulatorSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSimulator(port: u16) -> LinkSimulatorBuilderPtr {
     LinkSimulatorBuilderPtr::new(Simulator::builder(port))

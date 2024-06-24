@@ -42,21 +42,21 @@ pub unsafe extern "C" fn AUTDSTMSamplingConfigFromSamplingConfig(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMSamplingFreq(c: STMSamplingConfigWrap, n: u32) -> ResultF32 {
+pub unsafe extern "C" fn AUTDSTMFreq(c: STMSamplingConfigWrap, n: u32) -> ResultF32 {
     STMSamplingConfig::from(c)
         .sampling(n as _)
         .and_then(|c| c.freq())
-        .map(|f| f.hz())
+        .map(|f| f.hz() / n as f32)
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMSamplingPeriod(c: STMSamplingConfigWrap, n: u32) -> ResultU64 {
+pub unsafe extern "C" fn AUTDSTMPeriod(c: STMSamplingConfigWrap, n: u32) -> ResultU64 {
     STMSamplingConfig::from(c)
         .sampling(n as _)
         .and_then(|c| c.period())
-        .map(|f| f.as_nanos() as u64)
+        .map(|f| (f * n).as_nanos() as u64)
         .into()
 }
 

@@ -75,11 +75,6 @@ macro_rules! match_visualizer_plot {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkVisualizerSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkVisualizerPlotRange(
     x_min: f32,

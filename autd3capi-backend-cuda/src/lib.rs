@@ -23,11 +23,6 @@ macro_rules! create_holo {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDCUDASetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDCUDABackend() -> ResultBackend {
     match CUDABackend::new() {

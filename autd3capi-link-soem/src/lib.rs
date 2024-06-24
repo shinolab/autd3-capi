@@ -19,11 +19,6 @@ pub struct EthernetAdaptersPtr(pub *const libc::c_void);
 impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkSOEMSetUltrasoundFreq(f: u32) {
-    autd3capi_driver::driver::set_ultrasound_freq(f * autd3capi_driver::driver::defined::Hz);
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit(level: u8) {
     tracing_subscriber::fmt()
         .with_max_level(trace_level_into(level))
