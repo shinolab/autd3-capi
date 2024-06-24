@@ -135,6 +135,12 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditCpuSilencerStrictMode(audit: LinkPtr, idx: u16) -> bool {
+    audit.cast::<Audit>()[idx as usize].silencer_strict_mode()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
     audit: LinkPtr,
     idx: u16,

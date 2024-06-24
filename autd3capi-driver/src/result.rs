@@ -1,7 +1,7 @@
 use autd3::prelude::*;
 use autd3_driver::error::AUTDInternalError;
 
-use crate::ConstPtr;
+use crate::{ConstPtr, SamplingConfigTag, SamplingConfigValue, SamplingConfigWrap};
 
 pub const AUTD3_ERR: i32 = -1;
 pub const AUTD3_TRUE: i32 = 1;
@@ -156,6 +156,36 @@ impl From<Result<u64, AUTDInternalError>> for ResultU64 {
                 let err = e.to_string();
                 Self {
                     result: 0,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                }
+            }
+        }
+    }
+}
+
+#[repr(C)]
+pub struct ResultSamplingConfigWrap {
+    pub result: SamplingConfigWrap,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl From<Result<SamplingConfig, AUTDInternalError>> for ResultSamplingConfigWrap {
+    fn from(r: Result<SamplingConfig, AUTDInternalError>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v.into(),
+                err_len: 0,
+                err: ConstPtr(std::ptr::null_mut()),
+            },
+            Err(e) => {
+                let err = e.to_string();
+                Self {
+                    result: SamplingConfigWrap {
+                        tag: SamplingConfigTag::Division,
+                        value: SamplingConfigValue { div: 0 },
+                    },
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }

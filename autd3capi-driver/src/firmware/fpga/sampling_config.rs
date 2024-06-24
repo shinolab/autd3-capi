@@ -2,8 +2,9 @@ use std::time::Duration;
 
 use autd3_driver::defined::Hz;
 
+#[derive(Clone, Copy)]
 #[repr(u8)]
-enum SamplingConfigTag {
+pub(crate) enum SamplingConfigTag {
     Division = 0,
     DivisionRaw = 1,
     Freq = 2,
@@ -12,18 +13,20 @@ enum SamplingConfigTag {
     PeriodNearest = 5,
 }
 
+#[derive(Clone, Copy)]
 #[repr(C)]
-union SamplingConfigValue {
-    div: u32,
-    freq: u32,
-    freq_nearest: f32,
-    period_ns: u64,
+pub(crate) union SamplingConfigValue {
+    pub(crate) div: u32,
+    pub(crate) freq: u32,
+    pub(crate) freq_nearest: f32,
+    pub(crate) period_ns: u64,
 }
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SamplingConfigWrap {
-    tag: SamplingConfigTag,
-    value: SamplingConfigValue,
+    pub(crate) tag: SamplingConfigTag,
+    pub(crate) value: SamplingConfigValue,
 }
 
 impl From<SamplingConfigWrap> for autd3_driver::firmware::fpga::SamplingConfig {

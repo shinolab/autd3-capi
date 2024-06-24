@@ -30,7 +30,7 @@ impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultMo
                 result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
                 config,
                 err_len: 0,
-                err: ConstPtr(std::ptr::null_mut())
+                err: ConstPtr(std::ptr::null_mut()),
             },
             (Err(e), config) => {
                 let err = e.to_string();
@@ -38,11 +38,21 @@ impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultMo
                     result: ModulationCalcPtr(std::ptr::null()),
                     config,
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }
     }
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfigWrap {
+    (m.0 as *const Box<M>)
+        .as_ref()
+        .unwrap()
+        .sampling_config()
+        .into()
 }
 
 #[no_mangle]
