@@ -3,7 +3,7 @@ use driver::{datagram::IntoDatagramWithSegmentTransition, defined::ControlPoints
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFociFromFreq(
+pub unsafe extern "C" fn AUTDSTMFoci(
     config: STMSamplingConfigWrap,
     points: ConstPtr,
     size: u16,
