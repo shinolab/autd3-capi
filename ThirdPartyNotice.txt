@@ -70,11 +70,7 @@ atomic-polyfill 1.0.3 (Apache-2.0 OR MIT)
 https://github.com/embassy-rs/atomic-polyfill
 ---------------------------------------------------------
 
-atomic-waker 1.1.2 (Apache-2.0 OR MIT)
-https://github.com/smol-rs/atomic-waker
----------------------------------------------------------
-
-autd3 26.0.0-beta.0 (MIT)
+autd3 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
@@ -82,27 +78,27 @@ autd3-backend-cuda 26.0.0-beta.0 (MIT)
 https://github.com/shinolab/autd3-backend-cuda
 ---------------------------------------------------------
 
-autd3-derive 26.0.0-beta.0 (MIT)
+autd3-derive 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-driver 26.0.0-beta.0 (MIT)
+autd3-driver 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-firmware-emulator 26.0.0-beta.0 (MIT)
+autd3-firmware-emulator 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-gain-holo 26.0.0-beta.0 (MIT)
+autd3-gain-holo 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-simulator 26.0.0-beta.0 (MIT)
+autd3-link-simulator 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-soem 26.0.0-beta.0
+autd3-link-soem 26.0.0-beta.1
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -168,7 +164,7 @@ SOEM write to Beckhoff Automation GmbH, Eiserstrasse 5, D-33415 Verl, Germany
 
 ---------------------------------------------------------
 
-autd3-link-twincat 26.0.0-beta.0
+autd3-link-twincat 26.0.0-beta.1
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -224,40 +220,40 @@ autd3-link-visualizer 26.0.0-beta.0 (MIT)
 https://github.com/shinolab/autd3-link-visualizer
 ---------------------------------------------------------
 
-autd3-modulation-audio-file 26.0.0-beta.0 (MIT)
+autd3-modulation-audio-file 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-protobuf 26.0.0-beta.0 (MIT)
+autd3-protobuf 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 26.0.0-beta.0 (MIT)
+autd3capi 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-backend-cuda 26.0.0-beta.0 (MIT)
+autd3capi-backend-cuda 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-driver 26.0.0-beta.0 (MIT)
+autd3capi-driver 26.0.0-beta.1 (MIT)
 https://github.com/shinolab/autd3
 ---------------------------------------------------------
 
-autd3capi-gain-holo 26.0.0-beta.0 (MIT)
+autd3capi-gain-holo 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-simulator 26.0.0-beta.0 (MIT)
+autd3capi-link-simulator 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-soem 26.0.0-beta.0 (MIT)
+autd3capi-link-soem 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-twincat 26.0.0-beta.0 (MIT)
+autd3capi-link-twincat 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-link-visualizer 26.0.0-beta.0 (MIT)
+autd3capi-link-visualizer 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 26.0.0-beta.0 (MIT)
+autd3capi-modulation-audio-file 26.0.0-beta.1 (MIT)
 ---------------------------------------------------------
 
 autocfg 1.3.0 (Apache-2.0 OR MIT)
@@ -511,27 +507,11 @@ funty 2.0.0 (MIT)
 https://github.com/myrrlyn/funty
 ---------------------------------------------------------
 
-futures 0.3.30 (Apache-2.0 OR MIT)
-https://github.com/rust-lang/futures-rs
----------------------------------------------------------
-
 futures-channel 0.3.30 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/futures-rs
 ---------------------------------------------------------
 
 futures-core 0.3.30 (Apache-2.0 OR MIT)
-https://github.com/rust-lang/futures-rs
----------------------------------------------------------
-
-futures-executor 0.3.30 (Apache-2.0 OR MIT)
-https://github.com/rust-lang/futures-rs
----------------------------------------------------------
-
-futures-io 0.3.30 (Apache-2.0 OR MIT)
-https://github.com/rust-lang/futures-rs
----------------------------------------------------------
-
-futures-macro 0.3.30 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/futures-rs
 ---------------------------------------------------------
 
@@ -541,10 +521,6 @@ https://github.com/rust-lang/futures-rs
 
 futures-task 0.3.30 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/futures-rs
----------------------------------------------------------
-
-futures-timer 3.0.3 (Apache-2.0 OR MIT)
-https://github.com/async-rs/futures-timer
 ---------------------------------------------------------
 
 futures-util 0.3.30 (Apache-2.0 OR MIT)
@@ -580,10 +556,6 @@ https://github.com/rust-lang/glob
 ---------------------------------------------------------
 
 h2 0.3.26 (MIT)
-https://github.com/hyperium/h2
----------------------------------------------------------
-
-h2 0.4.5 (MIT)
 https://github.com/hyperium/h2
 ---------------------------------------------------------
 
@@ -624,10 +596,6 @@ https://github.com/ruuda/hound
 ---------------------------------------------------------
 
 http 0.2.12 (Apache-2.0 OR MIT)
-https://github.com/hyperium/http
----------------------------------------------------------
-
-http 1.1.0 (Apache-2.0 OR MIT)
 https://github.com/hyperium/http
 ---------------------------------------------------------
 
@@ -1019,10 +987,6 @@ regex-syntax 0.8.4 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/regex/tree/master/regex-syntax
 ---------------------------------------------------------
 
-relative-path 1.9.3 (Apache-2.0 OR MIT)
-https://github.com/udoprog/relative-path
----------------------------------------------------------
-
 robust 0.2.3 (Apache-2.0 OR MIT)
 ---------------------------------------------------------
 
@@ -1032,14 +996,6 @@ https://github.com/RazrFalcon/roxmltree
 
 rstar 0.10.0 (Apache-2.0 OR MIT)
 https://github.com/georust/rstar
----------------------------------------------------------
-
-rstest 0.18.2 (Apache-2.0 OR MIT)
-https://github.com/la10736/rstest
----------------------------------------------------------
-
-rstest_macros 0.18.2 (Apache-2.0 OR MIT)
-https://github.com/la10736/rstest
 ---------------------------------------------------------
 
 rustc-demangle 0.1.24 (Apache-2.0 OR MIT)
@@ -1160,10 +1116,6 @@ https://github.com/myrrlyn/tap
 
 target-lexicon 0.12.14 (Apache-2.0 WITH LLVM-exception)
 https://github.com/bytecodealliance/target-lexicon
----------------------------------------------------------
-
-temp-env 0.3.6 (Apache-2.0 OR MIT)
-https://github.com/vmx/temp-env
 ---------------------------------------------------------
 
 thiserror 1.0.61 (Apache-2.0 OR MIT)

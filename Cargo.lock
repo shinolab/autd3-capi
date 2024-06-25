@@ -145,16 +145,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "atomic-waker"
-version = "1.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
-
-[[package]]
 name = "autd3"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f429d7c7a8ed9a056550fe6126799b1c2f570e9143ced98386c1bb6f70121731"
+checksum = "94755da33564f34cd7784c2d7651f0d8abf12a856ab1e9e63e530d0bbbf54707"
 dependencies = [
  "autd3-driver",
  "autd3-firmware-emulator",
@@ -186,9 +180,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-derive"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1e02bff137a10e14bd8f7b0ee2065d46ce184df6ea0e580625e10972691cf68"
+checksum = "b6da10839bbc342641246aa5c7c5e36ba3a61aced7104be03376dbef5f4e11bd"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -198,9 +192,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-driver"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "863b24bc2356982c4bbbf5d153e7edad7fe9323f4a2a33f699ad5b4c92825b36"
+checksum = "fe0fea04f0f93af2b63ba6db02211d462512e64f9323b703f632696baf34f384"
 dependencies = [
  "async-trait",
  "autd3-derive",
@@ -213,7 +207,6 @@ dependencies = [
  "nalgebra",
  "num-complex",
  "rayon",
- "temp-env",
  "thiserror",
  "time",
  "tokio",
@@ -224,9 +217,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb88dd0b400cc7464fbffa8db325be797f7a2997770eb46532653cafeb83ae1f"
+checksum = "9ceefdbafd081deb4f6446ffb8bba376d3a8b3c19f1a50aab1794a3a532cc749"
 dependencies = [
  "autd3-driver",
  "num-integer",
@@ -236,9 +229,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2891617a28d07a0aa1571dc525764ed6a1308e6d3ad6671a99035a0e2f7e7c9d"
+checksum = "b7046c7fec4511c5909e51ecb01fdc13029cc40a31dd6d48bab65e77f024f063"
 dependencies = [
  "approx",
  "autd3-driver",
@@ -247,15 +240,14 @@ dependencies = [
  "nalgebra",
  "rand",
  "rayon",
- "rstest",
  "thiserror",
 ]
 
 [[package]]
 name = "autd3-link-simulator"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7586b364b2da158bcf9ebf986f1ede6622313352d31167eabd2dad6184804cf8"
+checksum = "bff4f3d9d835fa891c27104a65a366f6e327bd4b40de4e80e3b34708c91dbc45"
 dependencies = [
  "autd3-driver",
  "autd3-protobuf",
@@ -265,9 +257,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-soem"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1fe807fc27c4b98ab6788d56b4dd7cb32bad81ffca6d1565fe468085d65bd3b"
+checksum = "10c121f825b5a8c578f1918544e326a28287b5930a6f1421084c524421494994"
 dependencies = [
  "async-channel",
  "autd3-driver",
@@ -288,9 +280,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-twincat"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ee2042dd9dcd33a795fd0ef1d6154dab90d9ab035b1e6bfeb932c4b0bd0d3a5"
+checksum = "fddd96941a1cced85b3737d6cd41493838a196318e7ddb3fdb72d926062e5e3a"
 dependencies = [
  "autd3-driver",
  "cc",
@@ -321,9 +313,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4056e2a2259bf79b312158c14a37b6fd7ec1f83348e089696dfaf100b1362b17"
+checksum = "eda4589bf386dcda284b5b9b31ac061ecff8c6eba948ad27b3fc9015f5b2dbe1"
 dependencies = [
  "autd3-driver",
  "csv",
@@ -333,21 +325,19 @@ dependencies = [
 
 [[package]]
 name = "autd3-protobuf"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a81a2bc2327d44505fe5f1dad57c890a317b06b1d18cf0e18739f8a53f4b7d2"
+checksum = "5f14f5ed45c850f1a22ca914e954268ddd6dd310a30123a96ba51303a5624aec"
 dependencies = [
  "autd3-driver",
- "h2 0.4.5",
  "prost",
- "seq-macro",
  "thiserror",
  "tonic",
 ]
 
 [[package]]
 name = "autd3capi"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "assert_approx_eq",
  "autd3capi-driver",
@@ -358,7 +348,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-backend-cuda"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-backend-cuda",
  "autd3-gain-holo",
@@ -369,7 +359,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-driver"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "assert_approx_eq",
  "async-ffi",
@@ -381,7 +371,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -389,7 +379,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -398,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-soem"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-link-soem",
  "autd3capi-driver",
@@ -407,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
@@ -415,7 +405,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-visualizer"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-link-visualizer",
  "autd3capi-driver",
@@ -423,7 +413,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "26.0.0-beta.0"
+version = "26.0.0-beta.1"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-driver",
@@ -446,7 +436,7 @@ dependencies = [
  "bitflags 1.3.2",
  "bytes",
  "futures-util",
- "http 0.2.12",
+ "http",
  "http-body",
  "hyper",
  "itoa",
@@ -472,7 +462,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "futures-util",
- "http 0.2.12",
+ "http",
  "http-body",
  "mime",
  "rustversion",
@@ -1032,28 +1022,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e6d5a32815ae3f33302d95fdcb2ce17862f8c65363dcfd29360480ba1001fc9c"
 
 [[package]]
-name = "futures"
-version = "0.3.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "645c6916888f6cb6350d2550b80fb63e734897a8498abe35cfb732b6487804b0"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-executor",
- "futures-io",
- "futures-sink",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
 name = "futures-channel"
 version = "0.3.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eac8f7d7865dcb88bd4373ab671c8cf4508703796caa2b1985a9ca867b3fcb78"
 dependencies = [
  "futures-core",
- "futures-sink",
 ]
 
 [[package]]
@@ -1061,34 +1035,6 @@ name = "futures-core"
 version = "0.3.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dfc6580bb841c5a68e9ef15c77ccc837b40a7504914d52e47b8b0e9bbda25a1d"
-
-[[package]]
-name = "futures-executor"
-version = "0.3.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a576fc72ae164fca6b9db127eaa9a9dda0d61316034f33a0a0d4eda41f02b01d"
-dependencies = [
- "futures-core",
- "futures-task",
- "futures-util",
-]
-
-[[package]]
-name = "futures-io"
-version = "0.3.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a44623e20b9681a318efdd71c299b6b222ed6f231972bfe2f224ebad6311f0c1"
-
-[[package]]
-name = "futures-macro"
-version = "0.3.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87750cf4b7a4c0625b1529e4c543c2182106e4dedc60a2a6455e00d212c489ac"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.68",
-]
 
 [[package]]
 name = "futures-sink"
@@ -1103,27 +1049,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38d84fa142264698cdce1a9f9172cf383a0c82de1bddcf3092901442c4097004"
 
 [[package]]
-name = "futures-timer"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f288b0a4f20f9a56b5d1da57e2227c661b7b16168e2f72365f57b63326e29b24"
-
-[[package]]
 name = "futures-util"
 version = "0.3.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d6401deb83407ab3da39eba7e33987a73c3df0c82b4bb5813ee871c19c41d48"
 dependencies = [
- "futures-channel",
  "futures-core",
- "futures-io",
- "futures-macro",
- "futures-sink",
  "futures-task",
- "memchr",
  "pin-project-lite",
  "pin-utils",
- "slab",
 ]
 
 [[package]]
@@ -1207,26 +1141,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http 0.2.12",
- "indexmap 2.2.6",
- "slab",
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
-name = "h2"
-version = "0.4.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa82e28a107a8cc405f0839610bdc9b15f1e25ec7d696aa5cf173edbcb1486ab"
-dependencies = [
- "atomic-waker",
- "bytes",
- "fnv",
- "futures-core",
- "futures-sink",
- "http 1.1.0",
+ "http",
  "indexmap 2.2.6",
  "slab",
  "tokio",
@@ -1318,24 +1233,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "http"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21b9ddb458710bc376481b842f5da65cdf31522de232c1ca8146abce2a358258"
-dependencies = [
- "bytes",
- "fnv",
- "itoa",
-]
-
-[[package]]
 name = "http-body"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ceab25649e9960c0311ea418d17bee82c0dcec1bd053b5f9a66e265a693bed2"
 dependencies = [
  "bytes",
- "http 0.2.12",
+ "http",
  "pin-project-lite",
 ]
 
@@ -1361,8 +1265,8 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2 0.3.26",
- "http 0.2.12",
+ "h2",
+ "http",
  "http-body",
  "httparse",
  "httpdate",
@@ -2227,12 +2131,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a66a03ae7c801facd77a29370b4faec201768915ac14a721ba36f20bc9c209b"
 
 [[package]]
-name = "relative-path"
-version = "1.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba39f3699c378cd8970968dcbff9c43159ea4cfbd88d43c00b22f2ef10a435d2"
-
-[[package]]
 name = "robust"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2256,35 +2154,6 @@ dependencies = [
  "heapless",
  "num-traits",
  "smallvec",
-]
-
-[[package]]
-name = "rstest"
-version = "0.18.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97eeab2f3c0a199bc4be135c36c924b6590b88c377d416494288c14f2db30199"
-dependencies = [
- "futures",
- "futures-timer",
- "rstest_macros",
- "rustc_version",
-]
-
-[[package]]
-name = "rstest_macros"
-version = "0.18.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d428f8247852f894ee1be110b375111b586d4fa431f6c46e64ba5a0dcccbe605"
-dependencies = [
- "cfg-if",
- "glob",
- "proc-macro2",
- "quote",
- "regex",
- "relative-path",
- "rustc_version",
- "syn 2.0.68",
- "unicode-ident",
 ]
 
 [[package]]
@@ -2548,15 +2417,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e1fc403891a21bcfb7c37834ba66a547a8f402146eba7265b5a6d88059c9ff2f"
 
 [[package]]
-name = "temp-env"
-version = "0.3.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96374855068f47402c3121c6eed88d29cb1de8f3ab27090e273e420bdabcf050"
-dependencies = [
- "parking_lot",
-]
-
-[[package]]
 name = "thiserror"
 version = "1.0.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2708,8 +2568,8 @@ dependencies = [
  "axum",
  "base64",
  "bytes",
- "h2 0.3.26",
- "http 0.2.12",
+ "h2",
+ "http",
  "http-body",
  "hyper",
  "hyper-timeout",

@@ -2,10 +2,7 @@
 
 use std::ffi::{c_char, CStr};
 
-use autd3capi_driver::{
-    driver::{defined::Hz, derive::ModulationProperty},
-    *,
-};
+use autd3capi_driver::{driver::defined::Hz, *};
 
 use autd3_modulation_audio_file::{Csv, RawPCM, Wav};
 
@@ -15,12 +12,20 @@ pub unsafe extern "C" fn AUTDModulationAudioFileWav(
     path: *const c_char,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path)
-        .to_str()
-        .map(|path| Wav::new(path).with_loop_behavior(loop_behavior.into()))
-    {
+    let path = match CStr::from_ptr(path).to_str() {
+        Ok(v) => v,
+        Err(e) => {
+            let err = e.to_string();
+            return ResultModulation {
+                result: ModulationPtr(std::ptr::null()),
+                err_len: err.as_bytes().len() as u32 + 1,
+                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+            };
+        }
+    };
+    match Wav::new(path) {
         Ok(v) => ResultModulation {
-            result: v.into(),
+            result: v.with_loop_behavior(loop_behavior.into()).into(),
             err_len: 0,
             err: ConstPtr(std::ptr::null_mut()),
         },
@@ -33,14 +38,6 @@ pub unsafe extern "C" fn AUTDModulationAudioFileWav(
             };
         }
     }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationAudioFileWavIsDefault(wav: ModulationPtr) -> bool {
-    let m = take_mod!(wav, Wav);
-    let default = Wav::new("");
-    m.sampling_config() == default.sampling_config()
 }
 
 #[no_mangle]
