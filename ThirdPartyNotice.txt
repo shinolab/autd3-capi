@@ -715,6 +715,10 @@ maplit 1.0.2 (Apache-2.0 OR MIT)
 https://github.com/bluss/maplit
 ---------------------------------------------------------
 
+matchers 0.1.0 (MIT)
+https://github.com/hawkw/matchers
+---------------------------------------------------------
+
 matchit 0.7.3 (MIT AND BSD-3-Clause)
 https://github.com/ibraheemdev/matchit
 ---------------------------------------------------------
@@ -979,8 +983,16 @@ regex 1.10.5 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/regex
 ---------------------------------------------------------
 
+regex-automata 0.1.10 (MIT OR Unlicense)
+https://github.com/BurntSushi/regex-automata
+---------------------------------------------------------
+
 regex-automata 0.4.7 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/regex/tree/master/regex-automata
+---------------------------------------------------------
+
+regex-syntax 0.6.29 (Apache-2.0 OR MIT)
+https://github.com/rust-lang/regex
 ---------------------------------------------------------
 
 regex-syntax 0.8.4 (Apache-2.0 OR MIT)
