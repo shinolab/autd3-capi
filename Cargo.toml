@@ -17,19 +17,19 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.dependencies]
-autd3 = { version = "26.0.0-rc.0" }
-autd3-driver = { version = "26.0.0-rc.0" }
-autd3-gain-holo = { version = "26.0.0-rc.0" }
-autd3-link-simulator = { version = "26.0.0-rc.0" }
-autd3-link-soem = { version = "26.0.0-rc.0" }
-autd3-link-twincat = { version = "26.0.0-rc.0" }
-autd3-modulation-audio-file = { version = "26.0.0-rc.0" }
-autd3-link-visualizer = { version = "26.0.0-rc.0" }
-autd3-backend-cuda = { version = "26.0.0-rc.0" }
+autd3 = { version = "26.0.0" }
+autd3-driver = { version = "26.0.0" }
+autd3-gain-holo = { version = "26.0.0" }
+autd3-link-simulator = { version = "26.0.0" }
+autd3-link-soem = { version = "26.0.0" }
+autd3-link-twincat = { version = "26.0.0" }
+autd3-modulation-audio-file = { version = "26.0.0" }
+autd3-link-visualizer = { version = "26.0.0" }
+autd3-backend-cuda = { version = "26.0.0" }
 libc = "0.2.144"
 assert_approx_eq = "1.1.0"
 tokio = "1.37.0"
-tracing-subscriber = "0.3.18"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [profile.release]
 strip = true

@@ -19,9 +19,9 @@ pub struct EthernetAdaptersPtr(pub *const libc::c_void);
 impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit(level: u8) {
+pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit() {
     tracing_subscriber::fmt()
-        .with_max_level(trace_level_into(level))
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 

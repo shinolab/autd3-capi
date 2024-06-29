@@ -4,7 +4,7 @@ use autd3capi_driver::{
     async_ffi::{FfiFuture, LocalFfiFuture},
     impl_ptr,
     tokio::{self, runtime::Runtime},
-    trace_level_into, ResultI32,
+    ResultI32,
 };
 use controller::{ResultController, ResultFPGAStateList, ResultFirmwareVersionList};
 
@@ -88,9 +88,9 @@ pub unsafe extern "C" fn AUTDWaitResultFirmwareVersionList(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDTracingInit(level: u8) {
+pub unsafe extern "C" fn AUTDTracingInit() {
     tracing_subscriber::fmt()
-        .with_max_level(trace_level_into(level))
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 
