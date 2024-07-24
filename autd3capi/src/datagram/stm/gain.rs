@@ -17,6 +17,20 @@ pub unsafe extern "C" fn AUTDSTMGain(
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDSTMGainNearest(
+    config: STMConfigWrap,
+    gains: *const GainPtr,
+    size: u16,
+) -> ResultGainSTM {
+    GainSTM::<Box<G>>::new_nearest(
+        config,
+        (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
+    )
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDSTMGainWithMode(stm: GainSTMPtr, mode: GainSTMMode) -> GainSTMPtr {
     take!(stm, GainSTM<Box<G>>).with_mode(mode.into()).into()
 }

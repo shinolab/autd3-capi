@@ -20,6 +20,25 @@ pub unsafe extern "C" fn AUTDSTMFoci(
         }
     })
 }
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFociNearest(
+    config: STMConfigWrap,
+    points: ConstPtr,
+    size: u16,
+    n: u8,
+) -> ResultFociSTM {
+    seq_macro::seq!(N in 1..=8 {
+        match n {
+                #(N => FociSTM::new_nearest(
+                    config,
+                    vec_from_raw!(points.0, ControlPoints<N>, size)
+                )
+                .into(),)*
+            _ => unreachable!(),
+        }
+    })
+}
 
 #[no_mangle]
 #[must_use]

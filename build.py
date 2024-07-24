@@ -303,6 +303,12 @@ def util_update_ver(args):
         with open("Cargo.toml", "r") as f:
             content = f.read()
             content = re.sub(
+                r'^version = "(.*?)"',
+                f'version = "{version}"',
+                content,
+                flags=re.MULTILINE,
+            )
+            content = re.sub(
                 r'^autd3(.*)version = "(.*?)"',
                 f'autd3\\1version = "{version}"',
                 content,
