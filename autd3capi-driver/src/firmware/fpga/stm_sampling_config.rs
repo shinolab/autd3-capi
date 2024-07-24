@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use autd3_driver::{defined::Hz, firmware::fpga::STMConfig};
+use autd3_driver::defined::Hz;
 
 use crate::SamplingConfigWrap;
 
@@ -26,7 +26,7 @@ pub struct STMConfigWrap {
     value: STMConfigValue,
 }
 
-impl From<STMConfigWrap> for autd3_driver::firmware::fpga::STMConfig {
+impl From<STMConfigWrap> for STMConfig {
     fn from(c: STMConfigWrap) -> Self {
         unsafe {
             match c.tag {
