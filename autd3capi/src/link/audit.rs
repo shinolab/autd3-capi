@@ -321,7 +321,6 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrives(
 }
 
 #[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     audit: LinkPtr,
     idx: u16,
