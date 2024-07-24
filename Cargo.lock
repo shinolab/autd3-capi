@@ -180,9 +180,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-derive"
-version = "27.0.0-alpha.0"
+version = "27.0.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92d26040e765c51711ccf7b04fc19186f5b4f3af9b9383938632263a830bf122"
+checksum = "41486912b34fc4da112a96ca22d5f9a00729461bf2ab338db6b90201bcdd286e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -192,9 +192,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-driver"
-version = "27.0.0-alpha.0"
+version = "27.0.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0727a6c03b5e336a9ea73f514cdac323736ff73987a6758617eb9ca1843f2d23"
+checksum = "12a4fc3690327b0b4320e2b684f8e9b8e11b513695495bc9dda2458a0d23edc7"
 dependencies = [
  "async-trait",
  "autd3-derive",
