@@ -4,12 +4,12 @@ use driver::datagram::IntoDatagramWithSegmentTransition;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGain(
-    config: STMSamplingConfigWrap,
+    config: STMConfigWrap,
     gains: *const GainPtr,
     size: u16,
 ) -> ResultGainSTM {
-    GainSTM::<Box<G>>::from_stm_sampling_config(
-        config.into(),
+    GainSTM::<Box<G>>::new(
+        config,
         (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
     )
     .into()

@@ -1,17 +1,19 @@
 [package]
 name = "autd3capi"
-version = "26.0.0"
-edition = "2021"
-license = "MIT"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-driver = { path = "../autd3capi-driver" }
-seq-macro = "0.3.5"
+autd3capi-driver = { workspace = true }
 tracing-subscriber = { workspace = true }
 libc = { workspace = true }
+seq-macro = { workspace = true }
 
 [dev-dependencies]
 assert_approx_eq = { workspace = true }

@@ -53,27 +53,36 @@ pub unsafe extern "C" fn AUTDGainGroup(
     keys_ptr: *const i32,
     values_ptr: *const GainPtr,
     kv_len: u32,
+    parallel: bool,
 ) -> GainPtr {
     let map: HashMap<_, _> = take!(map, M)
         .into_iter()
         .map(|(k, v)| (k, Arc::new(v)))
         .collect();
-    vec_from_raw!(keys_ptr, i32, kv_len)
-        .iter()
-        .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
-        .fold(
-            Group::new(move |dev| {
-                let map = map[&dev.idx()].clone();
-                move |tr| {
-                    let key = map[tr.idx()];
-                    if key < 0 {
-                        None
-                    } else {
-                        Some(key)
-                    }
-                }
-            }),
-            |acc, (&k, v)| acc.set(k, *take!(v, Box<G>)),
-        )
-        .into()
+    let f = move |dev: &autd3::derive::Device| {
+        let map = map[&dev.idx()].clone();
+        move |tr: &autd3::derive::Transducer| {
+            let key = map[tr.idx()];
+            if key < 0 {
+                None
+            } else {
+                Some(key)
+            }
+        }
+    };
+    if parallel {
+        vec_from_raw!(keys_ptr, i32, kv_len)
+            .iter()
+            .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
+            .fold(Group::with_parallel(f), |acc, (&k, v)| {
+                acc.set(k, *take!(v, Box<G>))
+            })
+            .into()
+    } else {
+        vec_from_raw!(keys_ptr, i32, kv_len)
+            .iter()
+            .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
+            .fold(Group::new(f), |acc, (&k, v)| acc.set(k, *take!(v, Box<G>)))
+            .into()
+    }
 }

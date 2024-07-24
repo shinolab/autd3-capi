@@ -1,20 +1,16 @@
 [package]
 name = "autd3capi-driver"
-version = "26.0.0"
-edition = "2021"
-authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
-
-license = "MIT"
-description = "Base library for autd3 C API"
-repository = "https://github.com/shinolab/autd3"
-readme = "README.md"
-keywords = ["autd"]
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
 
 [lib]
 crate-type = ["rlib"]
 
 [dependencies]
-async-ffi = "0.5.0"
+async-ffi = { workspace = true }
 autd3 = { workspace = true, features = ["capi", "async-trait"] }
 autd3-driver = { workspace = true, features = ["capi", "derive", "async-trait"] }
 libc = { workspace = true }

@@ -1,20 +1,14 @@
-use std::time::Duration;
+use std::{num::NonZeroU16, time::Duration};
 
 use autd3capi_driver::{
-    autd3::derive::SamplingConfig, driver::defined::Hz, ResultF32, ResultU32, ResultU64,
+    autd3::derive::SamplingConfig, driver::defined::Hz, ResultF32, ResultU16, ResultU64,
     SamplingConfigWrap,
 };
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u32) -> SamplingConfigWrap {
-    SamplingConfig::Division(div).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromDivisionRaw(div: u32) -> SamplingConfigWrap {
-    SamplingConfig::DivisionRaw(div).into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u16) -> SamplingConfigWrap {
+    SamplingConfig::Division(NonZeroU16::new_unchecked(div)).into()
 }
 
 #[no_mangle]
@@ -43,7 +37,7 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: u64) -> Sampling
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfigWrap) -> ResultU32 {
+pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfigWrap) -> ResultU16 {
     SamplingConfig::from(c).division().into()
 }
 

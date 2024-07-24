@@ -9,7 +9,7 @@ pub unsafe extern "C" fn AUTDLoopBehaviorInfinite() -> LoopBehavior {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLoopBehaviorFinite(v: u32) -> LoopBehavior {
+pub unsafe extern "C" fn AUTDLoopBehaviorFinite(v: u16) -> LoopBehavior {
     RawLoopBehavior::finite(v).unwrap().into()
 }
 

@@ -144,7 +144,7 @@ pub unsafe extern "C" fn AUTDLinkAuditCpuSilencerStrictMode(audit: LinkPtr, idx:
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> u16 {
+) -> u8 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_update_rate_intensity()
@@ -152,7 +152,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u16) -> u16 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u16) -> u8 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_update_rate_phase()
@@ -163,7 +163,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> u16 {
+) -> u8 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps_intensity()
@@ -174,7 +174,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
     audit: LinkPtr,
     idx: u16,
-) -> u16 {
+) -> u8 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps_phase()
@@ -209,7 +209,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivision(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
-) -> u32 {
+) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .stm_freq_division(segment.into())
@@ -258,7 +258,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivision(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
-) -> u32 {
+) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .modulation_freq_division(segment.into())
@@ -326,18 +326,8 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     audit: LinkPtr,
     idx: u16,
     dst: *mut u8,
-) -> u16 {
+) {
     let fpga = audit.cast::<Audit>()[idx as usize].fpga();
     let src = fpga.pulse_width_encoder_table();
     std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
-    fpga.pulse_width_encoder_full_width_start()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaUltrasoundFreq(audit: LinkPtr, idx: u16) -> u32 {
-    audit.cast::<Audit>()[idx as usize]
-        .fpga()
-        .ultrasound_freq()
-        .hz()
 }

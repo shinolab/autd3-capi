@@ -199,7 +199,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
     directivity: Directivity,
     points: *const Vector3,
     points_len: u32,
-    geometry: GeometryPtr,
     segment: Segment,
     idx: u16,
     buf: *mut f32,
@@ -214,7 +213,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerCalcField(
         visualizer,
         calc_field,
         points.iter(),
-        &geometry,
         segment,
         idx
     )
@@ -232,7 +230,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotField(
     directivity: Directivity,
     config: ConfigPtr,
     range: PlotRangePtr,
-    geometry: GeometryPtr,
     segment: Segment,
     idx: u16,
 ) -> ResultI32 {
@@ -245,7 +242,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotField(
         plot_field,
         config,
         *take!(range, PlotRange),
-        &geometry,
         segment,
         idx
     ))
@@ -258,7 +254,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhase(
     backend: Backend,
     directivity: Directivity,
     config: ConfigPtr,
-    geometry: GeometryPtr,
     segment: Segment,
     idx: u16,
 ) -> ResultI32 {
@@ -270,7 +265,6 @@ pub unsafe extern "C" fn AUTDLinkVisualizerPlotPhase(
         visualizer,
         plot_phase,
         config,
-        &geometry,
         segment,
         idx
     ))

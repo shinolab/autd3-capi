@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{num::NonZeroU32, time::Duration};
 
 use autd3capi_driver::{
     async_ffi::{FfiFuture, FutureExt},
@@ -73,7 +73,8 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
     #[cfg(target_os = "windows")]
     {
         ControllerBuilderPtr::new(
-            take!(builder, ControllerBuilder).with_timer_resolution(resolution),
+            take!(builder, ControllerBuilder)
+                .with_timer_resolution(NonZeroU32::new_unchecked(resolution)),
         )
     }
     #[cfg(not(target_os = "windows"))]

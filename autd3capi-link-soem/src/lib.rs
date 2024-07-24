@@ -5,6 +5,7 @@ mod timer_strategy;
 use std::{
     ffi::{c_char, CStr, CString},
     net::SocketAddr,
+    num::{NonZeroU64, NonZeroUsize},
     time::Duration,
 };
 
@@ -77,7 +78,9 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithSendCycle(
     soem: LinkSOEMBuilderPtr,
     cycle: u64,
 ) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_send_cycle(cycle))
+    LinkSOEMBuilderPtr::new(
+        take!(soem, SOEMBuilder).with_send_cycle(NonZeroU64::new_unchecked(cycle)),
+    )
 }
 
 #[no_mangle]
@@ -86,7 +89,9 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithSync0Cycle(
     soem: LinkSOEMBuilderPtr,
     cycle: u64,
 ) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_sync0_cycle(cycle))
+    LinkSOEMBuilderPtr::new(
+        take!(soem, SOEMBuilder).with_sync0_cycle(NonZeroU64::new_unchecked(cycle)),
+    )
 }
 
 #[no_mangle]
@@ -95,7 +100,9 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithBufSize(
     soem: LinkSOEMBuilderPtr,
     buf_size: u32,
 ) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_buf_size(buf_size as _))
+    LinkSOEMBuilderPtr::new(
+        take!(soem, SOEMBuilder).with_buf_size(NonZeroUsize::new_unchecked(buf_size as _)),
+    )
 }
 
 #[no_mangle]

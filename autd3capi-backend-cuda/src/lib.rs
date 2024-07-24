@@ -49,26 +49,6 @@ pub unsafe extern "C" fn AUTDCUDABackendDelete(backend: BackendPtr) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainHoloCUDASDP(
-    backend: BackendPtr,
-    points: *const Vector3,
-    amps: *const f32,
-    size: u32,
-    alpha: f32,
-    lambda: f32,
-    repeat: u32,
-    constraint: EmissionConstraintWrap,
-) -> GainPtr {
-    create_holo!(SDP, CUDABackend, Sphere, backend, points, amps, size)
-        .with_alpha(alpha)
-        .with_lambda(lambda)
-        .with_repeat(repeat as _)
-        .with_constraint(constraint.into())
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDGainHoloCUDAGS(
     backend: BackendPtr,
     points: *const Vector3,

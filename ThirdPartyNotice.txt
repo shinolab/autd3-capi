@@ -70,35 +70,35 @@ atomic-polyfill 1.0.3 (Apache-2.0 OR MIT)
 https://github.com/embassy-rs/atomic-polyfill
 ---------------------------------------------------------
 
-autd3 26.0.0 (MIT)
+autd3 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-backend-cuda 26.0.0 (MIT)
+autd3-backend-cuda 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-backend-cuda
 ---------------------------------------------------------
 
-autd3-derive 26.0.0 (MIT)
+autd3-derive 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-driver 26.0.0 (MIT)
+autd3-driver 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-firmware-emulator 26.0.0 (MIT)
+autd3-firmware-emulator 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-gain-holo 26.0.0 (MIT)
+autd3-gain-holo 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-simulator 26.0.0 (MIT)
+autd3-link-simulator 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-soem 26.0.0
+autd3-link-soem 27.0.0-alpha.0
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -164,7 +164,7 @@ SOEM write to Beckhoff Automation GmbH, Eiserstrasse 5, D-33415 Verl, Germany
 
 ---------------------------------------------------------
 
-autd3-link-twincat 26.0.0
+autd3-link-twincat 27.0.0-alpha.0
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -216,44 +216,52 @@ SOFTWARE.
 
 ---------------------------------------------------------
 
-autd3-link-visualizer 26.0.0 (MIT)
+autd3-link-visualizer 27.0.0-alpha.1 (MIT)
 https://github.com/shinolab/autd3-link-visualizer
 ---------------------------------------------------------
 
-autd3-modulation-audio-file 26.0.0 (MIT)
+autd3-modulation-audio-file 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-protobuf 26.0.0 (MIT)
+autd3-protobuf 27.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 26.0.0 (MIT)
+autd3capi 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-backend-cuda 26.0.0 (MIT)
+autd3capi-backend-cuda 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-driver 26.0.0 (MIT)
-https://github.com/shinolab/autd3
+autd3capi-driver 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-gain-holo 26.0.0 (MIT)
+autd3capi-gain-holo 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-simulator 26.0.0 (MIT)
+autd3capi-link-simulator 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-soem 26.0.0 (MIT)
+autd3capi-link-soem 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-twincat 26.0.0 (MIT)
+autd3capi-link-twincat 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-visualizer 26.0.0 (MIT)
+autd3capi-link-visualizer 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 26.0.0 (MIT)
+autd3capi-modulation-audio-file 27.0.0-alpha.0 (MIT)
+https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
 autocfg 1.3.0 (Apache-2.0 OR MIT)
@@ -276,6 +284,10 @@ base64 0.21.7 (Apache-2.0 OR MIT)
 https://github.com/marshallpierce/rust-base64
 ---------------------------------------------------------
 
+bit-vec 0.8.0 (Apache-2.0 OR MIT)
+https://github.com/contain-rs/bit-vec
+---------------------------------------------------------
+
 bitfield-struct 0.6.2 (MIT)
 https://github.com/wrenger/bitfield-struct-rs.git
 ---------------------------------------------------------
@@ -286,10 +298,6 @@ https://github.com/bitflags/bitflags
 
 bitflags 2.5.0 (Apache-2.0 OR MIT)
 https://github.com/bitflags/bitflags
----------------------------------------------------------
-
-bitvec 1.0.1 (MIT)
-https://github.com/bitvecto-rs/bitvec
 ---------------------------------------------------------
 
 bumpalo 3.16.0 (Apache-2.0 OR MIT)
@@ -503,10 +511,6 @@ freetype-sys 0.20.1 (MIT)
 https://github.com/PistonDevelopers/freetype-sys.git
 ---------------------------------------------------------
 
-funty 2.0.0 (MIT)
-https://github.com/myrrlyn/funty
----------------------------------------------------------
-
 futures-channel 0.3.30 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/futures-rs
 ---------------------------------------------------------
@@ -641,10 +645,6 @@ https://github.com/indexmap-rs/indexmap
 
 indoc 2.0.5 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/indoc
----------------------------------------------------------
-
-is_sorted 0.1.1 (Apache-2.0 OR MIT)
-https://github.com/gnzlbg/is_sorted
 ---------------------------------------------------------
 
 itertools 0.11.0 (Apache-2.0 OR MIT)
@@ -939,10 +939,6 @@ quote 1.0.36 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/quote
 ---------------------------------------------------------
 
-radium 0.7.0 (MIT)
-https://github.com/bitvecto-rs/radium
----------------------------------------------------------
-
 rand 0.8.5 (Apache-2.0 OR MIT)
 https://github.com/rust-random/rand
 ---------------------------------------------------------
@@ -1120,10 +1116,6 @@ https://github.com/Actyx/sync_wrapper
 
 ta 0.5.0 (MIT)
 https://github.com/greyblake/ta-rs
----------------------------------------------------------
-
-tap 1.0.1 (MIT)
-https://github.com/myrrlyn/tap
 ---------------------------------------------------------
 
 target-lexicon 0.12.14 (Apache-2.0 WITH LLVM-exception)
@@ -1440,10 +1432,6 @@ https://github.com/rodrigocfd/winsafe
 
 wio 0.2.2 (Apache-2.0 OR MIT)
 https://github.com/retep998/wio-rs
----------------------------------------------------------
-
-wyz 0.5.1 (MIT)
-https://github.com/myrrlyn/wyz
 ---------------------------------------------------------
 
 xml-rs 0.8.20 (MIT)

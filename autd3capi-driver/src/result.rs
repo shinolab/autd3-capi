@@ -82,14 +82,14 @@ where
 
 #[repr(C)]
 
-pub struct ResultU32 {
-    pub result: u32,
+pub struct ResultU16 {
+    pub result: u16,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<Result<u32, AUTDInternalError>> for ResultU32 {
-    fn from(r: Result<u32, AUTDInternalError>) -> Self {
+impl From<Result<u16, AUTDInternalError>> for ResultU16 {
+    fn from(r: Result<u16, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: v,

@@ -1,5 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
+use std::num::NonZeroU8;
+
 use crate::{create_holo, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
@@ -17,7 +19,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Greedy, Sphere, points, amps, size)
-        .with_phase_div(div)
+        .with_phase_div(NonZeroU8::new_unchecked(div))
         .with_constraint(constraint.into())
         .into()
 }
@@ -32,7 +34,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(Greedy, T4010A1, points, amps, size)
-        .with_phase_div(div)
+        .with_phase_div(NonZeroU8::new_unchecked(div))
         .with_constraint(constraint.into())
         .into()
 }

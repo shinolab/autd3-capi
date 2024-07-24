@@ -7,7 +7,6 @@ pub mod gspat;
 pub mod lm;
 pub mod naive;
 pub mod nalgebra_backend;
-pub mod sdp;
 
 use autd3_gain_holo::*;
 use autd3capi_driver::*;

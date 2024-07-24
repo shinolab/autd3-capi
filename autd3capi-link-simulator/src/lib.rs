@@ -2,11 +2,10 @@
 
 use std::{
     ffi::{c_char, CStr},
-    net::Ipv4Addr,
+    net::SocketAddr,
     time::Duration,
 };
 
-use async_ffi::{FfiFuture, FutureExt};
 use autd3capi_driver::*;
 
 use autd3_link_simulator::*;
@@ -31,16 +30,7 @@ pub struct ResultLinkSimulatorBuilder {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulator(port: u16) -> LinkSimulatorBuilderPtr {
-    LinkSimulatorBuilderPtr::new(Simulator::builder(port))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
-    simulator: LinkSimulatorBuilderPtr,
-    addr: *const c_char,
-) -> ResultLinkSimulatorBuilder {
+pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLinkSimulatorBuilder {
     let addr = match CStr::from_ptr(addr).to_str() {
         Ok(v) => v,
         Err(e) => {
@@ -52,7 +42,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
             };
         }
     };
-    let addr = match addr.parse::<Ipv4Addr>() {
+    let addr = match addr.parse::<SocketAddr>() {
         Ok(v) => v,
         Err(e) => {
             let err = e.to_string();
@@ -64,9 +54,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorWithAddr(
         }
     };
     ResultLinkSimulatorBuilder {
-        result: LinkSimulatorBuilderPtr::new(
-            take!(simulator, SimulatorBuilder).with_server_ip(addr),
-        ),
+        result: LinkSimulatorBuilderPtr::new(Simulator::builder(addr)),
         err_len: 0,
         err: ConstPtr(std::ptr::null_mut()),
     }
@@ -101,37 +89,5 @@ pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
                 .unwrap(),
             inner: *take!(simulator, SimulatorBuilder),
         })
-    }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulatorUpdateGeometry(
-    mut simulator: LinkPtr,
-    geometry: GeometryPtr,
-) -> FfiFuture<ResultI32> {
-    #[cfg(feature = "static")]
-    {
-        async move {
-            let r: ResultI32 = simulator
-                .cast_mut::<Simulator>()
-                .update_geometry(&geometry)
-                .await
-                .into();
-            r
-        }
-        .into_ffi()
-    }
-    #[cfg(not(feature = "static"))]
-    {
-        async move {
-            let link = simulator.cast_mut::<SyncLink<Simulator>>();
-            let r: ResultI32 = link
-                .runtime
-                .block_on(link.inner.update_geometry(&geometry))
-                .into();
-            r
-        }
-        .into_ffi()
     }
 }

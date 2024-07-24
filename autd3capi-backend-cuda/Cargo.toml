@@ -1,15 +1,18 @@
 [package]
 name = "autd3capi-backend-cuda"
-version = "26.0.0"
-edition = "2021"
-license = "MIT"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
-autd3capi-driver = { path = "../autd3capi-driver" }
-autd3capi-gain-holo = { path = "../autd3capi-gain-holo" }
+autd3capi-driver = { workspace = true }
+autd3capi-gain-holo = { workspace = true }
 autd3-gain-holo = { workspace = true, features = ["async-trait"] }
 autd3-backend-cuda = { workspace = true, features = ["async-trait"] }
 libc = { workspace = true }

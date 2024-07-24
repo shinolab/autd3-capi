@@ -4,15 +4,15 @@ use driver::{datagram::IntoDatagramWithSegmentTransition, defined::ControlPoints
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFoci(
-    config: STMSamplingConfigWrap,
+    config: STMConfigWrap,
     points: ConstPtr,
     size: u16,
     n: u8,
 ) -> ResultFociSTM {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => FociSTM::from_stm_sampling_config(
-                    config.into(),
+                #(N => FociSTM::new(
+                    config,
                     vec_from_raw!(points.0, ControlPoints<N>, size)
                 )
                 .into(),)*

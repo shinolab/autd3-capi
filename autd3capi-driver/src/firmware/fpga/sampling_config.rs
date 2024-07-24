@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{num::NonZeroU16, time::Duration};
 
 use autd3_driver::defined::Hz;
 
@@ -6,7 +6,6 @@ use autd3_driver::defined::Hz;
 #[repr(u8)]
 pub(crate) enum SamplingConfigTag {
     Division = 0,
-    DivisionRaw = 1,
     Freq = 2,
     FreqNearest = 3,
     Period = 4,
@@ -16,7 +15,7 @@ pub(crate) enum SamplingConfigTag {
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub(crate) union SamplingConfigValue {
-    pub(crate) div: u32,
+    pub(crate) div: u16,
     pub(crate) freq: u32,
     pub(crate) freq_nearest: f32,
     pub(crate) period_ns: u64,
@@ -34,10 +33,9 @@ impl From<SamplingConfigWrap> for autd3_driver::firmware::fpga::SamplingConfig {
         unsafe {
             match c.tag {
                 SamplingConfigTag::Division => {
-                    autd3_driver::firmware::fpga::SamplingConfig::Division(c.value.div)
-                }
-                SamplingConfigTag::DivisionRaw => {
-                    autd3_driver::firmware::fpga::SamplingConfig::DivisionRaw(c.value.div)
+                    autd3_driver::firmware::fpga::SamplingConfig::Division(
+                        NonZeroU16::new_unchecked(c.value.div),
+                    )
                 }
                 SamplingConfigTag::Freq => {
                     autd3_driver::firmware::fpga::SamplingConfig::Freq(c.value.freq * Hz)
@@ -73,13 +71,9 @@ impl From<autd3_driver::firmware::fpga::SamplingConfig> for SamplingConfigWrap {
                     freq_nearest: c.hz(),
                 },
             },
-            autd3::derive::SamplingConfig::DivisionRaw(c) => SamplingConfigWrap {
-                tag: SamplingConfigTag::DivisionRaw,
-                value: SamplingConfigValue { div: c },
-            },
             autd3::derive::SamplingConfig::Division(c) => SamplingConfigWrap {
                 tag: SamplingConfigTag::Division,
-                value: SamplingConfigValue { div: c },
+                value: SamplingConfigValue { div: c.get() },
             },
             autd3::derive::SamplingConfig::Period(c) => SamplingConfigWrap {
                 tag: SamplingConfigTag::Period,
