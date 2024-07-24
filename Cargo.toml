@@ -37,7 +37,7 @@ autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }
 libc = "0.2.144"
 assert_approx_eq = "1.1.0"
-tokio = "1.37.0"
+tokio = "1.39.1"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 async-ffi = "0.5.0"
 seq-macro = "0.3.5"
