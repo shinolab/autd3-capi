@@ -343,7 +343,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "assert_approx_eq",
  "autd3capi-driver",
@@ -354,7 +354,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-backend-cuda"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-backend-cuda",
  "autd3-gain-holo",
@@ -365,7 +365,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-driver"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "assert_approx_eq",
  "async-ffi",
@@ -377,7 +377,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -385,7 +385,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -394,7 +394,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-soem"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-link-soem",
  "autd3capi-driver",
@@ -403,7 +403,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
@@ -411,7 +411,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-visualizer"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-link-visualizer",
  "autd3capi-driver",
@@ -419,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "27.0.0-alpha.2"
+version = "27.0.0-alpha.3"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-driver",
