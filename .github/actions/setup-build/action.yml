@@ -57,7 +57,7 @@ runs:
       shell: bash
       if: inputs.shaderc && inputs.os == 'macos-latest'
       run: |
-        brew install git cmake ninja
+        brew install ninja
       
     - name: Setup Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
@@ -76,6 +76,9 @@ runs:
 
     - name: install aarch64-pc-windows-msvc target
       shell: bash
-      if: inputs.os == 'windows-latest' && inputs.arch
+      if: inputs.os == 'windows-latest' && inputs.arch == 'aarch64'
       run: |
         rustup target install aarch64-pc-windows-msvc
+
+    - name: setup cache
+      uses: swatinem/rust-cache@v2
