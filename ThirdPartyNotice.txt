@@ -232,39 +232,39 @@ autd3-protobuf 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 27.0.0-alpha.2 (MIT)
+autd3capi 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-backend-cuda 27.0.0-alpha.2 (MIT)
+autd3capi-backend-cuda 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-driver 27.0.0-alpha.2 (MIT)
+autd3capi-driver 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-gain-holo 27.0.0-alpha.2 (MIT)
+autd3capi-gain-holo 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-simulator 27.0.0-alpha.2 (MIT)
+autd3capi-link-simulator 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-soem 27.0.0-alpha.2 (MIT)
+autd3capi-link-soem 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-twincat 27.0.0-alpha.2 (MIT)
+autd3capi-link-twincat 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-visualizer 27.0.0-alpha.2 (MIT)
+autd3capi-link-visualizer 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 27.0.0-alpha.2 (MIT)
+autd3capi-modulation-audio-file 27.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
