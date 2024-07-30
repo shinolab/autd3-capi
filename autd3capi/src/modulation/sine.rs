@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+use autd3::derive::SamplingConfig;
 use autd3capi_driver::{
     autd3::modulation::{sampling_mode::ExactFreqFloat, Sine},
     driver::{defined::Hz, derive::ModulationProperty},
@@ -10,18 +11,18 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineExact(
     freq: u32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     intensity: u8,
     offset: u8,
     phase: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
+) -> ResultModulation {
     Sine::new(freq * Hz)
-        .with_sampling_config(config)
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 
@@ -29,18 +30,18 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineExactFloat(
     freq: f32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     intensity: u8,
     offset: u8,
     phase: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
+) -> ResultModulation {
     Sine::new(freq * Hz)
-        .with_sampling_config(config)
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 
@@ -48,18 +49,18 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSineNearest(
     freq: f32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     intensity: u8,
     offset: u8,
     phase: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
-    Sine::from_freq_nearest(freq * Hz)
-        .with_sampling_config(config)
+) -> ResultModulation {
+    Sine::new_nearest(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * autd3::derive::rad)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 

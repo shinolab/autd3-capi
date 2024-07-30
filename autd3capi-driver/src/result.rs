@@ -1,7 +1,7 @@
 use autd3::prelude::*;
 use autd3_driver::error::AUTDInternalError;
 
-use crate::{ConstPtr, SamplingConfigTag, SamplingConfigValue, SamplingConfigWrap};
+use crate::ConstPtr;
 
 pub const AUTD3_ERR: i32 = -1;
 pub const AUTD3_TRUE: i32 = 1;
@@ -82,34 +82,6 @@ where
 
 #[repr(C)]
 
-pub struct ResultU16 {
-    pub result: u16,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl From<Result<u16, AUTDInternalError>> for ResultU16 {
-    fn from(r: Result<u16, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v,
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: 0,
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
-
-#[repr(C)]
-
 pub struct ResultF32 {
     pub result: f32,
     pub err_len: u32,
@@ -165,27 +137,24 @@ impl From<Result<u64, AUTDInternalError>> for ResultU64 {
 }
 
 #[repr(C)]
-pub struct ResultSamplingConfigWrap {
-    pub result: SamplingConfigWrap,
+pub struct ResultSamplingConfig {
+    pub result: SamplingConfig,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<Result<SamplingConfig, AUTDInternalError>> for ResultSamplingConfigWrap {
+impl From<Result<SamplingConfig, AUTDInternalError>> for ResultSamplingConfig {
     fn from(r: Result<SamplingConfig, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
-                result: v.into(),
+                result: v,
                 err_len: 0,
                 err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
-                    result: SamplingConfigWrap {
-                        tag: SamplingConfigTag::Division,
-                        value: SamplingConfigValue { div: 0 },
-                    },
+                    result: SamplingConfig::FREQ_40K,
                     err_len: err.as_bytes().len() as u32 + 1,
                     err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }

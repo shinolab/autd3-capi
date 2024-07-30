@@ -1,4 +1,7 @@
-use autd3capi_driver::{autd3::derive::EmitIntensity, driver::error::AUTDInternalError, *};
+use std::sync::Arc;
+
+use autd3::derive::{ModulationCalcResult, SamplingConfig};
+use autd3capi_driver::*;
 use driver::datagram::IntoDatagramWithSegmentTransition;
 
 pub mod fourier;
@@ -18,16 +21,16 @@ impl_ptr!(ModulationCalcPtr, Vec<u8>);
 #[repr(C)]
 pub struct ResultModulationCalc {
     pub result: ModulationCalcPtr,
-    pub config: SamplingConfigWrap,
+    pub config: SamplingConfig,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultModulationCalc {
-    fn from(r: (Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)) -> Self {
+impl From<(ModulationCalcResult, SamplingConfig)> for ResultModulationCalc {
+    fn from(r: (ModulationCalcResult, SamplingConfig)) -> Self {
         match r {
             (Ok(v), config) => Self {
-                result: ModulationCalcPtr(Box::into_raw(Box::new(v)) as _),
+                result: ModulationCalcPtr(Arc::into_raw(v) as _),
                 config,
                 err_len: 0,
                 err: ConstPtr(std::ptr::null_mut()),
@@ -47,7 +50,7 @@ impl From<(Result<Vec<u8>, AUTDInternalError>, SamplingConfigWrap)> for ResultMo
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfigWrap {
+pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfig {
     (m.0 as *const Box<M>)
         .as_ref()
         .unwrap()
@@ -89,7 +92,7 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagram(m: ModulationPtr) -> Datagra
 pub unsafe extern "C" fn AUTDModulationCalc(m: ModulationPtr) -> ResultModulationCalc {
     let m = take!(m, Box<M>);
     let config = m.sampling_config();
-    (m.calc(), config.into()).into()
+    (m.calc(), config).into()
 }
 
 #[no_mangle]
@@ -104,5 +107,5 @@ pub unsafe extern "C" fn AUTDModulationCalcGetSize(src: ModulationCalcPtr) -> u1
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCalcFreeResult(src: ModulationCalcPtr) {
-    let _ = take!(src, Vec<EmitIntensity>);
+    let _ = Arc::from_raw(src.0 as *mut Vec<u8>);
 }

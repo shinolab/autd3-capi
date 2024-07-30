@@ -1,10 +1,8 @@
 use std::time::Duration;
 
 use autd3::derive::{AUTDInternalError, SamplingConfig};
-use autd3_driver::datagram::{IntoSamplingConfig, STMConfig, STMConfigNearest};
+use autd3_driver::datagram::{STMConfig, STMConfigNearest};
 use autd3_driver::defined::Hz;
-
-use crate::SamplingConfigWrap;
 
 #[repr(u8)]
 enum STMConfigTag {
@@ -19,7 +17,7 @@ enum STMConfigTag {
 union STMConfigValue {
     freq: f32,
     period_ns: u64,
-    sampling_config: SamplingConfigWrap,
+    sampling_config: SamplingConfig,
 }
 
 #[repr(C)]
@@ -103,10 +101,10 @@ impl STMConfigWrap {
     pub unsafe fn sampling(self, n: usize) -> Result<SamplingConfig, AUTDInternalError> {
         match self.tag {
             STMConfigTag::Freq | STMConfigTag::Period | STMConfigTag::SamplingConfig => {
-                STMConfig::from(self).sampling(n)
+                SamplingConfig::try_from((STMConfig::from(self), n))
             }
             STMConfigTag::FreqNearest | STMConfigTag::PeriodNearest => {
-                STMConfigNearest::from(self).sampling(n)
+                SamplingConfig::try_from((STMConfigNearest::from(self), n))
             }
         }
     }
