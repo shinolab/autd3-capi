@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+use autd3::derive::SamplingConfig;
 use autd3capi_driver::{
     autd3::modulation::{sampling_mode::ExactFreqFloat, Square},
     driver::{defined::Hz, derive::ModulationProperty},
@@ -10,18 +11,18 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareExact(
     freq: u32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     low: u8,
     high: u8,
     duty: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
+) -> ResultModulation {
     Square::new(freq * Hz)
-        .with_sampling_config(config)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 
@@ -29,18 +30,18 @@ pub unsafe extern "C" fn AUTDModulationSquareExact(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
     freq: f32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     low: u8,
     high: u8,
     duty: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
+) -> ResultModulation {
     Square::new(freq * Hz)
-        .with_sampling_config(config)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 
@@ -48,18 +49,18 @@ pub unsafe extern "C" fn AUTDModulationSquareExactFloat(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSquareNearest(
     freq: f32,
-    config: SamplingConfigWrap,
+    config: SamplingConfig,
     low: u8,
     high: u8,
     duty: f32,
     loop_behavior: LoopBehavior,
-) -> ModulationPtr {
-    Square::from_freq_nearest(freq * Hz)
-        .with_sampling_config(config)
+) -> ResultModulation {
+    Square::new_nearest(freq * Hz)
         .with_low(low)
         .with_high(high)
         .with_duty(duty)
         .with_loop_behavior(loop_behavior.into())
+        .with_sampling_config(config)
         .into()
 }
 

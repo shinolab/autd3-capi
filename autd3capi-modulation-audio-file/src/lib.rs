@@ -2,7 +2,8 @@
 
 use std::ffi::{c_char, CStr};
 
-use autd3capi_driver::{driver::defined::Hz, *};
+use autd3::derive::SamplingConfig;
+use autd3capi_driver::*;
 
 use autd3_modulation_audio_file::{Csv, RawPCM, Wav};
 
@@ -44,18 +45,11 @@ pub unsafe extern "C" fn AUTDModulationAudioFileWav(
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationAudioFileRawPCM(
     path: *const c_char,
-    sample_rate: u32,
+    config: SamplingConfig,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path)
-        .to_str()
-        .map(|path| RawPCM::new(path, sample_rate * Hz).with_loop_behavior(loop_behavior.into()))
-    {
-        Ok(v) => ResultModulation {
-            result: v.into(),
-            err_len: 0,
-            err: ConstPtr(std::ptr::null_mut()),
-        },
+    let path = match CStr::from_ptr(path).to_str() {
+        Ok(v) => v,
         Err(e) => {
             let err = e.to_string();
             return ResultModulation {
@@ -64,27 +58,22 @@ pub unsafe extern "C" fn AUTDModulationAudioFileRawPCM(
                 err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
-    }
+    };
+    RawPCM::new(path, config)
+        .map(|m| m.with_loop_behavior(loop_behavior.into()))
+        .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationAudioFileCsv(
     path: *const c_char,
-    sample_rate: u32,
+    config: SamplingConfig,
     deliminator: u8,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
-    match CStr::from_ptr(path).to_str().map(|path| {
-        Csv::new(path, sample_rate * Hz)
-            .with_deliminator(deliminator)
-            .with_loop_behavior(loop_behavior.into())
-    }) {
-        Ok(v) => ResultModulation {
-            result: v.into(),
-            err_len: 0,
-            err: ConstPtr(std::ptr::null_mut()),
-        },
+    let path = match CStr::from_ptr(path).to_str() {
+        Ok(v) => v,
         Err(e) => {
             let err = e.to_string();
             return ResultModulation {
@@ -93,5 +82,11 @@ pub unsafe extern "C" fn AUTDModulationAudioFileCsv(
                 err: ConstPtr(Box::into_raw(Box::new(err)) as _),
             };
         }
-    }
+    };
+    Csv::new(path, config)
+        .map(|m| {
+            m.with_deliminator(deliminator)
+                .with_loop_behavior(loop_behavior.into())
+        })
+        .into()
 }
