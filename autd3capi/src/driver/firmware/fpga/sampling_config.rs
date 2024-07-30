@@ -9,7 +9,7 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u16) -> SamplingConfig {
-    SamplingConfig::new(NonZeroU16::new_unchecked(div)).into()
+    SamplingConfig::new(NonZeroU16::new_unchecked(div))
 }
 
 #[no_mangle]

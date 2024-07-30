@@ -51,11 +51,7 @@ impl From<(ModulationCalcResult, SamplingConfig)> for ResultModulationCalc {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfig {
-    (m.0 as *const Box<M>)
-        .as_ref()
-        .unwrap()
-        .sampling_config()
-        .into()
+    (m.0 as *const Box<M>).as_ref().unwrap().sampling_config()
 }
 
 #[no_mangle]

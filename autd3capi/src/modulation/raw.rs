@@ -25,7 +25,7 @@ pub unsafe extern "C" fn AUTDModulationRaw(
     len: u16,
 ) -> ModulationPtr {
     RawModulation {
-        config: config.into(),
+        config,
         buf: Arc::new(vec_from_raw!(ptr, u8, len)),
         loop_behavior: loop_behavior.into(),
     }

@@ -27,7 +27,7 @@ pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: u64) -> STMConfigWrap {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMConfigFromSamplingConfig(c: SamplingConfig) -> STMConfigWrap {
-    STMConfig::SamplingConfig(c.into()).into()
+    STMConfig::SamplingConfig(c).into()
 }
 
 #[no_mangle]

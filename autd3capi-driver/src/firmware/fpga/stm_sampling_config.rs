@@ -41,9 +41,7 @@ impl From<STMConfig> for STMConfigWrap {
             },
             STMConfig::SamplingConfig(c) => Self {
                 tag: STMConfigTag::SamplingConfig,
-                value: STMConfigValue {
-                    sampling_config: c.into(),
-                },
+                value: STMConfigValue { sampling_config: c },
             },
             _ => unimplemented!(),
         }
@@ -74,9 +72,7 @@ impl From<STMConfigWrap> for STMConfig {
             match c.tag {
                 STMConfigTag::Freq => STMConfig::Freq(c.value.freq * Hz),
                 STMConfigTag::Period => STMConfig::Period(Duration::from_nanos(c.value.period_ns)),
-                STMConfigTag::SamplingConfig => {
-                    STMConfig::SamplingConfig(c.value.sampling_config.into())
-                }
+                STMConfigTag::SamplingConfig => STMConfig::SamplingConfig(c.value.sampling_config),
                 _ => unimplemented!(),
             }
         }
