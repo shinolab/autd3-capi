@@ -6,7 +6,7 @@ use autd3capi_driver::{
         datagram::{STMConfig, STMConfigNearest},
         defined::Hz,
     },
-    ResultF32, ResultSamplingConfig, ResultU64, STMConfigWrap,
+    ResultSamplingConfig,
 };
 
 pub mod foci;
@@ -14,57 +14,45 @@ pub mod gain;
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromFreq(f: f32) -> STMConfigWrap {
-    STMConfig::Freq(f * Hz).into()
+pub unsafe extern "C" fn AUTDSTMConfigFromFreq(f: f32, n: u16) -> ResultSamplingConfig {
+    (STMConfig::Freq(f * Hz), n as usize).try_into().into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: u64) -> STMConfigWrap {
-    STMConfig::Period(Duration::from_nanos(p)).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromSamplingConfig(c: SamplingConfig) -> STMConfigWrap {
-    STMConfig::SamplingConfig(c).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromFreqNearest(f: f32) -> STMConfigWrap {
-    STMConfigNearest::Freq(f * Hz).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(p: u64) -> STMConfigWrap {
-    STMConfigNearest::Period(Duration::from_nanos(p)).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMFreq(c: STMConfigWrap, n: u32) -> ResultF32 {
-    c.sampling(n as _)
-        .map(|c| c.freq())
-        .map(|f| f.hz() / n as f32)
+pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: u64, n: u16) -> ResultSamplingConfig {
+    (STMConfig::Period(Duration::from_nanos(p)), n as usize)
+        .try_into()
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMPeriod(c: STMConfigWrap, n: u32) -> ResultU64 {
-    c.sampling(n as _)
-        .map(|c| c.period())
-        .map(|f| (f * n).as_nanos() as u64)
+pub unsafe extern "C" fn AUTDSTMConfigFromFreqNearest(f: f32, n: u16) -> ResultSamplingConfig {
+    (STMConfigNearest::Freq(f * Hz), n as usize)
+        .try_into()
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMSamplingSamplingConfig(
-    c: STMConfigWrap,
-    n: u32,
-) -> ResultSamplingConfig {
-    c.sampling(n as _).into()
+pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(p: u64, n: u16) -> ResultSamplingConfig {
+    (
+        STMConfigNearest::Period(Duration::from_nanos(p)),
+        n as usize,
+    )
+        .try_into()
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMFreq(c: SamplingConfig, n: u32) -> f32 {
+    c.freq().hz() / n as f32
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMPeriod(c: SamplingConfig, n: u32) -> u64 {
+    (c.period() * n).as_nanos() as u64
 }

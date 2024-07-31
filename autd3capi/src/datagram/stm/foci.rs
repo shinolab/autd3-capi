@@ -1,10 +1,11 @@
+use autd3::derive::SamplingConfig;
 use autd3capi_driver::{driver::datagram::FociSTM, *};
 use driver::{datagram::IntoDatagramWithSegmentTransition, defined::ControlPoints};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMFoci(
-    config: STMConfigWrap,
+    config: SamplingConfig,
     points: ConstPtr,
     size: u16,
     n: u8,
@@ -12,25 +13,6 @@ pub unsafe extern "C" fn AUTDSTMFoci(
     seq_macro::seq!(N in 1..=8 {
         match n {
                 #(N => FociSTM::new(
-                    config,
-                    vec_from_raw!(points.0, ControlPoints<N>, size)
-                )
-                .into(),)*
-            _ => unreachable!(),
-        }
-    })
-}
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMFociNearest(
-    config: STMConfigWrap,
-    points: ConstPtr,
-    size: u16,
-    n: u8,
-) -> ResultFociSTM {
-    seq_macro::seq!(N in 1..=8 {
-        match n {
-                #(N => FociSTM::new_nearest(
                     config,
                     vec_from_raw!(points.0, ControlPoints<N>, size)
                 )

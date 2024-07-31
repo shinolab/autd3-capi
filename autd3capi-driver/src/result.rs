@@ -81,62 +81,6 @@ where
 }
 
 #[repr(C)]
-
-pub struct ResultF32 {
-    pub result: f32,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl From<Result<f32, AUTDInternalError>> for ResultF32 {
-    fn from(r: Result<f32, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v,
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: 0.,
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
-
-#[repr(C)]
-
-pub struct ResultU64 {
-    pub result: u64,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl From<Result<u64, AUTDInternalError>> for ResultU64 {
-    fn from(r: Result<u64, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v,
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: 0,
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
-
-#[repr(C)]
 pub struct ResultSamplingConfig {
     pub result: SamplingConfig,
     pub err_len: u32,

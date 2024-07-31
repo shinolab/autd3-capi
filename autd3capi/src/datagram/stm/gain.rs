@@ -1,28 +1,15 @@
+use autd3::derive::SamplingConfig;
 use autd3capi_driver::{driver::datagram::GainSTM, *};
 use driver::datagram::IntoDatagramWithSegmentTransition;
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGain(
-    config: STMConfigWrap,
+    config: SamplingConfig,
     gains: *const GainPtr,
     size: u16,
 ) -> ResultGainSTM {
     GainSTM::<Box<G>>::new(
-        config,
-        (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
-    )
-    .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSTMGainNearest(
-    config: STMConfigWrap,
-    gains: *const GainPtr,
-    size: u16,
-) -> ResultGainSTM {
-    GainSTM::<Box<G>>::new_nearest(
         config,
         (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
     )
