@@ -11,547 +11,137 @@ jobs:
     name: check-license
     steps:
     - uses: actions/checkout@v4
-    - name: Check license
-      run: |
+    - run: |
         git submodule update --init tools/autd3-license-check
         cd tools/license-checker
         cargo run
 
-  release:
+  create-release:
     needs: [license-check]
     name: create-github-release
     runs-on: ubuntu-latest
     steps:
-    - name: Create Release
-      id: create_release
+    - id: create_release
       uses: ncipollo/release-action@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         draft: false
         prerelease: false
-    - name: Output Release URL File
-      run: |
+    - run: |
         echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
         echo "${{ steps.create_release.outputs.id }}" > release_id.txt
-    - name: Save Release URL File for publish
-      uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: release_url
         path: release_url.txt
-    - name: Save Release URL File for publish
-      uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: release_id
         path: release_id.txt
 
-  publish_win:
-    needs: [release]
-    name: upload-release-asset-windows-x64
-    runs-on: windows-latest
+  publish:
+    needs: [create-release]
+    name: upload-release-asset-${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: win
+            arch: x64
+            shaderc: true
+            cuda: true
+            unity: true
+          - os: windows-latest
+            name: win
+            arch: aarch64
+            shaderc: false
+            cuda: false
+            unity: true
+          - os: ubuntu-latest
+            name: linux
+            arch: x64
+            shaderc: true
+            cuda: true
+            unity: true
+          - os: ubuntu-latest
+            name: linux
+            arch: armv7
+            shaderc: false
+            cuda: false
+          - os: ubuntu-latest
+            name: linux
+            arch: aarch64
+            shaderc: false
+            cuda: false
+          - os: macos-latest
+            name: macos
+            arch: aarch64
+            shaderc: true
+            cuda: false
+            unity: true
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup-build
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-build
         with:
-          os: windows-latest
-          shaderc: true
-          cuda: true
-
-      - name: Get the version
-        id: get_version
+          os: ${{ matrix.os }}
+          arch: ${{ matrix.arch }}
+          shaderc: ${{ matrix.shaderc }}
+          cuda: ${{ matrix.cuda }}
+      - id: get_version
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win';
-
-      - name: Build project x64
-        run: |
-          python3 build.py build --release
-          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_x64-dll.zip
-          python3 build.py build --release --features "static"
-          Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets_x64-static.zip
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./release_url/release_url.txt
-      - name: Upload Release Asset Win x64 Dll
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_x64-dll.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-dll.zip
-          asset_content_type: application/zip
-      - name: Upload Release Asset Win x64 Static
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_x64-static.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-static.zip
-          asset_content_type: application/zip
-
-  publish_win_arm:
-    needs: [release]
-    name: upload-release-asset-windows-arm
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: windows-latest
-          arch: 'aarch64'
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win';
-
-      - name: Build project arm
-        run: |
-          python3 build.py build --release --arch aarch64
-          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_arm-dll.zip
-          python3 build.py build --release --arch aarch64 --features "static"
-          Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets_arm-static.zip
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./release_url/release_url.txt
-      - name: Upload Release Asset Win Arm Dll
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_arm-dll.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-arm-dll.zip
-          asset_content_type: application/zip
-      - name: Upload Release Asset Win arm Static
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_arm-static.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-arm-static.zip
-          asset_content_type: application/zip
-
-  publish_win-unity:
-    needs: [release]
-    name: upload-release-asset-windows-for-unity
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: windows-latest
-          shaderc: true
-          cuda: true
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win-unity';
-
-      - name: Build project x64
-        run: |
-          python3 build.py build --release --features "use_meter left_handed"
-          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_x64.zip
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./release_url/release_url.txt
-      - name: Upload Release Asset Win x64
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_x64.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-dll.zip
-          asset_content_type: application/zip
-
-  publish_win_arm-unity:
-    needs: [release]
-    name: upload-release-asset-windows-arm-for-unity
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: windows-latest
-          arch: 'aarch64'
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-win-unity';
-
-      - name: Build project arm
-        run: |
-          python3 build.py build --release --arch aarch64 --features "use_meter left_handed"
-          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets_arm-dll.zip
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./release_url/release_url.txt
-      - name: Upload Release Asset Win Arm Dll
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.content }}
-          asset_path: ./assets_arm-dll.zip
-          asset_name: ${{ steps.get_version.outputs.result }}-arm-dll.zip
-          asset_content_type: application/zip
-
-  publish_linux:
-    needs: [release]
-    name: upload-release-asset-linux
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: ubuntu-latest
-          shaderc: true
-          cuda: true
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux';
-
-      - name: Build project x64
-        run: |
-          python3 build.py build --release
-          tar -zcvf assets_x64-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
-          python3 build.py build --release --features "static"
-          tar -zcvf assets_x64-static.tar.gz lib LICENSE ThirdPartyNotice.txt
-        shell: bash
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset Shared
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_x64-shared.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-shared.tar.gz
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset Static
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_x64-static.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-static.tar.gz
-          asset_content_type: application/octet-stream
-
-  publish_linux_unity:
-    needs: [release]
-    name: upload-release-asset-linux-unity
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: ubuntu-latest
-          shaderc: true
-          cuda: true
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux-unity';
-
-      - name: Build project x64
-        run: |
-          python3 build.py build --release --features "use_meter left_handed"
-          tar -zcvf assets_x64.tar.gz bin LICENSE ThirdPartyNotice.txt
-        shell: bash
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_x64.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-x64-shared.tar.gz
-          asset_content_type: application/octet-stream
-
-  publish_linux-arm32:
-    needs: [release]
-    name: upload-release-asset-linux-arm32
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: ubuntu-latest
-          arch: 'arm32'
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux';
-
-      - name: Build project arm32
-        run: |
-          python3 build.py build --release --arch arm32
-          tar -zcvf assets_arm32-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
-          python3 build.py build --release --arch arm32 --features "static"
-          tar -zcvf assets_arm32-static.tar.gz lib LICENSE ThirdPartyNotice.txt
-        shell: bash
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset Shared
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_arm32-shared.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-armv7-shared.tar.gz
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset Static
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_arm32-static.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-armv7-static.tar.gz
-          asset_content_type: application/octet-stream
-
-  publish_linux-aarch64:
-    needs: [release]
-    name: upload-release-asset-linux-aarch64
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: ubuntu-latest
-          arch: 'aarch64'
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-linux';
-
-      - name: Build project aarch64
-        run: |
-          python3 build.py build --release --arch aarch64
-          tar -zcvf assets_aarch64-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
-          python3 build.py build --release --arch aarch64 --features "static"
-          tar -zcvf assets_aarch64-static.tar.gz lib LICENSE ThirdPartyNotice.txt
-        shell: bash
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset Shared
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_aarch64-shared.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-aarch64-shared.tar.gz
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset Static
-        uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets_aarch64-static.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-aarch64-static.tar.gz
-          asset_content_type: application/octet-stream
-
-  publish_mac:
-    needs: [release]
-    name: upload-release-asset-macos
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: macos-latest
-          shaderc: true
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-aarch64';
-
-      - name: Build project
-        run: |
-          python3 build.py build --release
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-'+${{ matrix.name }}-${{ matrix.arch }}';
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }}
+          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-shared.zip
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "static"
+          Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets-static.zip
+        if: ${{ matrix.os == 'windows-latest' }} 
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
+          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-unity.zip
+        if: ${{ matrix.os == 'windows-latest' && matrix.unity == 'true' }} 
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }}
           tar -zcvf assets-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
-          python3 build.py build --release --features "static"
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "static"
           tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
+        if: ${{ matrix.os != 'windows-latest' }} 
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
+          tar -zcvf assets-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
+        if: ${{ matrix.os != 'windows-latest' && matrix.unity == 'true'  }} 
+      - uses: actions/download-artifact@v4
         with:
           name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset Shared
-        uses: shogo82148/actions-upload-release-asset@v1
+      - id: get_release_info
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: release_url.txt
+      - uses: shogo82148/actions-upload-release-asset@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets-shared.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-shared.tar.gz
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset Static
-        uses: shogo82148/actions-upload-release-asset@v1
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets-shared.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_name: ${{ steps.get_version.outputs.result }}-shared.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/octet-stream' }}
+      - uses: shogo82148/actions-upload-release-asset@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets-static.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-static.tar.gz
-          asset_content_type: application/octet-stream
-
-  publish_mac_unity:
-    needs: [release]
-    name: upload-release-asset-macos-unity
-    runs-on: macos-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Setup
-        uses: ./.github/actions/setup-build
-        with:
-          os: macos-latest
-          shaderc: true
-
-      - name: Get the version
-        id: get_version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-macos-unity-aarch64';
-
-      - name: Build project
-        run: |
-          python3 build.py build --release --features "use_meter left_handed"
-          tar -zcvf assets.tar.gz bin LICENSE ThirdPartyNotice.txt
-      - name: Load Release URL File from release job
-        uses: actions/download-artifact@v1
-        with:
-          name: release_url
-      - name: Get Release File Name & Upload URL
-        id: get_release_info
-        run: |
-          value=`cat release_url/release_url.txt`
-          echo "upload_url=$value" >> $GITHUB_OUTPUT
-      - name: Upload Release Asset
-        uses: shogo82148/actions-upload-release-asset@v1
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets-static.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_name: ${{ steps.get_version.outputs.result }}-static.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/octet-stream' }}
+      - uses: shogo82148/actions-upload-release-asset@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ./assets.tar.gz
-          asset_name: ${{ steps.get_version.outputs.result }}-shared.tar.gz
-          asset_content_type: application/octet-stream
+          upload_url: ${{ steps.get_release_info.outputs.content }}
+          asset_path: ./assets-unity.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_name: ${{ steps.get_version.outputs.result }}-unity.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
+          asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/octet-stream' }}
+        if: ${{ matrix.unity == 'true' }} 

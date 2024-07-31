@@ -89,22 +89,28 @@ class Config:
 
         if hasattr(args, "arch") and args.arch is not None:
             if self.is_linux():
-                self.shaderc = False
-                self.cuda = False
                 match args.arch:
-                    case "arm32":
+                    case "arm32" | "armv7":
+                        self.shaderc = False
+                        self.cuda = False
                         self.target = "armv7-unknown-linux-gnueabihf"
                     case "aarch64":
+                        self.shaderc = False
+                        self.cuda = False
                         self.target = "aarch64-unknown-linux-gnu"
+                    case "x64":
+                        self.target = None
                     case _:
                         err(f'arch "{args.arch}" is not supported.')
                         sys.exit(-1)
             elif self.is_windows():
-                self.shaderc = False
-                self.cuda = False
                 match args.arch:
                     case "aarch64":
+                        self.shaderc = False
+                        self.cuda = False
                         self.target = "aarch64-pc-windows-msvc"
+                    case "x64":
+                        self.target = None
                     case _:
                         err(f'arch "{args.arch}" is not supported.')
                         sys.exit(-1)
