@@ -66,7 +66,7 @@ runs:
 
     - name: install cross
       shell: bash
-      if: inputs.os == 'ubuntu-latest' && inputs.arch
+      if: inputs.os == 'ubuntu-latest' && (inputs.arch == 'armv7' || inputs.arch == 'aarch64') 
       run: |
         curl -L https://github.com/cross-rs/cross/releases/download/v0.2.5/cross-x86_64-unknown-linux-gnu.tar.gz > cross.tar.gz
         tar -xzf cross.tar.gz
