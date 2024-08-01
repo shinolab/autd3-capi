@@ -70,11 +70,13 @@ jobs:
             arch: armv7
             shaderc: false
             cuda: false
+            unity: false
           - os: ubuntu-latest
             name: linux
             arch: aarch64
             shaderc: false
             cuda: false
+            unity: false
           - os: macos-latest
             name: macos
             arch: aarch64
