@@ -1,3 +1,5 @@
+use std::convert::Infallible;
+
 use autd3::derive::AUTDInternalError;
 use autd3_driver::derive::Modulation;
 
@@ -46,6 +48,19 @@ impl<T: Modulation + Send + Sync + 'static> From<Result<T, AUTDInternalError>>
                     err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
+        }
+    }
+}
+
+impl<T: Modulation + Send + Sync + 'static> From<Result<T, Infallible>> for ResultModulation {
+    fn from(r: Result<T, Infallible>) -> Self {
+        match r {
+            Ok(v) => Self {
+                result: v.into(),
+                err_len: 0,
+                err: ConstPtr(std::ptr::null_mut()),
+            },
+            _ => unreachable!(),
         }
     }
 }

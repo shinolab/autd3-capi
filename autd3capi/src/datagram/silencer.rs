@@ -16,7 +16,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
         NonZeroU8::new_unchecked(value_intensity),
         NonZeroU8::new_unchecked(value_phase),
     )
-    .with_taget(target.into())
+    .with_target(target.into())
     .into()
 }
 
@@ -33,7 +33,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
         Duration::from_nanos(value_phase),
     )
     .with_strict_mode(strict_mode)
-    .with_taget(target.into())
+    .with_target(target.into())
     .into()
 }
 
