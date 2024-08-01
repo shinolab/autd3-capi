@@ -97,7 +97,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: string
           script: |
-            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-'+${{ matrix.name }}-${{ matrix.arch }};
+            return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-${{ matrix.name }}-${{ matrix.arch }}';
       - run: |
           python3 build.py build --release --arch ${{ matrix.arch }}
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-shared.zip
