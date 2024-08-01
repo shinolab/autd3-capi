@@ -64,6 +64,7 @@ jobs:
       - uses: ./.github/actions/setup-build
         with:
           os: ${{ matrix.os }}
+          arch: ${{ matrix.arch }}
           shaderc: ${{ matrix.shaderc }}
           cuda: ${{ matrix.cuda }}
         if: ${{ needs.changed-files.outputs.src == 'true' }}
