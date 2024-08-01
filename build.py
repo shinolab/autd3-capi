@@ -114,6 +114,8 @@ class Config:
                     case _:
                         err(f'arch "{args.arch}" is not supported.')
                         sys.exit(-1)
+            else:
+                self.target = None
         else:
             self.target = None
 
