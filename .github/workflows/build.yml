@@ -28,48 +28,47 @@ jobs:
 
   test:
     needs: changed-files
-    name: test-on-${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@v4
-        if: ${{ needs.changed-files.outputs.src == 'true' }}
-      - uses: ./.github/actions/setup-build
-        with:
-          os: ${{ matrix.os }}
-          shaderc: true
-          cuda: true
-        if: ${{ needs.changed-files.outputs.src == 'true' }}
-      - run: python3 build.py build
-        shell: bash
-        if: ${{ needs.changed-files.outputs.src == 'true' }}
-
-  test-on-arm:
-    needs: changed-files
     name: test-on-${{ matrix.os }}-${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            arch: arm32
-          - os: ubuntu-latest
-            arch: aarch64
+          - os: windows-latest
+            arch: x64
+            shaderc: true
+            cuda: true
           - os: windows-latest
             arch: aarch64
+            shaderc: false
+            cuda: false
+          - os: ubuntu-latest
+            arch: x64
+            shaderc: true
+            cuda: true
+          - os: ubuntu-latest
+            arch: armv7
+            shaderc: false
+            cuda: false
+          - os: ubuntu-latest
+            arch: aarch64
+            shaderc: false
+            cuda: false
+          - os: macos-latest
+            arch: aarch64
+            shaderc: true
+            cuda: false
     steps:
       - uses: actions/checkout@v4
         if: ${{ needs.changed-files.outputs.src == 'true' }}
       - uses: ./.github/actions/setup-build
         with:
           os: ${{ matrix.os }}
-          arch: ${{ matrix.arch }}
+          shaderc: ${{ matrix.shaderc }}
+          cuda: ${{ matrix.cuda }}
         if: ${{ needs.changed-files.outputs.src == 'true' }}
       - run: python3 build.py build --arch ${{ matrix.arch }}
+        shell: bash
         if: ${{ needs.changed-files.outputs.src == 'true' }}
 
   lint:
@@ -88,10 +87,18 @@ jobs:
           python3 build.py lint
           python3 build.py lint --features "static"
 
+  all-tests-passed:
+    if: ${{ always() }}
+    name: all-tests-passed
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - if: ${{ needs.test.result == 'failure' }}
+        run: exit 1
+
   auto-merge:
     needs:
       - test
-      - test-on-arm
       - lint
     permissions:
       pull-requests: write
