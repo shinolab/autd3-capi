@@ -1,6 +1,9 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::derive::SamplingConfig;
+use autd3::{
+    derive::SamplingConfig,
+    modulation::sampling_mode::{ExactFreq, NearestFreq},
+};
 use autd3capi_driver::{
     autd3::modulation::{sampling_mode::ExactFreqFloat, Square},
     driver::{defined::Hz, derive::ModulationProperty},
@@ -62,6 +65,24 @@ pub unsafe extern "C" fn AUTDModulationSquareNearest(
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareExactFreq(square: ModulationPtr) -> u32 {
+    take_mod!(square, Square<ExactFreq>).freq().hz()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareExactFloatFreq(square: ModulationPtr) -> f32 {
+    take_mod!(square, Square<ExactFreqFloat>).freq().hz()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationSquareNearestFreq(square: ModulationPtr) -> f32 {
+    take_mod!(square, Square<NearestFreq>).freq().hz()
 }
 
 #[no_mangle]
