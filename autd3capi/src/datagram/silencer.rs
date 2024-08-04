@@ -1,7 +1,8 @@
 use std::{num::NonZeroU8, time::Duration};
 
 use autd3capi_driver::{
-    driver::datagram::{Silencer, SilencerFixedCompletionTime},
+    autd3::derive::SamplingConfig,
+    driver::datagram::{Silencer, SilencerFixedCompletionTime, SilencerFixedUpdateRate},
     take, DatagramPtr, SilencerTarget,
 };
 
@@ -22,6 +23,16 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRateIsValid(
+    silencer: DatagramPtr,
+    config_intensity: SamplingConfig,
+    config_phase: SamplingConfig,
+) -> bool {
+    take!(silencer, Box<SilencerFixedUpdateRate>).is_valid(&(config_intensity, config_phase))
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
     value_intensity: u64,
     value_phase: u64,
@@ -35,6 +46,16 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
     .with_strict_mode(strict_mode)
     .with_target(target.into())
     .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsValid(
+    silencer: DatagramPtr,
+    config_intensity: SamplingConfig,
+    config_phase: SamplingConfig,
+) -> bool {
+    take!(silencer, Box<SilencerFixedCompletionTime>).is_valid(&(config_intensity, config_phase))
 }
 
 #[no_mangle]

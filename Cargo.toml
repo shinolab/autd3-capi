@@ -17,21 +17,21 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.package]
-version = "27.0.0-rc.2"
+version = "27.0.0-rc.6"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "27.0.0-rc.2" }
-autd3-driver = { version = "27.0.0-rc.2" }
-autd3-gain-holo = { version = "27.0.0-rc.2" }
-autd3-link-simulator = { version = "27.0.0-rc.2" }
-autd3-link-soem = { version = "27.0.0-rc.2" }
-autd3-link-twincat = { version = "27.0.0-rc.2" }
-autd3-modulation-audio-file = { version = "27.0.0-rc.2" }
-autd3-link-visualizer = { version = "27.0.0-rc.0" }
+autd3 = { version = "27.0.0-rc.6" }
+autd3-driver = { version = "27.0.0-rc.6" }
+autd3-gain-holo = { version = "27.0.0-rc.6" }
+autd3-link-simulator = { version = "27.0.0-rc.6" }
+autd3-link-soem = { version = "27.0.0-rc.6" }
+autd3-link-twincat = { version = "27.0.0-rc.6" }
+autd3-modulation-audio-file = { version = "27.0.0-rc.6" }
+autd3-link-visualizer = { version = "27.0.0-rc.4" }
 autd3-backend-cuda = { version = "27.0.0-rc.0" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }

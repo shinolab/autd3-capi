@@ -24,19 +24,20 @@ pub unsafe extern "C" fn AUTDDeviceGetSoundSpeed(dev: DevicePtr) -> f32 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceSetSoundSpeed(mut dev: DevicePtr, value: f32) {
-    dev.sound_speed = value;
+pub unsafe extern "C" fn AUTDDeviceSetSoundSpeed(mut geo: GeometryPtr, dev_idx: u16, value: f32) {
+    geo[dev_idx as usize].sound_speed = value;
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeviceSetSoundSpeedFromTemp(
-    mut dev: DevicePtr,
+    mut geo: GeometryPtr,
+    dev_idx: u16,
     temp: f32,
     k: f32,
     r: f32,
     m: f32,
 ) {
-    dev.set_sound_speed_from_temp_with(temp, k, r, m);
+    geo[dev_idx as usize].set_sound_speed_from_temp_with(temp, k, r, m);
 }
 
 #[no_mangle]
@@ -45,23 +46,28 @@ pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Vector3 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceTranslate(mut dev: DevicePtr, t: Vector3) {
-    dev.translate(t);
+pub unsafe extern "C" fn AUTDDeviceTranslate(mut geo: GeometryPtr, dev_idx: u16, t: Vector3) {
+    geo[dev_idx as usize].translate(t);
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceRotate(mut dev: DevicePtr, r: Quaternion) {
-    dev.rotate(UnitQuaternion::from_quaternion(r));
+pub unsafe extern "C" fn AUTDDeviceRotate(mut geo: GeometryPtr, dev_idx: u16, r: Quaternion) {
+    geo[dev_idx as usize].rotate(UnitQuaternion::from_quaternion(r));
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceAffine(mut dev: DevicePtr, t: Vector3, r: Quaternion) {
-    dev.affine(t, UnitQuaternion::from_quaternion(r));
+pub unsafe extern "C" fn AUTDDeviceAffine(
+    mut geo: GeometryPtr,
+    dev_idx: u16,
+    t: Vector3,
+    r: Quaternion,
+) {
+    geo[dev_idx as usize].affine(t, UnitQuaternion::from_quaternion(r));
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceEnableSet(mut dev: DevicePtr, value: bool) {
-    dev.enable = value;
+pub unsafe extern "C" fn AUTDDeviceEnableSet(mut geo: GeometryPtr, dev_idx: u16, value: bool) {
+    geo[dev_idx as usize].enable = value;
 }
 
 #[no_mangle]
