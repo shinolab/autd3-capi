@@ -70,19 +70,11 @@ pub unsafe extern "C" fn AUTDGainGroup(
             }
         }
     };
-    if parallel {
-        vec_from_raw!(keys_ptr, i32, kv_len)
-            .iter()
-            .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
-            .fold(Group::with_parallel(f), |acc, (&k, v)| {
-                acc.set(k, *take!(v, Box<G>))
-            })
-            .into()
-    } else {
-        vec_from_raw!(keys_ptr, i32, kv_len)
-            .iter()
-            .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
-            .fold(Group::new(f), |acc, (&k, v)| acc.set(k, *take!(v, Box<G>)))
-            .into()
-    }
+    vec_from_raw!(keys_ptr, i32, kv_len)
+        .iter()
+        .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
+        .fold(Group::new(f).with_parallel(parallel), |acc, (&k, v)| {
+            acc.set(k, *take!(v, Box<G>))
+        })
+        .into()
 }
