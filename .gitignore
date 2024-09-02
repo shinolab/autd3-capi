@@ -1,9 +1,7 @@
 target/
-settings.json
-.cargo
+Cargo.lock
+
 bin/
 lib/
 *.zip
 *.tar.gz
-Packet.lib
-wpcap.lib
