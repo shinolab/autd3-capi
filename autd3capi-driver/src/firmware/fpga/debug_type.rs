@@ -1,4 +1,4 @@
-use autd3::derive::Device;
+use autd3_driver::geometry::Device;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Default)]

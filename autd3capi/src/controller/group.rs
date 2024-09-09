@@ -1,6 +1,6 @@
 use autd3capi_driver::{
-    async_ffi::LocalFfiFuture, autd3::derive::Device, ConstPtr, DatagramPtr, DynamicDatagramPack,
-    GeometryPtr, ResultI32,
+    async_ffi::LocalFfiFuture, autd3::driver::geometry::Device, ConstPtr, DatagramPtr,
+    DynamicDatagramPack, GeometryPtr, ResultI32,
 };
 
 use super::ControllerPtr;

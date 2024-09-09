@@ -3,6 +3,7 @@
 use autd3::{
     derive::SamplingConfig,
     modulation::sampling_mode::{ExactFreq, NearestFreq},
+    prelude::rad,
 };
 use autd3capi_driver::{
     autd3::modulation::{sampling_mode::ExactFreqFloat, Sine},
@@ -23,7 +24,7 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
     Sine::new(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
-        .with_phase(phase * autd3::derive::rad)
+        .with_phase(phase * rad)
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()
@@ -42,7 +43,7 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
     Sine::new(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
-        .with_phase(phase * autd3::derive::rad)
+        .with_phase(phase * rad)
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()
@@ -61,7 +62,7 @@ pub unsafe extern "C" fn AUTDModulationSineNearest(
     Sine::new_nearest(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
-        .with_phase(phase * autd3::derive::rad)
+        .with_phase(phase * rad)
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()

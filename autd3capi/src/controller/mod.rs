@@ -35,14 +35,14 @@ impl From<Result<Controller<Box<dyn Link>>, AUTDError>> for ResultController {
             Ok(v) => Self {
                 result: ControllerPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: ConstPtr(std::ptr::null_mut())
+                err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: ControllerPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }
@@ -51,23 +51,13 @@ impl From<Result<Controller<Box<dyn Link>>, AUTDError>> for ResultController {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerClose(mut cnt: ControllerPtr) -> FfiFuture<ResultI32> {
+pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> FfiFuture<ResultI32> {
+    let cnt = take!(cnt, Controller<Box<dyn Link>>);
     async move {
         let r: ResultI32 = cnt.close().await.into();
         r
     }
     .into_ffi()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDControllerDelete(cnt: ControllerPtr) {
-    let _ = take!(cnt, Controller<Box<dyn Link>>);
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDControllerLastParallelThreshold(cnt: ControllerPtr) -> u16 {
-    cnt.last_parallel_threshold() as u16
 }
 
 #[repr(C)]
@@ -95,14 +85,14 @@ impl From<Result<Vec<Option<FPGAState>>, AUTDError>> for ResultFPGAStateList {
             Ok(v) => Self {
                 result: FPGAStateListPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: ConstPtr(std::ptr::null_mut())
+                err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: FPGAStateListPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }
@@ -156,14 +146,14 @@ impl From<Result<Vec<FirmwareVersion>, AUTDError>> for ResultFirmwareVersionList
             Ok(v) => Self {
                 result: FirmwareVersionListPtr(Box::into_raw(Box::new(v)) as _),
                 err_len: 0,
-                err: ConstPtr(std::ptr::null_mut())
+                err: ConstPtr(std::ptr::null_mut()),
             },
             Err(e) => {
                 let err = e.to_string();
                 Self {
                     result: FirmwareVersionListPtr(std::ptr::null()),
                     err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _)
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
                 }
             }
         }

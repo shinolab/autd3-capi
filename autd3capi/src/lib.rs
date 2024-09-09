@@ -131,7 +131,6 @@ mod tests {
             let result = AUTDWaitResultI32(runtime, future);
             assert_eq!(AUTD3_TRUE, result.result);
 
-            controller::AUTDControllerDelete(cnt);
             AUTDDeleteRuntime(runtime);
         }
     }

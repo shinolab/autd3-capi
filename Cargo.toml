@@ -8,8 +8,7 @@ members = [
     "autd3capi-link-soem",
     "autd3capi-link-twincat",
     "autd3capi-modulation-audio-file",
-    "autd3capi-link-visualizer",
-    "autd3capi-backend-cuda",
+    # "autd3capi-backend-cuda",
 ]
 
 exclude = ["tools"]
@@ -17,22 +16,21 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.package]
-version = "27.0.0"
+version = "28.0.0-alpha.1"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "27.0.0" }
-autd3-driver = { version = "27.0.0" }
-autd3-gain-holo = { version = "27.0.0" }
-autd3-link-simulator = { version = "27.0.0" }
-autd3-link-soem = { version = "27.0.0" }
-autd3-link-twincat = { version = "27.0.0" }
-autd3-modulation-audio-file = { version = "27.0.0" }
-autd3-link-visualizer = { version = "27.0.0" }
-autd3-backend-cuda = { version = "27.0.0" }
+autd3 = { version = "28.0.0-alpha.1" }
+autd3-driver = { version = "28.0.0-alpha.1" }
+autd3-gain-holo = { version = "28.0.0-alpha.1" }
+autd3-link-simulator = { version = "28.0.0-alpha.1" }
+autd3-link-soem = { version = "28.0.0-alpha.1" }
+autd3-link-twincat = { version = "28.0.0-alpha.1" }
+autd3-modulation-audio-file = { version = "28.0.0-alpha.1" }
+# autd3-backend-cuda = { version = "27.0.0" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }
 libc = "0.2.158"
@@ -41,6 +39,7 @@ tokio = "1.40.0"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 async-ffi = "0.5.0"
 seq-macro = "0.3.5"
+derive_more = "1.0.0"
 
 [profile.release]
 strip = true

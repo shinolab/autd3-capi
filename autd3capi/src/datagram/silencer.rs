@@ -1,22 +1,22 @@
-use std::{num::NonZeroU8, time::Duration};
+use std::{num::NonZeroU16, time::Duration};
 
 use autd3capi_driver::{
     autd3::derive::SamplingConfig,
-    driver::datagram::{Silencer, SilencerFixedCompletionTime, SilencerFixedUpdateRate},
+    driver::datagram::{FixedCompletionTime, FixedUpdateRate, Silencer, WithSampling},
     take, DatagramPtr, SilencerTarget,
 };
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
-    value_intensity: u8,
-    value_phase: u8,
+    value_intensity: u16,
+    value_phase: u16,
     target: SilencerTarget,
 ) -> DatagramPtr {
-    Silencer::from_update_rate(
-        NonZeroU8::new_unchecked(value_intensity),
-        NonZeroU8::new_unchecked(value_phase),
-    )
+    Silencer::new(FixedUpdateRate {
+        intensity: NonZeroU16::new_unchecked(value_intensity),
+        phase: NonZeroU16::new_unchecked(value_phase),
+    })
     .with_target(target.into())
     .into()
 }
@@ -28,7 +28,8 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRateIsValid(
     config_intensity: SamplingConfig,
     config_phase: SamplingConfig,
 ) -> bool {
-    take!(silencer, Box<SilencerFixedUpdateRate>).is_valid(&(config_intensity, config_phase))
+    take!(silencer, Box<Silencer<FixedUpdateRate>>)
+        .is_valid(&SamplingConfigTuple(config_intensity, config_phase))
 }
 
 #[no_mangle]
@@ -39,10 +40,10 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
     strict_mode: bool,
     target: SilencerTarget,
 ) -> DatagramPtr {
-    Silencer::from_completion_time(
-        Duration::from_nanos(value_intensity),
-        Duration::from_nanos(value_phase),
-    )
+    Silencer::new(FixedCompletionTime {
+        intensity: Duration::from_nanos(value_intensity),
+        phase: Duration::from_nanos(value_phase),
+    })
     .with_strict_mode(strict_mode)
     .with_target(target.into())
     .into()
@@ -55,7 +56,8 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsValid(
     config_intensity: SamplingConfig,
     config_phase: SamplingConfig,
 ) -> bool {
-    take!(silencer, Box<SilencerFixedCompletionTime>).is_valid(&(config_intensity, config_phase))
+    take!(silencer, Box<Silencer<FixedCompletionTime>>)
+        .is_valid(&SamplingConfigTuple(config_intensity, config_phase))
 }
 
 #[no_mangle]
@@ -63,10 +65,22 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsValid(
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsDefault(
     silencer: DatagramPtr,
 ) -> bool {
-    let silencer = take!(silencer, Box<SilencerFixedCompletionTime>);
-    let default = SilencerFixedCompletionTime::default();
-    silencer.completion_time_intensity() == default.completion_time_intensity()
-        && silencer.completion_time_phase() == default.completion_time_phase()
+    let silencer = take!(silencer, Box<Silencer<FixedCompletionTime>>);
+    let default = Silencer::default();
+    silencer.config().intensity() == default.config().intensity()
+        && silencer.config().phase() == default.config().phase()
         && silencer.strict_mode() == default.strict_mode()
         && silencer.target() == default.target()
+}
+
+struct SamplingConfigTuple(SamplingConfig, SamplingConfig);
+
+impl WithSampling for SamplingConfigTuple {
+    fn sampling_config_intensity(&self) -> Option<SamplingConfig> {
+        Some(self.0)
+    }
+
+    fn sampling_config_phase(&self) -> Option<SamplingConfig> {
+        Some(self.1)
+    }
 }

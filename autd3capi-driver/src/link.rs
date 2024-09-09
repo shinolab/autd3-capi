@@ -98,9 +98,19 @@ impl<T: Link> Link for SyncLink<T> {
         self.inner.timeout()
     }
 
+    async fn update(&mut self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
+        self.runtime.block_on(self.inner.update(geometry))
+    }
+
     #[inline(always)]
-    fn trace(&mut self, tx: &TxDatagram, rx: &mut [RxMessage], timeout: Option<Duration>) {
-        self.inner.trace(tx, rx, timeout)
+    fn trace(
+        &mut self,
+        tx: &TxDatagram,
+        rx: &mut [RxMessage],
+        timeout: Duration,
+        parallel_threshold: usize,
+    ) {
+        self.inner.trace(tx, rx, timeout, parallel_threshold)
     }
 }
 

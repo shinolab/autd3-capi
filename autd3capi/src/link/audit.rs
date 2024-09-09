@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+use autd3::prelude::ULTRASOUND_PERIOD;
 use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
 use std::time::Duration;
 
@@ -49,12 +50,8 @@ pub unsafe extern "C" fn AUTDLinkAuditTimeoutNs(audit: LinkPtr) -> u64 {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastTimeoutNs(audit: LinkPtr) -> i64 {
-    audit
-        .cast::<Audit>()
-        .last_timeout()
-        .map(|v| v.as_nanos() as _)
-        .unwrap_or(-1)
+pub unsafe extern "C" fn AUTDLinkAuditLastTimeoutNs(audit: LinkPtr) -> u64 {
+    audit.cast::<Audit>().last_timeout().as_nanos() as _
 }
 
 #[no_mangle]
@@ -144,18 +141,22 @@ pub unsafe extern "C" fn AUTDLinkAuditCpuSilencerStrictMode(audit: LinkPtr, idx:
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> u8 {
+) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .silencer_update_rate_intensity()
+        .silencer_update_rate()
+        .intensity
+        .get()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u16) -> u8 {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u16) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .silencer_update_rate_phase()
+        .silencer_update_rate()
+        .phase
+        .get()
 }
 
 #[no_mangle]
@@ -163,10 +164,13 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> u8 {
-    audit.cast::<Audit>()[idx as usize]
+) -> u16 {
+    (audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .silencer_completion_steps_intensity()
+        .silencer_completion_steps()
+        .intensity
+        .as_nanos()
+        / ULTRASOUND_PERIOD.as_nanos()) as u16
 }
 
 #[no_mangle]
@@ -174,10 +178,13 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
     audit: LinkPtr,
     idx: u16,
-) -> u8 {
-    audit.cast::<Audit>()[idx as usize]
+) -> u16 {
+    (audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .silencer_completion_steps_phase()
+        .silencer_completion_steps()
+        .phase
+        .as_nanos()
+        / ULTRASOUND_PERIOD.as_nanos()) as u16
 }
 
 #[no_mangle]
@@ -289,16 +296,17 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationCycle(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulation(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationBuffer(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
     data: *mut u8,
+    size: u32,
 ) {
-    let m = audit.cast::<Audit>()[idx as usize]
+    let dst = std::slice::from_raw_parts_mut(data, size as _);
+    audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .modulation(segment.into());
-    std::ptr::copy_nonoverlapping(m.as_ptr() as _, data, m.len())
+        .modulation_buffer_inplace(segment.into(), dst);
 }
 
 #[no_mangle]
@@ -315,21 +323,20 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaDrives(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
     stm_idx: u16,
-    intensities: *mut u8,
-    phases: *mut u8,
+    drive: *mut Drive,
 ) {
-    let dp = audit.cast::<Audit>()[idx as usize]
+    let dst = std::slice::from_raw_parts_mut(
+        drive as *mut autd3::prelude::Drive,
+        autd3::prelude::AUTD3::NUM_TRANS_IN_UNIT,
+    );
+    audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .drives(segment.into(), stm_idx as _);
-    let d = dp.iter().map(|v| v.intensity()).collect::<Vec<_>>();
-    let p = dp.iter().map(|v| v.phase()).collect::<Vec<_>>();
-    std::ptr::copy_nonoverlapping(d.as_ptr() as _, intensities, d.len());
-    std::ptr::copy_nonoverlapping(p.as_ptr() as _, phases, p.len());
+        .drives_at_inplace(segment.into(), stm_idx as _, dst);
 }
 
 #[no_mangle]
@@ -338,7 +345,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     idx: u16,
     dst: *mut u8,
 ) {
+    let dst = std::slice::from_raw_parts_mut(dst, autd3::driver::firmware::fpga::PWE_BUF_SIZE);
     let fpga = audit.cast::<Audit>()[idx as usize].fpga();
-    let src = fpga.pulse_width_encoder_table();
-    std::ptr::copy_nonoverlapping(src.as_ptr() as _, dst, src.len());
+    fpga.pulse_width_encoder_table_inplace(dst);
 }

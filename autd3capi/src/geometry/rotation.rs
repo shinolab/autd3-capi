@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::derive::rad,
+    autd3::prelude::rad,
     driver::geometry::{EulerAngle, Quaternion, UnitQuaternion},
 };
 

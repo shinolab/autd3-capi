@@ -1,5 +1,6 @@
 use autd3capi_driver::{
-    autd3::derive::Device, driver::datagram::ReadsFPGAState, ConstPtr, DatagramPtr, GeometryPtr,
+    autd3::driver::geometry::Device, driver::datagram::ReadsFPGAState, ConstPtr, DatagramPtr,
+    GeometryPtr,
 };
 
 #[no_mangle]

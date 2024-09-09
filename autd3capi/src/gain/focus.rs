@@ -1,8 +1,5 @@
-use autd3capi_driver::{
-    autd3::{derive::Phase, gain::Focus},
-    driver::geometry::Vector3,
-    *,
-};
+use autd3::prelude::Phase;
+use autd3capi_driver::{autd3::gain::Focus, driver::geometry::Vector3, *};
 
 #[no_mangle]
 #[must_use]

@@ -6,6 +6,7 @@ mod ethercat;
 mod firmware;
 mod link;
 mod ptr;
+mod resampler;
 mod result;
 
 pub use autd3_device::*;
@@ -14,6 +15,7 @@ pub use ethercat::*;
 pub use firmware::*;
 pub use link::*;
 pub use ptr::*;
+pub use resampler::*;
 pub use result::*;
 
 pub use async_ffi;

@@ -1,8 +1,5 @@
-use autd3::derive::EmitIntensity;
-use autd3capi_driver::{
-    autd3::{derive::Phase, gain::Uniform},
-    *,
-};
+use autd3::prelude::{EmitIntensity, Phase};
+use autd3capi_driver::{autd3::gain::Uniform, *};
 
 #[no_mangle]
 #[must_use]

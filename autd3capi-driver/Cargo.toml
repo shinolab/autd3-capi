@@ -11,10 +11,11 @@ crate-type = ["rlib"]
 
 [dependencies]
 async-ffi = { workspace = true }
-autd3 = { workspace = true, features = ["capi", "async-trait"] }
-autd3-driver = { workspace = true, features = ["capi", "derive", "async-trait"] }
+autd3 = { workspace = true, features = ["async-trait"] }
+autd3-driver = { workspace = true, features = ["lightweight", "derive", "async-trait"] }
 libc = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
+derive_more = { workspace = true }
 
 [features]
 use_meter = ["autd3-driver/use_meter"]

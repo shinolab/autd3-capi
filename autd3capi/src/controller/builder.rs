@@ -66,6 +66,19 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithSendInterval(
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
+pub unsafe extern "C" fn AUTDControllerBuilderWithReceiveInterval(
+    builder: ControllerBuilderPtr,
+    interval_ns: u64,
+) -> ControllerBuilderPtr {
+    ControllerBuilderPtr::new(
+        take!(builder, ControllerBuilder)
+            .with_receive_interval(std::time::Duration::from_nanos(interval_ns)),
+    )
+}
+
+#[no_mangle]
+#[must_use]
+#[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
     builder: ControllerBuilderPtr,
     resolution: u32,
