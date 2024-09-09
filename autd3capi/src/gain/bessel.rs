@@ -1,11 +1,5 @@
-use autd3capi_driver::{
-    autd3::{
-        derive::{rad, Phase},
-        gain::Bessel,
-    },
-    driver::geometry::Vector3,
-    *,
-};
+use autd3::prelude::{rad, Phase};
+use autd3capi_driver::{autd3::gain::Bessel, driver::geometry::Vector3, *};
 
 #[no_mangle]
 #[must_use]

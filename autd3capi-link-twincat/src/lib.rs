@@ -7,7 +7,7 @@ use std::{
 
 use autd3capi_driver::*;
 
-use autd3_link_twincat::{local::twincat_link::*, remote::remote_twincat_link::*};
+use autd3_link_twincat::{local::*, remote::remote_twincat_link::*};
 
 #[repr(C)]
 pub struct LinkTwinCATBuilderPtr(pub *const libc::c_void);

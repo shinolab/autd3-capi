@@ -1,17 +1,17 @@
 use std::sync::Arc;
 
-use autd3::derive::{ModulationCalcResult, SamplingConfig};
+use autd3::derive::SamplingConfig;
 use autd3capi_driver::*;
-use driver::datagram::IntoDatagramWithSegmentTransition;
+use driver::{datagram::IntoDatagramWithSegmentTransition, error::AUTDInternalError};
 
+pub mod fir;
 pub mod fourier;
 pub mod mixer;
 pub mod radiation_pressure;
-pub mod raw;
+pub mod custom;
 pub mod sine;
 pub mod square;
 pub mod r#static;
-pub mod transform;
 
 #[repr(C)]
 pub struct ModulationCalcPtr(pub *const libc::c_void);
@@ -26,8 +26,8 @@ pub struct ResultModulationCalc {
     pub err: ConstPtr,
 }
 
-impl From<(ModulationCalcResult, SamplingConfig)> for ResultModulationCalc {
-    fn from(r: (ModulationCalcResult, SamplingConfig)) -> Self {
+impl From<(Result<Arc<Vec<u8>>, AUTDInternalError>, SamplingConfig)> for ResultModulationCalc {
+    fn from(r: (Result<Arc<Vec<u8>>, AUTDInternalError>, SamplingConfig)) -> Self {
         match r {
             (Ok(v), config) => Self {
                 result: ModulationCalcPtr(Arc::into_raw(v) as _),

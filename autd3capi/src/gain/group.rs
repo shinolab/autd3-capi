@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use autd3capi_driver::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
+use driver::geometry::{Device, Transducer};
 
 type M = HashMap<usize, Vec<i32>>;
 
@@ -11,7 +12,7 @@ pub struct GroupGainMapPtr(pub *const libc::c_void);
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainGroupCreateMap(
-    device_indices_ptr: *const u32,
+    device_indices_ptr: *const u16,
     num_devices: u16,
 ) -> GroupGainMapPtr {
     GroupGainMapPtr(Box::into_raw(Box::new(
@@ -59,9 +60,9 @@ pub unsafe extern "C" fn AUTDGainGroup(
         .into_iter()
         .map(|(k, v)| (k, Arc::new(v)))
         .collect();
-    let f = move |dev: &autd3::derive::Device| {
+    let f = move |dev: &Device| {
         let map = map[&dev.idx()].clone();
-        move |tr: &autd3::derive::Transducer| {
+        move |tr: &Transducer| {
             let key = map[tr.idx()];
             if key < 0 {
                 None
@@ -70,10 +71,9 @@ pub unsafe extern "C" fn AUTDGainGroup(
             }
         }
     };
-    vec_from_raw!(keys_ptr, i32, kv_len)
-        .iter()
-        .zip(vec_from_raw!(values_ptr, GainPtr, kv_len).iter())
-        .fold(Group::new(f).with_parallel(parallel), |acc, (&k, v)| {
+    (0..kv_len as usize)
+        .map(|i| (keys_ptr.add(i).read(), values_ptr.add(i).read()))
+        .fold(Group::new(f).with_parallel(parallel), |acc, (k, v)| {
             acc.set(k, *take!(v, Box<G>))
         })
         .into()

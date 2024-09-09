@@ -1,8 +1,5 @@
-use autd3capi_driver::{
-    autd3::gain::Plane,
-    driver::{derive::Phase, geometry::Vector3},
-    *,
-};
+use autd3::prelude::Phase;
+use autd3capi_driver::{autd3::gain::Plane, driver::geometry::Vector3, *};
 
 #[no_mangle]
 #[must_use]

@@ -3,13 +3,13 @@ use std::time::Duration;
 use autd3capi_driver::{
     autd3::derive::Geometry,
     driver::{
-        derive::tracing,
         error::AUTDInternalError,
         firmware::operation::{Operation, OperationGenerator},
     },
     DatagramPtr, DynamicDatagram,
 };
 
+#[derive(Debug)]
 pub struct DynamicDatagramWithParallelThreshold {
     pub d: Box<Box<dyn DynamicDatagram>>,
     pub parallel_threshold: usize,
@@ -32,15 +32,6 @@ impl DynamicDatagram for DynamicDatagramWithParallelThreshold {
 
     fn parallel_threshold(&self) -> Option<usize> {
         Some(self.parallel_threshold)
-    }
-
-    #[tracing::instrument(skip(self, geometry))]
-    fn trace(&self, geometry: &Geometry) {
-        tracing::info!(
-            "DynamicDatagramWithParallelThreshold ({:?})",
-            self.parallel_threshold
-        );
-        self.d.trace(geometry)
     }
 }
 

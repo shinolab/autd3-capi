@@ -13,14 +13,15 @@ pub mod with_timeout;
 use std::time::Duration;
 
 use autd3capi_driver::{
-    autd3::derive::{tracing, Device, Geometry},
+    autd3::derive::Geometry,
     driver::{
         error::AUTDInternalError, firmware::operation::Operation,
-        firmware::operation::OperationGenerator,
+        firmware::operation::OperationGenerator, geometry::Device,
     },
     DatagramPtr, DynamicDatagram,
 };
 
+#[derive(Debug)]
 pub struct DynamicDatagramTuple {
     pub d1: Box<Box<dyn DynamicDatagram>>,
     pub d2: Box<Box<dyn DynamicDatagram>>,
@@ -66,12 +67,6 @@ impl DynamicDatagram for DynamicDatagramTuple {
             (Some(t1), Some(t2)) => Some(t1.min(t2)),
             (a, b) => a.or(b),
         }
-    }
-
-    #[tracing::instrument(skip(self, geometry))]
-    fn trace(&self, geometry: &Geometry) {
-        self.d1.trace(geometry);
-        self.d2.trace(geometry);
     }
 }
 

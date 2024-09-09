@@ -12,11 +12,14 @@ pub unsafe extern "C" fn AUTDSTMFoci(
 ) -> ResultFociSTM {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => FociSTM::new(
-                    config,
-                    vec_from_raw!(points.0, ControlPoints<N>, size)
-                )
-                .into(),)*
+                #(N => {
+                    let points = points.0 as *const ControlPoints<N>;
+                    FociSTM::new(
+                        config,
+                        (0..size as usize).map(|i| (points.add(i).read())),
+                    )
+                    .into()
+                },)*
             _ => unreachable!(),
         }
     })

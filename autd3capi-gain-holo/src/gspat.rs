@@ -1,4 +1,4 @@
-#![allow(clippy::missing_safety_doc)]
+use std::num::NonZeroUsize;
 
 use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
 use autd3_gain_holo::*;
@@ -17,11 +17,11 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATSphere(
     points: *const Vector3,
     amps: *const f32,
     size: u32,
-    repeat: u32,
+    repeat_nonzero: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(GSPAT, NalgebraBackend, Sphere, backend, points, amps, size)
-        .with_repeat(repeat as _)
+        .with_repeat(NonZeroUsize::new_unchecked(repeat_nonzero as _))
         .with_constraint(constraint.into())
         .into()
 }
@@ -33,11 +33,11 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
     points: *const Vector3,
     amps: *const f32,
     size: u32,
-    repeat: u32,
+    repeat_nonzero: u32,
     constraint: EmissionConstraintWrap,
 ) -> GainPtr {
     create_holo!(GSPAT, NalgebraBackend, T4010A1, backend, points, amps, size)
-        .with_repeat(repeat as _)
+        .with_repeat(NonZeroUsize::new_unchecked(repeat_nonzero as _))
         .with_constraint(constraint.into())
         .into()
 }
@@ -46,6 +46,6 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGSPATIsDefault(gs: GainPtr) -> bool {
     let g = take_gain!(gs, GSPAT<Sphere,NalgebraBackend<Sphere>>);
-    let default = GSPAT::new(std::sync::Arc::new(NalgebraBackend::default()), []);
+    let default = GSPAT::new(NalgebraBackend::<Sphere>::new().unwrap(), []);
     g.constraint() == default.constraint() && g.repeat() == default.repeat()
 }

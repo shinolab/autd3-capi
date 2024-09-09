@@ -1,4 +1,4 @@
-use autd3capi_driver::{autd3::derive::rad, driver::firmware::fpga::Phase};
+use autd3capi_driver::{autd3::prelude::rad, driver::firmware::fpga::Phase};
 
 #[no_mangle]
 #[must_use]
