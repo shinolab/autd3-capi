@@ -1,9 +1,6 @@
 use std::{num::NonZeroU16, time::Duration};
 
-use autd3::{
-    derive::{AUTDInternalError, Geometry, SamplingConfig, Segment},
-    prelude::{ControlPoint, ControlPoints},
-};
+use autd3::derive::{AUTDInternalError, Geometry, Segment};
 use autd3_driver::{
     datagram::Datagram,
     firmware::operation::{Operation, OperationGenerator},
@@ -182,19 +179,13 @@ impl DatagramDefault for autd3_driver::datagram::Clear {
 
 impl DatagramDefault for autd3::prelude::GainSTM<Box<G>> {
     fn default() -> Self {
-        autd3::prelude::GainSTM::new(SamplingConfig::FREQ_MIN, [Box::<G>::default()]).unwrap()
+        unsafe { autd3::prelude::GainSTM::uninit() }
     }
 }
 
 impl<const N: usize> DatagramDefault for autd3::prelude::FociSTM<N> {
     fn default() -> Self {
-        autd3::prelude::FociSTM::new(
-            SamplingConfig::FREQ_MIN,
-            [ControlPoints::<N>::new(
-                [ControlPoint::new(autd3::prelude::Vector3::zeros()); N],
-            )],
-        )
-        .unwrap()
+        unsafe { autd3::prelude::FociSTM::uninit() }
     }
 }
 
