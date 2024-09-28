@@ -87,7 +87,7 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
     {
         ControllerBuilderPtr::new(
             take!(builder, ControllerBuilder)
-                .with_timer_resolution(std::num::NonZeroU32::new_unchecked(resolution)),
+                .with_timer_resolution(std::num::NonZeroU32::new(resolution)),
         )
     }
     #[cfg(not(target_os = "windows"))]

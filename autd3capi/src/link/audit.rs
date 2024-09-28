@@ -213,13 +213,13 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerTarget(
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugTypes(audit: LinkPtr, idx: u16, ty: *mut u8) {
     let src = audit.cast::<Audit>()[idx as usize].fpga().debug_types();
-    std::ptr::copy_nonoverlapping(src.as_ptr() as _, ty, src.len())
+    std::ptr::copy_nonoverlapping(src.as_ptr(), ty, src.len())
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u16, value: *mut u16) {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u16, value: *mut u64) {
     let src = audit.cast::<Audit>()[idx as usize].fpga().debug_values();
-    std::ptr::copy_nonoverlapping(src.as_ptr() as _, value, src.len())
+    std::ptr::copy_nonoverlapping(src.as_ptr(), value, src.len())
 }
 
 #[no_mangle]
