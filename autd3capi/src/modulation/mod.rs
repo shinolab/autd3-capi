@@ -4,11 +4,11 @@ use autd3::derive::SamplingConfig;
 use autd3capi_driver::*;
 use driver::{datagram::IntoDatagramWithSegmentTransition, error::AUTDInternalError};
 
+pub mod custom;
 pub mod fir;
 pub mod fourier;
 pub mod mixer;
 pub mod radiation_pressure;
-pub mod custom;
 pub mod sine;
 pub mod square;
 pub mod r#static;

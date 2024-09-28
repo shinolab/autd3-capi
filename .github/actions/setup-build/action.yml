@@ -8,14 +8,6 @@ inputs:
     description: 'arch'
     required: false
     default: ''
-  shaderc:
-    description: 'shaderc'
-    required: false
-    default: ''
-  cuda:
-    description: 'cuda'
-    required: false
-    default: ''
 runs:
   using: "composite"
   steps:
@@ -25,40 +17,6 @@ runs:
       with:
         python-version: "3.12"
 
-    - uses: Jimver/cuda-toolkit@v0.2.15
-      if: inputs.cuda == 'true' && inputs.os == 'windows-latest'
-      with:
-        method: 'network'
-        sub-packages: '["nvcc", "cudart", "cublas_dev", "cusolver_dev"]'
-    - name: install cuda
-      shell: bash
-      if: inputs.cuda == 'true' && inputs.os == 'ubuntu-latest'
-      run: |
-        wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
-        sudo dpkg -i cuda-keyring_1.1-1_all.deb
-        sudo apt-get update
-        sudo apt-get -y install cuda-nvcc-12-4 libcublas-dev-12-4 libcusolver-dev-12-4
-        echo "/usr/local/cuda/bin" >> $GITHUB_PATH
-
-    - name: install shaderc
-      shell: pwsh
-      if: inputs.shaderc == 'true' && inputs.os == 'windows-latest'
-      run: |
-        Invoke-WebRequest -URI https://storage.googleapis.com/shaderc/artifacts/prod/graphics_shader_compiler/shaderc/windows/continuous_release_2019/44/20240430-112613/install.zip -OutFile shaderc.zip
-        Expand-Archive -Path shaderc.zip -DestinationPath shaderc
-        echo "SHADERC_LIB_DIR=$Env:GITHUB_WORKSPACE/shaderc/install/lib" >> $Env:GITHUB_ENV
-        rm shaderc.zip
-    - name: install shaderc
-      shell: bash
-      if: inputs.shaderc == 'true' && inputs.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get install build-essential cmake git ninja-build
-    - name: install shaderc
-      shell: bash
-      if: inputs.shaderc == 'true' && inputs.os == 'macos-latest'
-      run: |
-        brew install ninja
-      
     - name: Setup Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
@@ -79,6 +37,3 @@ runs:
       if: inputs.os == 'windows-latest' && inputs.arch == 'aarch64'
       run: |
         rustup target install aarch64-pc-windows-msvc
-
-    - name: setup cache
-      uses: swatinem/rust-cache@v2

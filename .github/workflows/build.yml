@@ -36,28 +36,16 @@ jobs:
         include:
           - os: windows-latest
             arch: x64
-            shaderc: true
-            cuda: true
           - os: windows-latest
             arch: aarch64
-            shaderc: false
-            cuda: false
           - os: ubuntu-latest
             arch: x64
-            shaderc: true
-            cuda: true
           - os: ubuntu-latest
             arch: armv7
-            shaderc: false
-            cuda: false
           - os: ubuntu-latest
             arch: aarch64
-            shaderc: false
-            cuda: false
           - os: macos-latest
             arch: aarch64
-            shaderc: true
-            cuda: false
     steps:
       - uses: actions/checkout@v4
         if: ${{ needs.changed-files.outputs.src == 'true' }}
@@ -65,8 +53,6 @@ jobs:
         with:
           os: ${{ matrix.os }}
           arch: ${{ matrix.arch }}
-          shaderc: ${{ matrix.shaderc }}
-          cuda: ${{ matrix.cuda }}
         if: ${{ needs.changed-files.outputs.src == 'true' }}
       - run: python3 build.py build --arch ${{ matrix.arch }}
         shell: bash
@@ -82,8 +68,6 @@ jobs:
       - uses: ./.github/actions/setup-build
         with:
           os: ubuntu-latest
-          shaderc: true
-          cuda: true
       - run: |
           python3 build.py lint
           python3 build.py lint --features "static"

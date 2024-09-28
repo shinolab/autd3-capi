@@ -70,9 +70,6 @@ class Config:
     target: Optional[str]
     no_examples: bool
 
-    shaderc: bool
-    cuda: bool
-
     def __init__(self, args):
         self._platform = platform.system()
 
@@ -84,19 +81,12 @@ class Config:
         self.release = hasattr(args, "release") and args.release
         self.no_examples = hasattr(args, "no_examples") and args.no_examples
 
-        self.cuda = False if self.is_macos() else self.is_cuda_available()
-        self.shaderc = self.is_shaderc_available()
-
         if hasattr(args, "arch") and args.arch is not None:
             if self.is_linux():
                 match args.arch:
                     case "arm32" | "armv7":
-                        self.shaderc = False
-                        self.cuda = False
                         self.target = "armv7-unknown-linux-gnueabihf"
                     case "aarch64":
-                        self.shaderc = False
-                        self.cuda = False
                         self.target = "aarch64-unknown-linux-gnu"
                     case "x64":
                         self.target = None
@@ -106,8 +96,6 @@ class Config:
             elif self.is_windows():
                 match args.arch:
                     case "aarch64":
-                        self.shaderc = False
-                        self.cuda = False
                         self.target = "aarch64-pc-windows-msvc"
                     case "x64":
                         self.target = None
@@ -118,31 +106,6 @@ class Config:
                 self.target = None
         else:
             self.target = None
-
-    def is_shaderc_available(self):
-        shaderc_lib_name = (
-            "shaderc_combined.lib" if self.is_windows() else "libshaderc_combined.a"
-        )
-        if env_exists("SHADERC_LIB_DIR"):
-            if os.path.isfile(f"{os.environ['SHADERC_LIB_DIR']}/{shaderc_lib_name}"):
-                return True
-        if env_exists("VULKAN_SDK"):
-            if os.path.isfile(f"{os.environ['VULKAN_SDK']}/lib/{shaderc_lib_name}"):
-                return True
-        if not self.is_windows():
-            if os.path.isfile(f"/usr/local/lib/{shaderc_lib_name}"):
-                return True
-        if (
-            shutil.which("git") is not None
-            and shutil.which("cmake") is not None
-            and shutil.which("python3") is not None
-            and shutil.which("ninja")
-        ):
-            return True
-        return False
-
-    def is_cuda_available(self):
-        return shutil.which("nvcc") is not None
 
     def cargo_command_base(self, subcommand):
         command = []
@@ -167,12 +130,6 @@ class Config:
         if extra_features is not None:
             features += extra_features
         command.append(features)
-        if not self.cuda:
-            command.append("--exclude")
-            command.append("autd3capi-backend-cuda")
-        if not self.shaderc:
-            command.append("--exclude")
-            command.append("autd3capi-link-visualizer")
         return command
 
     def cargo_clippy_capi_command(self, extra_features=None):

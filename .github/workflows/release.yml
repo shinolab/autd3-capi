@@ -50,38 +50,26 @@ jobs:
           - os: windows-latest
             name: win
             arch: x64
-            shaderc: true
-            cuda: true
             unity: true
           - os: windows-latest
             name: win
             arch: aarch64
-            shaderc: false
-            cuda: false
             unity: true
           - os: ubuntu-latest
             name: linux
             arch: x64
-            shaderc: true
-            cuda: true
             unity: true
           - os: ubuntu-latest
             name: linux
             arch: armv7
-            shaderc: false
-            cuda: false
             unity: false
           - os: ubuntu-latest
             name: linux
             arch: aarch64
-            shaderc: false
-            cuda: false
             unity: false
           - os: macos-latest
             name: macos
             arch: aarch64
-            shaderc: true
-            cuda: false
             unity: true
     steps:
       - uses: actions/checkout@v4
@@ -89,8 +77,6 @@ jobs:
         with:
           os: ${{ matrix.os }}
           arch: ${{ matrix.arch }}
-          shaderc: ${{ matrix.shaderc }}
-          cuda: ${{ matrix.cuda }}
       - id: get_version
         uses: actions/github-script@v7
         with:
