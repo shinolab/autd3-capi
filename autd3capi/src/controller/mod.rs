@@ -12,15 +12,6 @@ use std::ffi::c_char;
 
 use autd3capi_driver::*;
 
-#[derive(Clone, Copy)]
-#[repr(C)]
-pub struct ControllerPtr(pub *const libc::c_void);
-
-unsafe impl Send for ControllerPtr {}
-unsafe impl Sync for ControllerPtr {}
-
-impl_ptr!(ControllerPtr, Controller<Box<dyn Link>>);
-
 #[repr(C)]
 
 pub struct ResultController {

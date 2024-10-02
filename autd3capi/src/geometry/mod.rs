@@ -6,8 +6,6 @@ pub mod transducer;
 
 use autd3capi_driver::*;
 
-use crate::controller::ControllerPtr;
-
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGeometry(cnt: ControllerPtr) -> GeometryPtr {
