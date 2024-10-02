@@ -91,7 +91,7 @@ jobs:
           Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets-static.zip
         if: ${{ matrix.os == 'windows-latest' }} 
       - run: |
-          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "unity"
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-unity.zip
         if: ${{ matrix.os == 'windows-latest' && matrix.unity }} 
       - run: |
@@ -101,7 +101,7 @@ jobs:
           tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
         if: ${{ matrix.os != 'windows-latest' }} 
       - run: |
-          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "unity"
           tar -zcvf assets-unity.tar.gz bin LICENSE ThirdPartyNotice.txt
         if: ${{ matrix.os != 'windows-latest' && matrix.unity }} 
       - uses: actions/download-artifact@v4

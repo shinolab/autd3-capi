@@ -18,8 +18,7 @@ tokio = { workspace = true, features = ["rt-multi-thread"] }
 derive_more = { workspace = true }
 
 [features]
-use_meter = ["autd3-driver/use_meter"]
-left_handed = ["autd3-driver/left_handed"]
+unity = ["autd3-driver/left_handed", "autd3-driver/use_meter"]
 
 [dev-dependencies]
 assert_approx_eq = { workspace = true }
