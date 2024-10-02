@@ -130,6 +130,10 @@ class Config:
         if extra_features is not None:
             features += extra_features
         command.append(features)
+        if extra_features is not None:
+            if "static" in extra_features or "unity" in extra_features:
+                command.append("--exclude")
+                command.append("autd3capi-emulator")
         return command
 
     def cargo_clippy_capi_command(self, extra_features=None):

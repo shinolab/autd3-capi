@@ -85,25 +85,29 @@ jobs:
           script: |
             return 'autd3-'+context.payload.ref.replace(/refs\/tags\//, '')+'-${{ matrix.name }}-${{ matrix.arch }}';
       - run: |
-          python3 build.py build --release --arch ${{ matrix.arch }}
-          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-shared.zip
           python3 build.py build --release --arch ${{ matrix.arch }} --features "static"
           Compress-Archive -Path LICENSE, lib, ThirdPartyNotice.txt -DestinationPath assets-static.zip
-        if: ${{ matrix.os == 'windows-latest' }} 
+        if: ${{ matrix.os == 'windows-latest' }}
       - run: |
-          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "unity"
           Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-unity.zip
-        if: ${{ matrix.os == 'windows-latest' && matrix.unity }} 
+        if: ${{ matrix.os == 'windows-latest' && matrix.unity }}
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }}
+          Compress-Archive -Path LICENSE, bin, ThirdPartyNotice.txt -DestinationPath assets-shared.zip
+        if: ${{ matrix.os == 'windows-latest' }}
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "static"
+          tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
+        if: ${{ matrix.os != 'windows-latest' }}
+      - run: |
+          python3 build.py build --release --arch ${{ matrix.arch }} --features "unity"
+          tar -zcvf assets-unity.tar.gz bin LICENSE ThirdPartyNotice.txt
+        if: ${{ matrix.os != 'windows-latest' && matrix.unity }}
       - run: |
           python3 build.py build --release --arch ${{ matrix.arch }}
           tar -zcvf assets-shared.tar.gz bin LICENSE ThirdPartyNotice.txt
-          python3 build.py build --release --arch ${{ matrix.arch }} --features "static"
-          tar -zcvf assets-static.tar.gz lib LICENSE ThirdPartyNotice.txt
-        if: ${{ matrix.os != 'windows-latest' }} 
-      - run: |
-          python3 build.py build --release --arch ${{ matrix.arch }} --features "use_meter left_handed"
-          tar -zcvf assets-unity.tar.gz bin LICENSE ThirdPartyNotice.txt
-        if: ${{ matrix.os != 'windows-latest' && matrix.unity }} 
+        if: ${{ matrix.os != 'windows-latest' }}
       - uses: actions/download-artifact@v4
         with:
           name: release_url
