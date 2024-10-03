@@ -55,6 +55,12 @@ pub unsafe extern "C" fn AUTDLinkAuditLastTimeoutNs(audit: LinkPtr) -> u64 {
 }
 
 #[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditLastParallelThreshold(audit: LinkPtr) -> u64 {
+    audit.cast::<Audit>().last_parallel_threshold() as _
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditDown(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().down()
 }
