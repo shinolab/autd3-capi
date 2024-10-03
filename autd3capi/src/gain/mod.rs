@@ -81,7 +81,16 @@ pub unsafe extern "C" fn AUTDGainCalc(
     gain: GainPtr,
     geometry: GeometryPtr,
 ) -> ResultGainCalcDrivesMap {
-    take!(gain, Box<G>).calc(&geometry).into()
+    (gain.0 as *mut Box<G>)
+        .as_ref()
+        .unwrap()
+        .calc(&geometry)
+        .into()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDGainFree(gain: GainPtr) {
+    let _ = take!(gain, Box<G>);
 }
 
 #[no_mangle]
