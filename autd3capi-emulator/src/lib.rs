@@ -104,13 +104,10 @@ pub unsafe extern "C" fn AUTDEmulatorRecordFrom(
                 )
                 .unwrap(),
                 move |cnt| async move {
-                    let f = std::mem::transmute::<
-                        ConstPtr,
-                        unsafe extern "C" fn(ControllerPtr) -> ControllerPtr,
-                    >(f);
+                    let f = std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ControllerPtr)>(f);
                     let cnt = cnt.into_boxed_link();
                     let cnt_ptr = ControllerPtr(Box::into_raw(Box::new(cnt)) as _);
-                    let cnt_ptr = tokio::task::block_in_place(|| f(cnt_ptr));
+                    tokio::task::block_in_place(|| f(cnt_ptr));
                     let cnt = Controller::from_boxed_link(*Box::from_raw(
                         cnt_ptr.0 as *mut Controller<Box<dyn Link>>,
                     ));
@@ -343,7 +340,7 @@ mod tests {
 
     #[test]
     fn record_drive() {
-        unsafe extern "C" fn f(cnt: ControllerPtr) -> ControllerPtr {
+        unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
             let handle = HandlePtr(&handle as *const _ as _);
@@ -359,8 +356,6 @@ mod tests {
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
             assert_eq!(AUTD3_TRUE, result.result);
-
-            cnt
         }
 
         unsafe {
@@ -376,9 +371,7 @@ mod tests {
             let record = AUTDEmulatorRecordFrom(
                 emulator,
                 0,
-                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr) -> ControllerPtr, ConstPtr>(
-                    f,
-                ),
+                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
             assert!(!record.result.0.is_null());
@@ -412,7 +405,7 @@ mod tests {
 
     #[test]
     fn record_output_voltage() {
-        unsafe extern "C" fn f(cnt: ControllerPtr) -> ControllerPtr {
+        unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
             let handle = HandlePtr(&handle as *const _ as _);
@@ -428,8 +421,6 @@ mod tests {
 
             let result = AUTDEmulatorTickNs(link_ptr, ULTRASOUND_PERIOD.as_nanos() as u64);
             assert_eq!(AUTD3_TRUE, result.result);
-
-            cnt
         }
 
         unsafe {
@@ -445,9 +436,7 @@ mod tests {
             let record = AUTDEmulatorRecordFrom(
                 emulator,
                 0,
-                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr) -> ControllerPtr, ConstPtr>(
-                    f,
-                ),
+                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
             assert!(!record.result.0.is_null());
@@ -760,7 +749,7 @@ mod tests {
 
     #[test]
     fn record_sound_field() {
-        unsafe extern "C" fn f(cnt: ControllerPtr) -> ControllerPtr {
+        unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
             let handle = HandlePtr(&handle as *const _ as _);
@@ -776,8 +765,6 @@ mod tests {
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
             assert_eq!(AUTD3_TRUE, result.result);
-
-            cnt
         }
 
         unsafe {
@@ -793,9 +780,7 @@ mod tests {
             let record = AUTDEmulatorRecordFrom(
                 emulator,
                 0,
-                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr) -> ControllerPtr, ConstPtr>(
-                    f,
-                ),
+                std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
             assert!(!record.result.0.is_null());
