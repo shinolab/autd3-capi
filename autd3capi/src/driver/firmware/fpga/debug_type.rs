@@ -1,4 +1,8 @@
-use autd3capi_driver::{autd3::driver::firmware::fpga::DebugType, DebugTypeWrap, TransducerPtr};
+use autd3capi_driver::{
+    autd3::{driver::firmware::fpga::DebugType, prelude::DcSysTime},
+    driver::ethercat::ECAT_DC_SYS_TIME_BASE,
+    DebugTypeWrap, TransducerPtr,
+};
 
 #[no_mangle]
 #[must_use]
@@ -70,4 +74,14 @@ pub unsafe extern "C" fn AUTDDebugTypePwmOut(value: TransducerPtr) -> DebugTypeW
 #[must_use]
 pub unsafe extern "C" fn AUTDDebugTypeDirect(value: bool) -> DebugTypeWrap {
     DebugType::Direct(value).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDDebugSysTimeEq(sys_time: u64) -> DebugTypeWrap {
+    DebugType::SysTimeEq(
+        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(sys_time))
+            .unwrap(),
+    )
+    .into()
 }
