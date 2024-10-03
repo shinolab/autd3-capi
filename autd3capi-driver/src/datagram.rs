@@ -1,10 +1,13 @@
 use std::{num::NonZeroU16, time::Duration};
 
-use autd3::derive::{AUTDInternalError, Geometry, Segment};
+use autd3::{
+    derive::{AUTDInternalError, Geometry, Segment},
+    prelude::Phase,
+};
 use autd3_driver::{
     datagram::Datagram,
     firmware::operation::{Operation, OperationGenerator},
-    geometry::Device,
+    geometry::{Device, Transducer},
 };
 
 use derive_more::Debug;
@@ -158,6 +161,17 @@ impl DatagramDefault
 impl DatagramDefault for autd3_driver::datagram::ForceFan<Box<dyn Fn(&Device) -> bool>> {
     fn default() -> Self {
         Self::new(Box::new(|_| false))
+    }
+}
+
+impl DatagramDefault
+    for autd3_driver::datagram::PhaseCorrection<
+        Box<dyn Fn(&Transducer) -> Phase + Send + Sync>,
+        Box<dyn for<'a> Fn(&'a Device) -> Box<dyn Fn(&Transducer) -> Phase + Send + Sync>>,
+    >
+{
+    fn default() -> Self {
+        Self::new(Box::new(|_| Box::new(|_| Phase::ZERO)))
     }
 }
 

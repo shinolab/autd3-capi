@@ -1,6 +1,7 @@
 pub mod clear;
 pub mod debug;
 pub mod force_fan;
+pub mod phase_corr;
 pub mod pulse_width_encoder;
 pub mod reads_fpga_state;
 pub mod segment;

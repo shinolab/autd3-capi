@@ -1,6 +1,6 @@
 use autd3::modulation::resample::{Blackman, Rectangular, Resampler, SincInterpolation};
 
-#[repr(C)]
+#[repr(u32)]
 #[derive(Debug)]
 pub enum DynWindow {
     Rectangular = 0,
