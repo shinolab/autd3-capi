@@ -111,8 +111,9 @@ pub unsafe extern "C" fn AUTDEmulatorRecordFrom(
                     let cnt = cnt.into_boxed_link();
                     let cnt_ptr = ControllerPtr(Box::into_raw(Box::new(cnt)) as _);
                     let cnt_ptr = tokio::task::block_in_place(|| f(cnt_ptr));
-                    let cnt = Box::from_raw(cnt_ptr.0 as *mut Controller<Box<dyn Link>>)
-                        .from_boxed_link();
+                    let cnt = Controller::from_boxed_link(*Box::from_raw(
+                        cnt_ptr.0 as *mut Controller<Box<dyn Link>>,
+                    ));
                     Ok(cnt)
                 },
             )
