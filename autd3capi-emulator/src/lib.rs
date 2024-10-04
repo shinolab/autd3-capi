@@ -36,6 +36,12 @@ pub unsafe extern "C" fn AUTDEmulatorFree(emulator: EmulatorPtr) {
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> GeometryPtr {
+    GeometryPtr(emulator.geometry() as *const _ as _)
+}
+
+#[no_mangle]
+#[must_use]
 #[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDEmulatorWithParallelThreshold(
     emulator: EmulatorPtr,
