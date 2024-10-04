@@ -281,47 +281,79 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldPointsLen(sound_field: SoundField
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDEmulatorSoundFieldGetX(sound_field: SoundFieldPtr, x: *mut f32) {
+    sound_field.x_inplace(std::slice::from_raw_parts_mut(
+        x,
+        sound_field.next_points_len(),
+    ));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDEmulatorSoundFieldGetY(sound_field: SoundFieldPtr, y: *mut f32) {
+    sound_field.y_inplace(std::slice::from_raw_parts_mut(
+        y,
+        sound_field.next_points_len(),
+    ));
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDEmulatorSoundFieldGetZ(sound_field: SoundFieldPtr, z: *mut f32) {
+    sound_field.z_inplace(std::slice::from_raw_parts_mut(
+        z,
+        sound_field.next_points_len(),
+    ));
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDEmulatorSoundFieldSkip(
+    mut sound_field: SoundFieldPtr,
+    duration_ns: u64,
+) -> LocalFfiFuture<ResultEmualtorErr> {
+    async move {
+        sound_field
+            .next_inplace(
+                std::time::Duration::from_nanos(duration_ns),
+                true,
+                &mut [],
+                std::iter::empty(),
+            )
+            .await
+            .into()
+    }
+    .into_local_ffi()
+}
+
+#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldNext(
     mut sound_field: SoundFieldPtr,
     duration_ns: u64,
-    skip: bool,
     time: *mut f32,
     v: *const *mut f32,
-) -> FfiFuture<ResultEmualtorErr> {
+) -> LocalFfiFuture<ResultEmualtorErr> {
     let n = sound_field.next_time_len(std::time::Duration::from_nanos(duration_ns));
     let time = std::slice::from_raw_parts_mut(time, n as _);
-    let mut v = (0..n)
-        .map(|i| {
-            let ptr = v.add(i as _).read();
-            Vec::from_raw_parts(
-                ptr,
-                sound_field.next_points_len(),
-                sound_field.next_points_len(),
-            )
-        })
-        .collect::<Vec<_>>();
+    let iter = (0..n).map(move |i| v.add(i as _).read());
     async move {
-        let r = sound_field
+        sound_field
             .next_inplace(
                 std::time::Duration::from_nanos(duration_ns),
-                skip,
+                false,
                 time,
-                &mut v,
+                iter,
             )
             .await
-            .into();
-        std::mem::forget(v);
-        r
+            .into()
     }
-    .into_ffi()
+    .into_local_ffi()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorWaitResultEmualtorErr(
     handle: HandlePtr,
-    future: FfiFuture<ResultEmualtorErr>,
+    future: LocalFfiFuture<ResultEmualtorErr>,
 ) -> ResultEmualtorErr {
     handle.block_on(future)
 }
@@ -809,19 +841,7 @@ mod tests {
 
             {
                 let duration_ns = 9 * ULTRASOUND_PERIOD.as_nanos() as u64;
-                let len = AUTDEmulatorSoundFieldTimeLen(sound_field, duration_ns);
-                let points_len = AUTDEmulatorSoundFieldPointsLen(sound_field);
-                let mut time = vec![0.0f32; len as _];
-                let mut v = vec![vec![0.0f32; points_len as _]; len as _];
-
-                let vp = v.iter_mut().map(|v| v.as_mut_ptr()).collect::<Vec<_>>();
-                let res = AUTDEmulatorSoundFieldNext(
-                    sound_field,
-                    duration_ns,
-                    true,
-                    time.as_mut_ptr(),
-                    vp.as_ptr(),
-                );
+                let res = AUTDEmulatorSoundFieldSkip(sound_field, duration_ns);
                 let res = AUTDEmulatorWaitResultEmualtorErr(handle, res);
                 assert_eq!(AUTD3_TRUE, res.result);
             }
@@ -837,7 +857,6 @@ mod tests {
                 let res = AUTDEmulatorSoundFieldNext(
                     sound_field,
                     duration_ns,
-                    false,
                     time.as_mut_ptr(),
                     vp.as_ptr(),
                 );
