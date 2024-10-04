@@ -94,7 +94,7 @@ autd3-driver 28.0.0-alpha.7 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-emulator 28.0.0-alpha.8 (MIT)
+autd3-emulator 28.0.0-alpha.9 (MIT)
 https://github.com/shinolab/autd3-emulator
 ---------------------------------------------------------
 
@@ -236,35 +236,35 @@ autd3-protobuf 28.0.0-alpha.7 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 28.0.0-alpha.7 (MIT)
+autd3capi 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-driver 28.0.0-alpha.7 (MIT)
+autd3capi-driver 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-emulator 28.0.0-alpha.7 (MIT)
+autd3capi-emulator 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-gain-holo 28.0.0-alpha.7 (MIT)
+autd3capi-gain-holo 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-simulator 28.0.0-alpha.7 (MIT)
+autd3capi-link-simulator 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-soem 28.0.0-alpha.7 (MIT)
+autd3capi-link-soem 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-twincat 28.0.0-alpha.7 (MIT)
+autd3capi-link-twincat 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 28.0.0-alpha.7 (MIT)
+autd3capi-modulation-audio-file 28.0.0-alpha.8 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
