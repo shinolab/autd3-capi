@@ -19,12 +19,14 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
     intensity: u8,
     offset: u8,
     phase: f32,
+    clamp: bool,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Sine::new(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * rad)
+        .with_clamp(clamp)
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()
@@ -38,6 +40,7 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
     intensity: u8,
     offset: u8,
     phase: f32,
+    clamp: bool,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Sine::new(freq * Hz)
@@ -45,6 +48,7 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
         .with_offset(offset)
         .with_phase(phase * rad)
         .with_loop_behavior(loop_behavior.into())
+        .with_clamp(clamp)
         .with_sampling_config(config)
         .into()
 }
@@ -57,12 +61,14 @@ pub unsafe extern "C" fn AUTDModulationSineNearest(
     intensity: u8,
     offset: u8,
     phase: f32,
+    clamp: bool,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Sine::new_nearest(freq * Hz)
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * rad)
+        .with_clamp(clamp)
         .with_loop_behavior(loop_behavior.into())
         .with_sampling_config(config)
         .into()
@@ -96,4 +102,5 @@ pub unsafe extern "C" fn AUTDModulationSineIsDefault(sine: ModulationPtr) -> boo
         && m.phase() == default.phase()
         && m.sampling_config() == default.sampling_config()
         && m.loop_behavior() == default.loop_behavior()
+        && m.clamp() == default.clamp()
 }

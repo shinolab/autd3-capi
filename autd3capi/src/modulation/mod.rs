@@ -7,7 +7,6 @@ use driver::{datagram::IntoDatagramWithSegmentTransition, error::AUTDInternalErr
 pub mod custom;
 pub mod fir;
 pub mod fourier;
-pub mod mixer;
 pub mod radiation_pressure;
 pub mod sine;
 pub mod square;
