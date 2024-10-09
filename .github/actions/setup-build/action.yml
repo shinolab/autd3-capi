@@ -15,7 +15,7 @@ runs:
       uses: actions/setup-python@v5
       if: inputs.os == 'windows-latest'
       with:
-        python-version: "3.12"
+        python-version: "3.13"
 
     - name: Setup Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
