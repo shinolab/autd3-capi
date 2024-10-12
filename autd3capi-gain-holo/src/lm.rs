@@ -66,7 +66,7 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainLMIsDefault(gs: GainPtr) -> bool {
     let g = take_gain!(gs, LM<Sphere,NalgebraBackend<Sphere>>);
-    let default = LM::new(NalgebraBackend::<Sphere>::new().unwrap(), []);
+    let default = LM::new(std::sync::Arc::new(NalgebraBackend::default()), []);
     g.constraint() == default.constraint()
         && g.eps_1() == default.eps_1()
         && g.eps_2() == default.eps_2()

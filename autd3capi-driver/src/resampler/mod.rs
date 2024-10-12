@@ -1,3 +1,5 @@
+use std::num::NonZeroUsize;
+
 use autd3::modulation::resample::{Blackman, Rectangular, Resampler, SincInterpolation};
 
 #[repr(u32)]
@@ -19,13 +21,13 @@ impl Resampler for DynSincInterpolator {
         match self.window {
             DynWindow::Rectangular => SincInterpolation {
                 window: Rectangular {
-                    size: self.window_size as _,
+                    size: NonZeroUsize::new(self.window_size as _).unwrap(),
                 },
             }
             .upsample(buffer, ratio),
             DynWindow::Blackman => SincInterpolation {
                 window: Blackman {
-                    size: self.window_size as _,
+                    size: NonZeroUsize::new(self.window_size as _).unwrap(),
                 },
             }
             .upsample(buffer, ratio),
@@ -36,13 +38,13 @@ impl Resampler for DynSincInterpolator {
         match self.window {
             DynWindow::Rectangular => SincInterpolation {
                 window: Rectangular {
-                    size: self.window_size as _,
+                    size: NonZeroUsize::new(self.window_size as _).unwrap(),
                 },
             }
             .downsample(buffer, ratio),
             DynWindow::Blackman => SincInterpolation {
                 window: Blackman {
-                    size: self.window_size as _,
+                    size: NonZeroUsize::new(self.window_size as _).unwrap(),
                 },
             }
             .downsample(buffer, ratio),

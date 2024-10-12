@@ -10,13 +10,15 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDNalgebraBackendSphere() -> BackendPtr {
-    BackendPtr(Box::into_raw(Box::new(NalgebraBackend::<Sphere>::new().unwrap())) as _)
+    BackendPtr(Box::into_raw(Box::new(std::sync::Arc::new(NalgebraBackend::default()))) as _)
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDNalgebraBackendT4010A1() -> BackendPtr {
-    BackendPtr(Box::into_raw(Box::new(NalgebraBackend::<T4010A1>::new().unwrap())) as _)
+    let backend = NalgebraBackend::default();
+    let backend: NalgebraBackend<T4010A1> = std::mem::transmute(backend);
+    BackendPtr(Box::into_raw(Box::new(std::sync::Arc::new(backend))) as _)
 }
 
 #[no_mangle]
