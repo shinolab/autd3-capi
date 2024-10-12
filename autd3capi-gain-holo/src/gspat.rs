@@ -46,6 +46,6 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGSPATIsDefault(gs: GainPtr) -> bool {
     let g = take_gain!(gs, GSPAT<Sphere,NalgebraBackend<Sphere>>);
-    let default = GSPAT::new(NalgebraBackend::<Sphere>::new().unwrap(), []);
+    let default = GSPAT::new(std::sync::Arc::new(NalgebraBackend::default()), []);
     g.constraint() == default.constraint() && g.repeat() == default.repeat()
 }
