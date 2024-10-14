@@ -1,3 +1,9 @@
+mod gain;
+mod modulation;
+
+pub use gain::*;
+pub use modulation::*;
+
 use std::{num::NonZeroU16, time::Duration};
 
 use autd3::{
