@@ -1,70 +1,34 @@
-use std::sync::Mutex;
-
-use autd3capi_driver::{autd3::derive::*, take, take_mod, ModulationPtr, M};
-
-use derive_more::{Debug, Deref};
-
-#[derive(Modulation, Clone, Deref, Debug)]
-pub struct BoxedCache {
-    #[deref]
-    m: Arc<M>,
-    #[debug("{}", !self.cache.lock().unwrap().is_empty())]
-    cache: Arc<Mutex<Arc<Vec<u8>>>>,
-    #[no_change]
-    config: SamplingConfig,
-    loop_behavior: LoopBehavior,
-}
-
-impl BoxedCache {
-    fn new(m: Box<M>) -> Self {
-        Self {
-            config: m.sampling_config(),
-            loop_behavior: m.loop_behavior(),
-            m: Arc::from(m),
-            cache: Default::default(),
-        }
-    }
-
-    pub fn init(&self) -> Result<(), AUTDInternalError> {
-        if self.cache.lock().unwrap().is_empty() {
-            tracing::debug!("Initialize cache");
-            *self.cache.lock().unwrap() = self.m.calc()?;
-        }
-        Ok(())
-    }
-}
-
-impl Modulation for BoxedCache {
-    fn calc(&self) -> Result<Arc<Vec<u8>>, AUTDInternalError> {
-        self.init()?;
-        let buffer = self.cache.lock().unwrap().clone();
-        Ok(buffer)
-    }
-}
+use autd3capi_driver::{take, take_mod, BoxedModulationCache, LoopBehavior, ModulationPtr, M};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationPtr {
-    BoxedCache::new(take!(m, Box<M>)).into()
+    BoxedModulationCache::new(take!(m, Box<M>)).into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationCacheClone(m: ModulationPtr) -> ModulationPtr {
-    (*(m.0 as *mut Box<M> as *mut Box<BoxedCache>)
+pub unsafe extern "C" fn AUTDModulationCacheClone(
+    m: ModulationPtr,
+    loop_behavior: LoopBehavior,
+) -> ModulationPtr {
+    (*(m.0 as *mut Box<M> as *mut Box<BoxedModulationCache>)
         .as_ref()
         .unwrap()
         .clone())
+    .with_loop_behavior(loop_behavior.into())
     .into()
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationPtr) {
-    let _ = take_mod!(m, BoxedCache);
+    let _ = take_mod!(m, BoxedModulationCache);
 }
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use autd3capi_driver::{driver::geometry::Quaternion, Vector3, AUTD3_TRUE};
 
     use super::*;
@@ -89,20 +53,26 @@ mod tests {
 
             let count = |mc: ModulationPtr| {
                 Arc::strong_count(
-                    &(mc.0 as *mut Box<M> as *mut Box<BoxedCache>)
+                    &(mc.0 as *mut Box<M> as *mut Box<BoxedModulationCache>)
                         .as_ref()
                         .unwrap()
                         .m,
                 )
             };
 
-            let m =
-                modulation::r#static::AUTDModulationStatic(0xFF, LoopBehavior::infinite().into());
+            let m = modulation::r#static::AUTDModulationStatic(
+                0xFF,
+                autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite().into(),
+            );
             let mc = AUTDModulationCache(m);
             assert_eq!(1, count(mc));
 
             {
-                let mm = AUTDModulationCacheClone(mc);
+                let mm = AUTDModulationCacheClone(
+                    mc,
+                    autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite()
+                        .into(),
+                );
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
                 let future = controller::AUTDControllerSend(cnt, d);
@@ -112,7 +82,11 @@ mod tests {
             assert_eq!(1, count(mc));
 
             {
-                let mm = AUTDModulationCacheClone(mc);
+                let mm = AUTDModulationCacheClone(
+                    mc,
+                    autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite()
+                        .into(),
+                );
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
                 let future = controller::AUTDControllerSend(cnt, d);

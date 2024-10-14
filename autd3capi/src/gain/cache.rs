@@ -1,71 +1,15 @@
-use std::{collections::HashMap, sync::Mutex};
-
-use autd3capi_driver::{
-    autd3::{derive::*, prelude::Drive},
-    take, take_gain, GainPtr, G,
-};
-
-use derive_more::{Debug, Deref};
-
-#[derive(Gain, Deref, Debug, Clone)]
-pub struct BoxedCache {
-    #[deref]
-    gain: Arc<G>,
-    #[debug("{}", !self.cache.lock().unwrap().is_empty())]
-    cache: Arc<Mutex<HashMap<usize, Arc<Vec<Drive>>>>>,
-}
-
-impl BoxedCache {
-    fn new(gain: Box<G>) -> Self {
-        Self {
-            gain: Arc::from(gain),
-            cache: Default::default(),
-        }
-    }
-
-    pub fn init(&self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
-        if self.cache.lock().unwrap().len() != geometry.devices().count()
-            || geometry
-                .devices()
-                .any(|dev| !self.cache.lock().unwrap().contains_key(&dev.idx()))
-        {
-            let mut f = self.gain.calc(geometry)?;
-            geometry
-                .devices()
-                .filter(|dev| !self.cache.lock().unwrap().contains_key(&dev.idx()))
-                .for_each(|dev| {
-                    tracing::debug!("Initialize cache for device {}", dev.idx());
-                    self.cache
-                        .lock()
-                        .unwrap()
-                        .insert(dev.idx(), Arc::new(dev.iter().map(f(dev)).collect()));
-                });
-        }
-        Ok(())
-    }
-}
-
-impl Gain for BoxedCache {
-    fn calc(&self, geometry: &Geometry) -> Result<GainCalcFn, AUTDInternalError> {
-        self.init(geometry)?;
-        let cache = self.cache.lock().unwrap();
-        Ok(Box::new(move |dev| {
-            let drives = cache[&dev.idx()].clone();
-            Box::new(move |tr| drives[tr.idx()])
-        }))
-    }
-}
+use autd3capi_driver::{take, take_gain, BoxedGainCache, GainPtr, G};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainPtr {
-    BoxedCache::new(take!(g, Box<G>)).into()
+    BoxedGainCache::new(take!(g, Box<G>)).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCacheClone(g: GainPtr) -> GainPtr {
-    (*(g.0 as *mut Box<G> as *mut Box<BoxedCache>)
+    (*(g.0 as *mut Box<G> as *mut Box<BoxedGainCache>)
         .as_ref()
         .unwrap()
         .clone())
@@ -74,13 +18,15 @@ pub unsafe extern "C" fn AUTDGainCacheClone(g: GainPtr) -> GainPtr {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDGainCacheFree(g: GainPtr) {
-    let _ = take_gain!(g, BoxedCache);
+    let _ = take_gain!(g, BoxedGainCache);
 }
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use autd3capi_driver::{
-        driver::geometry::Quaternion, ConstPtr, GeometryPtr, Vector3, AUTD3_TRUE,
+        driver::geometry::Quaternion, ConstPtr, Drive, GeometryPtr, Vector3, AUTD3_TRUE,
     };
 
     use super::*;
@@ -120,7 +66,7 @@ mod tests {
 
             let count = |gc: GainPtr| {
                 Arc::strong_count(
-                    &(gc.0 as *mut Box<G> as *mut Box<BoxedCache>)
+                    &(gc.0 as *mut Box<G> as *mut Box<BoxedGainCache>)
                         .as_ref()
                         .unwrap()
                         .gain,
