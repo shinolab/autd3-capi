@@ -1,60 +1,32 @@
 #![allow(clippy::missing_safety_doc)]
 
-mod timer_strategy;
+pub mod adapter;
+pub mod local;
+pub mod process_priority;
+pub mod remote;
+pub mod status;
+pub mod thread_priority;
+pub mod timer_strategy;
 
 use std::{
     ffi::{c_char, CStr, CString},
-    net::SocketAddr,
     num::{NonZeroU64, NonZeroUsize},
     time::Duration,
 };
 
 use autd3capi_driver::*;
 
-use autd3_link_soem::{local::link_soem::*, remote::link_soem_remote::*, EthernetAdapters};
+use autd3_link_soem::{local::link_soem::*, ThreadPriority};
+use process_priority::ProcessPriority;
+use status::Status;
+use thread_priority::ThreadPriorityPtr;
 use timer_strategy::TimerStrategy;
-
-#[repr(C)]
-pub struct EthernetAdaptersPtr(pub *const libc::c_void);
-
-impl_ptr!(EthernetAdaptersPtr, EthernetAdapters);
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit() {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDAdapterPointer() -> EthernetAdaptersPtr {
-    EthernetAdaptersPtr(Box::into_raw(Box::new(EthernetAdapters::new())) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDAdapterGetSize(adapters: EthernetAdaptersPtr) -> u32 {
-    adapters.len() as u32
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDAdapterGetAdapter(
-    adapters: EthernetAdaptersPtr,
-    idx: u32,
-    desc: *mut c_char,
-    name: *mut c_char,
-) {
-    let adapter = &adapters[idx as usize];
-    let name_ = std::ffi::CString::new(adapter.name().to_string()).unwrap();
-    libc::strcpy(name, name_.as_ptr());
-    let desc_ = std::ffi::CString::new(adapter.desc().to_string()).unwrap();
-    libc::strcpy(desc, desc_.as_ptr());
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDAdapterPointerDelete(adapters: EthernetAdaptersPtr) {
-    let _ = take!(adapters, EthernetAdapters);
 }
 
 #[repr(C)]
@@ -167,23 +139,9 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithStateCheckInterval(
     )
 }
 
-#[repr(u8)]
-pub enum Status {
-    Error = 0,
-    StateChanged = 1,
-    Lost = 2,
-}
-
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkSOEMStatusGetMsg(src: Status, dst: *mut c_char) -> u32 {
-    let msg = format!(
-        "{}",
-        match src {
-            Status::Error => autd3_link_soem::Status::Error,
-            Status::StateChanged => autd3_link_soem::Status::StateChanged,
-            Status::Lost => autd3_link_soem::Status::Lost,
-        }
-    );
+    let msg = format!("{}", autd3_link_soem::Status::from(src));
     if dst.is_null() {
         return msg.as_bytes().len() as u32 + 1;
     }
@@ -213,17 +171,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
                 context,
             )
         };
-        match status {
-            autd3_link_soem::Status::Error => {
-                out_f(context, slave as _, Status::Error);
-            }
-            autd3_link_soem::Status::StateChanged => {
-                out_f(context, slave as _, Status::StateChanged);
-            }
-            autd3_link_soem::Status::Lost => {
-                out_f(context, slave as _, Status::Lost);
-            }
-        }
+        out_f(context, slave as _, status.into());
     };
     LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_err_handler(out_func))
 }
@@ -235,6 +183,33 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimeout(
     timeout_ns: u64,
 ) -> LinkSOEMBuilderPtr {
     LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_timeout(Duration::from_nanos(timeout_ns)))
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkSOEMWithProcessPriority(
+    soem: LinkSOEMBuilderPtr,
+    priority: ProcessPriority,
+) -> LinkSOEMBuilderPtr {
+    #[cfg(target_os = "windows")]
+    {
+        LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_process_priority(priority.into()))
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = priority;
+        soem
+    }
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkSOEMWithThreadPriority(
+    soem: LinkSOEMBuilderPtr,
+    priority: ThreadPriorityPtr,
+) -> LinkSOEMBuilderPtr {
+    let priority = *take!(priority, ThreadPriority);
+    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_thread_priority(priority))
 }
 
 #[no_mangle]
@@ -252,88 +227,6 @@ pub unsafe extern "C" fn AUTDLinkSOEMIntoBuilder(soem: LinkSOEMBuilderPtr) -> Li
                 .build()
                 .unwrap(),
             inner: *take!(soem, SOEMBuilder),
-        })
-    }
-}
-
-#[repr(C)]
-
-pub struct LinkRemoteSOEMBuilderPtr(pub *const libc::c_void);
-
-impl LinkRemoteSOEMBuilderPtr {
-    pub fn new(builder: RemoteSOEMBuilder) -> Self {
-        Self(Box::into_raw(Box::new(builder)) as _)
-    }
-}
-
-#[repr(C)]
-
-pub struct ResultLinkRemoteSOEMBuilder {
-    pub result: LinkRemoteSOEMBuilderPtr,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkRemoteSOEM(addr: *const c_char) -> ResultLinkRemoteSOEMBuilder {
-    let addr = match CStr::from_ptr(addr).to_str() {
-        Ok(v) => v,
-        Err(e) => {
-            let err = e.to_string();
-            return ResultLinkRemoteSOEMBuilder {
-                result: LinkRemoteSOEMBuilderPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-            };
-        }
-    };
-    let addr = match addr.parse::<SocketAddr>() {
-        Ok(v) => v,
-        Err(e) => {
-            let err = e.to_string();
-            return ResultLinkRemoteSOEMBuilder {
-                result: LinkRemoteSOEMBuilderPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-            };
-        }
-    };
-    ResultLinkRemoteSOEMBuilder {
-        result: LinkRemoteSOEMBuilderPtr::new(RemoteSOEM::builder(addr)),
-        err_len: 0,
-        err: ConstPtr(std::ptr::null_mut()),
-    }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkRemoteSOEMWithTimeout(
-    soem: LinkRemoteSOEMBuilderPtr,
-    timeout_ns: u64,
-) -> LinkRemoteSOEMBuilderPtr {
-    LinkRemoteSOEMBuilderPtr::new(
-        take!(soem, RemoteSOEMBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
-    )
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkRemoteSOEMIntoBuilder(
-    soem: LinkRemoteSOEMBuilderPtr,
-) -> LinkBuilderPtr {
-    #[cfg(feature = "static")]
-    {
-        DynamicLinkBuilder::new(*take!(soem, RemoteSOEMBuilder))
-    }
-    #[cfg(not(feature = "static"))]
-    {
-        DynamicLinkBuilder::new(SyncLinkBuilder {
-            runtime: tokio::runtime::Builder::new_multi_thread()
-                .enable_all()
-                .build()
-                .unwrap(),
-            inner: *take!(soem, RemoteSOEMBuilder),
         })
     }
 }
