@@ -7,7 +7,6 @@ pub mod focus;
 pub mod group;
 pub mod null;
 pub mod plane;
-pub mod raw;
 pub mod transform;
 pub mod uniform;
 
