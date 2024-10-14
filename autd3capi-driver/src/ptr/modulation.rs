@@ -5,6 +5,7 @@ use autd3_driver::derive::Modulation;
 
 use crate::{ConstPtr, M};
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ModulationPtr(pub *const libc::c_void);
 
