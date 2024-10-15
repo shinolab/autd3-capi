@@ -15,6 +15,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
     size: u32,
     clamp: bool,
     scale_factor: f32,
+    offset: u8,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Fourier::new((0..size as usize).map(|i| **take_mod!(components.add(i).read(), Sine<ExactFreq>)))
@@ -25,6 +26,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
                 } else {
                     Some(scale_factor)
                 })
+                .with_offset(offset)
                 .with_loop_behavior(loop_behavior.into())
         })
         .into()
@@ -37,6 +39,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
     size: u32,
     clamp: bool,
     scale_factor: f32,
+    offset: u8,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Fourier::new(
@@ -49,6 +52,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
             } else {
                 Some(scale_factor)
             })
+            .with_offset(offset)
             .with_loop_behavior(loop_behavior.into())
     })
     .into()
@@ -61,6 +65,7 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
     size: u32,
     clamp: bool,
     scale_factor: f32,
+    offset: u8,
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Fourier::new(
@@ -73,6 +78,7 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
             } else {
                 Some(scale_factor)
             })
+            .with_offset(offset)
             .with_loop_behavior(loop_behavior.into())
     })
     .into()
