@@ -9,6 +9,13 @@ use autd3capi_driver::*;
 
 use autd3_link_twincat::{local::*, remote::remote_twincat_link::*};
 
+#[no_mangle]
+pub unsafe extern "C" fn AUTDAUTDLinkTwinCATTracingInit() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+}
+
 #[repr(C)]
 pub struct LinkTwinCATBuilderPtr(pub *const libc::c_void);
 

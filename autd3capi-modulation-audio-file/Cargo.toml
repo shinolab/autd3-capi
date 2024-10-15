@@ -12,3 +12,4 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 autd3capi-driver = { workspace = true }
 autd3-modulation-audio-file = { workspace = true, features = ["async-trait"] }
+tracing-subscriber = { workspace = true }

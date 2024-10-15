@@ -16,3 +16,4 @@ static = []
 autd3-link-simulator = { workspace = true, features = ["async-trait"] }
 autd3capi-driver = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
+tracing-subscriber = { workspace = true }

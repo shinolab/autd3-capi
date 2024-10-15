@@ -7,6 +7,13 @@ use autd3capi_driver::*;
 
 use autd3_modulation_audio_file::{Csv, RawPCM, Wav};
 
+#[no_mangle]
+pub unsafe extern "C" fn AUTDModulationAudioFileTracingInit() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+}
+
 macro_rules! validate_path {
     ($path:expr) => {
         match CStr::from_ptr($path).to_str() {

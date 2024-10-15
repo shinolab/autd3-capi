@@ -12,3 +12,4 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 autd3capi-driver = { workspace = true }
 autd3-link-twincat = { workspace = true, features = ["local", "remote", "async-trait"] }
+tracing-subscriber = { workspace = true }
