@@ -29,6 +29,13 @@ pub struct ResultLinkSimulatorBuilder {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn AUTDLinkSimulatorTracingInit() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+}
+
+#[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLinkSimulatorBuilder {
     let addr = match CStr::from_ptr(addr).to_str() {
