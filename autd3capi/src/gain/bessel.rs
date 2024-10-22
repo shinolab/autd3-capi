@@ -1,5 +1,6 @@
 use autd3::prelude::{rad, Phase};
 use autd3capi_driver::{autd3::gain::Bessel, driver::geometry::Vector3, *};
+use driver::geometry::UnitVector3;
 
 #[no_mangle]
 #[must_use]
@@ -10,7 +11,7 @@ pub unsafe extern "C" fn AUTDGainBessel(
     intensity: u8,
     phase_offset: u8,
 ) -> GainPtr {
-    Bessel::new(p, n, theta_z * rad)
+    Bessel::new(p, UnitVector3::new_normalize(n), theta_z * rad)
         .with_intensity(intensity)
         .with_phase_offset(Phase::new(phase_offset))
         .into()
@@ -18,8 +19,7 @@ pub unsafe extern "C" fn AUTDGainBessel(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainBesselIsDefault(bessel: GainPtr) -> bool {
-    let g = take_gain!(bessel, Bessel);
-    let default = Bessel::new(Vector3::zeros(), Vector3::zeros(), 0.0 * rad);
-    g.intensity() == default.intensity() && g.phase_offset() == default.phase_offset()
+pub unsafe extern "C" fn AUTDGainBesselIsDefault(intensity: u8, phase_offset: u8) -> bool {
+    let default = Bessel::new(Vector3::zeros(), Vector3::x_axis(), 0.0 * rad);
+    intensity == default.intensity().value() && phase_offset == default.phase_offset().value()
 }

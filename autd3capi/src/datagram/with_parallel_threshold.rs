@@ -1,28 +1,19 @@
 use std::time::Duration;
 
 use autd3capi_driver::{
-    autd3::derive::Geometry,
-    driver::{
-        error::AUTDInternalError,
-        firmware::operation::{Operation, OperationGenerator},
-    },
-    DatagramPtr, DynamicDatagram,
+    autd3::derive::{Datagram, Geometry},
+    driver::error::AUTDInternalError,
+    DatagramPtr, DynamicDatagram, DynamicOperationGenerator,
 };
 
 #[derive(Debug)]
 pub struct DynamicDatagramWithParallelThreshold {
-    pub d: Box<Box<dyn DynamicDatagram>>,
-    pub parallel_threshold: usize,
+    pub d: Box<DynamicDatagram>,
+    pub parallel_threshold: Option<usize>,
 }
 
-impl DynamicDatagram for DynamicDatagramWithParallelThreshold {
-    fn operation_generator(
-        &mut self,
-        geometry: &Geometry,
-    ) -> Result<
-        Box<dyn OperationGenerator<O1 = Box<dyn Operation>, O2 = Box<dyn Operation>>>,
-        AUTDInternalError,
-    > {
+impl Datagram for DynamicDatagramWithParallelThreshold {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
         self.d.operation_generator(geometry)
     }
 
@@ -31,19 +22,25 @@ impl DynamicDatagram for DynamicDatagramWithParallelThreshold {
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
-        Some(self.parallel_threshold)
+        self.parallel_threshold
     }
+
+    type G = DynamicOperationGenerator;
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramWithParallelThreshold(
     d: DatagramPtr,
-    threshold: u16,
+    threshold: i32,
 ) -> DatagramPtr {
     DynamicDatagramWithParallelThreshold {
         d: d.into(),
-        parallel_threshold: threshold as usize,
+        parallel_threshold: if threshold < 0 {
+            None
+        } else {
+            Some(threshold as usize)
+        },
     }
     .into()
 }

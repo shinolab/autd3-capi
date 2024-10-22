@@ -1,7 +1,7 @@
 use autd3::derive::AUTDInternalError;
-use autd3_driver::datagram::{FociSTM, GainSTM};
+use autd3_driver::datagram::{BoxedGain, FociSTM, GainSTM};
 
-use crate::{ConstPtr, G};
+use crate::ConstPtr;
 
 #[repr(C)]
 pub struct FociSTMPtr(pub *const libc::c_void);
@@ -15,8 +15,8 @@ impl<const N: usize> From<FociSTM<N>> for FociSTMPtr {
 #[repr(C)]
 pub struct GainSTMPtr(pub *const libc::c_void);
 
-impl From<GainSTM<Box<G>>> for GainSTMPtr {
-    fn from(stm: GainSTM<Box<G>>) -> Self {
+impl From<GainSTM<BoxedGain>> for GainSTMPtr {
+    fn from(stm: GainSTM<BoxedGain>) -> Self {
         Self(Box::into_raw(Box::new(stm)) as _)
     }
 }
@@ -55,8 +55,8 @@ pub struct ResultGainSTM {
     pub err: ConstPtr,
 }
 
-impl From<Result<GainSTM<Box<G>>, AUTDInternalError>> for ResultGainSTM {
-    fn from(r: Result<GainSTM<Box<G>>, AUTDInternalError>) -> Self {
+impl From<Result<GainSTM<BoxedGain>, AUTDInternalError>> for ResultGainSTM {
+    fn from(r: Result<GainSTM<BoxedGain>, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: v.into(),

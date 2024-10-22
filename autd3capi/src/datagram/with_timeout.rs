@@ -1,46 +1,43 @@
 use std::time::Duration;
 
 use autd3capi_driver::{
-    autd3::derive::Geometry,
-    driver::{
-        error::AUTDInternalError,
-        firmware::operation::{Operation, OperationGenerator},
-    },
-    DatagramPtr, DynamicDatagram,
+    autd3::derive::{Datagram, Geometry},
+    driver::error::AUTDInternalError,
+    DatagramPtr, DynamicDatagram, DynamicOperationGenerator,
 };
 
 #[derive(Debug)]
 pub struct DynamicDatagramWithTimeout {
-    pub d: Box<Box<dyn DynamicDatagram>>,
-    pub timeout: Duration,
+    pub d: Box<DynamicDatagram>,
+    pub timeout: Option<Duration>,
 }
 
-impl DynamicDatagram for DynamicDatagramWithTimeout {
-    fn operation_generator(
-        &mut self,
-        geometry: &Geometry,
-    ) -> Result<
-        Box<dyn OperationGenerator<O1 = Box<dyn Operation>, O2 = Box<dyn Operation>>>,
-        AUTDInternalError,
-    > {
+impl Datagram for DynamicDatagramWithTimeout {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
         self.d.operation_generator(geometry)
     }
 
     fn timeout(&self) -> Option<Duration> {
-        Some(self.timeout)
+        self.timeout
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
         self.d.parallel_threshold()
     }
+
+    type G = DynamicOperationGenerator;
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramWithTimeout(d: DatagramPtr, timeout_ns: u64) -> DatagramPtr {
+pub unsafe extern "C" fn AUTDDatagramWithTimeout(d: DatagramPtr, timeout_ns: i64) -> DatagramPtr {
     DynamicDatagramWithTimeout {
         d: d.into(),
-        timeout: Duration::from_nanos(timeout_ns),
+        timeout: if timeout_ns < 0 {
+            None
+        } else {
+            Some(Duration::from_nanos(timeout_ns as u64))
+        },
     }
     .into()
 }

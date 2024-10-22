@@ -41,8 +41,11 @@ pub unsafe extern "C" fn AUTDGainHoloGST4010A1(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainGSIsDefault(gs: GainPtr) -> bool {
-    let g = take_gain!(gs, GS<Sphere,NalgebraBackend<Sphere>>);
+pub unsafe extern "C" fn AUTDGainGSIsDefault(
+    constraint: EmissionConstraintWrap,
+    repeat: u32,
+) -> bool {
     let default = GS::new(std::sync::Arc::new(NalgebraBackend::default()), []);
-    g.constraint() == default.constraint() && g.repeat() == default.repeat()
+    let constraint: EmissionConstraint = constraint.into();
+    constraint == default.constraint() && repeat as usize == default.repeat().get()
 }

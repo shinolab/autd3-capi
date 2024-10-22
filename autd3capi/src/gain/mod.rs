@@ -7,7 +7,6 @@ pub mod focus;
 pub mod group;
 pub mod null;
 pub mod plane;
-pub mod transform;
 pub mod uniform;
 
 #[no_mangle]
@@ -15,15 +14,26 @@ pub mod uniform;
 pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     gain: GainPtr,
     segment: Segment,
-    update_segment: bool,
 ) -> DatagramPtr {
-    (*take!(gain, Box<G>))
-        .with_segment(segment.into(), update_segment)
+    (*take!(gain, BoxedGain))
+        .with_segment(segment.into(), None)
+        .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegmentTransition(
+    gain: GainPtr,
+    segment: Segment,
+    transition_mode: TransitionModeWrap,
+) -> DatagramPtr {
+    (*take!(gain, BoxedGain))
+        .with_segment(segment.into(), Some(transition_mode.into()))
         .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainIntoDatagram(gain: GainPtr) -> DatagramPtr {
-    (*take!(gain, Box<G>)).into()
+    (*take!(gain, BoxedGain)).into()
 }

@@ -1,30 +1,25 @@
 use std::convert::Infallible;
 
 use autd3::derive::AUTDInternalError;
-use autd3_driver::derive::Modulation;
+use autd3_driver::{
+    datagram::{BoxedModulation, IntoBoxedModulation},
+    derive::Modulation,
+};
 
-use crate::{ConstPtr, M};
+use crate::ConstPtr;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ModulationPtr(pub *const libc::c_void);
 
-impl<T: Modulation + Send + Sync + 'static> From<T> for ModulationPtr {
+impl<T: IntoBoxedModulation> From<T> for ModulationPtr {
     fn from(m: T) -> Self {
-        let m: Box<Box<M>> = Box::new(Box::new(m));
+        let m: Box<BoxedModulation> = Box::new(m.into_boxed());
         Self(Box::into_raw(m) as _)
     }
 }
 
-#[macro_export]
-macro_rules! take_mod {
-    ($ptr:expr, $type:ty) => {
-        Box::from_raw($ptr.0 as *mut Box<M> as *mut Box<$type>)
-    };
-}
-
 #[repr(C)]
-
 pub struct ResultModulation {
     pub result: ModulationPtr,
     pub err_len: u32,

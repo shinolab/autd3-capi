@@ -1,11 +1,9 @@
-use std::time::Duration;
-
 use async_ffi::BorrowingFfiFuture;
 
 use autd3_driver::{
     async_trait,
     error::AUTDInternalError,
-    firmware::cpu::{RxMessage, TxDatagram},
+    firmware::cpu::{RxMessage, TxMessage},
     geometry::Geometry,
     link::{Link, LinkBuilder},
 };
@@ -81,7 +79,7 @@ impl<T: Link> Link for SyncLink<T> {
         self.runtime.block_on(self.inner.close())
     }
 
-    async fn send(&mut self, tx: &TxDatagram) -> Result<bool, AUTDInternalError> {
+    async fn send(&mut self, tx: &[TxMessage]) -> Result<bool, AUTDInternalError> {
         self.runtime.block_on(self.inner.send(tx))
     }
 
@@ -94,23 +92,8 @@ impl<T: Link> Link for SyncLink<T> {
         self.inner.is_open()
     }
 
-    fn timeout(&self) -> Duration {
-        self.inner.timeout()
-    }
-
     async fn update(&mut self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
         self.runtime.block_on(self.inner.update(geometry))
-    }
-
-    #[inline(always)]
-    fn trace(
-        &mut self,
-        tx: &TxDatagram,
-        rx: &mut [RxMessage],
-        timeout: Duration,
-        parallel_threshold: usize,
-    ) {
-        self.inner.trace(tx, rx, timeout, parallel_threshold)
     }
 }
 

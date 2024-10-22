@@ -193,7 +193,7 @@ pub unsafe extern "C" fn AUTDControllerSend(
     d: DatagramPtr,
 ) -> FfiFuture<ResultI32> {
     async move {
-        let r: ResultI32 = cnt.send(DynamicDatagramPack { d: d.into() }).await.into();
+        let r: ResultI32 = cnt.send(*Box::<DynamicDatagram>::from(d)).await.into();
         r
     }
     .into_ffi()

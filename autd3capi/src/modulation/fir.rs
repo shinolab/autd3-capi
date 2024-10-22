@@ -9,7 +9,7 @@ pub unsafe extern "C" fn AUTDModulationWithFir(
     coef: *const f32,
     n_tap: u32,
 ) -> ModulationPtr {
-    take!(m, Box<M>)
+    take!(m, BoxedModulation)
         .with_fir((0..n_tap as usize).map(|i| coef.add(i).read()))
         .with_loop_behavior(loop_behavior.into())
         .into()

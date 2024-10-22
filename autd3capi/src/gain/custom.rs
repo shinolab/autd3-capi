@@ -14,7 +14,7 @@ pub unsafe extern "C" fn AUTDGainCustom(
     Custom::new(move |dev| {
         let dev_idx = dev.idx() as _;
         move |tr| {
-            let mut d = driver::firmware::fpga::Drive::null();
+            let mut d = driver::firmware::fpga::Drive::NULL;
             f(
                 context,
                 geometry,

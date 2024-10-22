@@ -1,6 +1,7 @@
-use autd3::derive::AUTDInternalError;
+use autd3::derive::{AUTDInternalError, Datagram, Geometry};
+use autd3_driver::firmware::operation::OperationGenerator;
 
-use crate::{take, ConstPtr, DynamicDatagram};
+use crate::{take, ConstPtr, DynamicDatagram, DynamicOperationGenerator};
 
 #[repr(C)]
 pub struct DatagramPtr(pub *const libc::c_void);
@@ -16,16 +17,34 @@ impl DatagramPtr {
     pub const NULL: Self = Self(std::ptr::null());
 }
 
-impl From<DatagramPtr> for Box<Box<dyn DynamicDatagram>> {
+impl From<DatagramPtr> for Box<DynamicDatagram> {
     fn from(value: DatagramPtr) -> Self {
-        unsafe { take!(value, Box<dyn DynamicDatagram>) }
+        unsafe { take!(value, DynamicDatagram) }
     }
 }
 
-impl<T: DynamicDatagram> From<T> for DatagramPtr {
-    fn from(d: T) -> Self {
-        let d: Box<Box<dyn DynamicDatagram>> = Box::new(Box::new(d));
-        Self(Box::into_raw(d) as _)
+impl<G: OperationGenerator + 'static, D: Datagram<G = G> + 'static> From<D> for DatagramPtr {
+    fn from(d: D) -> Self {
+        let d = std::rc::Rc::new(std::cell::RefCell::new(Some(d)));
+        let d = DynamicDatagram {
+            timeout: Box::new({
+                let d = d.clone();
+                move || d.borrow().as_ref().unwrap().timeout()
+            }),
+            parallel_threshold: Box::new({
+                let d = d.clone();
+                move || d.borrow().as_ref().unwrap().parallel_threshold()
+            }),
+            g: Box::new(move |geometry: &Geometry| {
+                Ok(DynamicOperationGenerator::new(
+                    d.borrow_mut()
+                        .take()
+                        .unwrap()
+                        .operation_generator(geometry)?,
+                ))
+            }),
+        };
+        Self(Box::into_raw(Box::new(d)) as _)
     }
 }
 
@@ -37,8 +56,10 @@ pub struct ResultDatagram {
     pub err: ConstPtr,
 }
 
-impl<T: DynamicDatagram> From<Result<T, AUTDInternalError>> for ResultDatagram {
-    fn from(r: Result<T, AUTDInternalError>) -> Self {
+impl<G: OperationGenerator + 'static, D: Datagram<G = G> + 'static>
+    From<Result<D, AUTDInternalError>> for ResultDatagram
+{
+    fn from(r: Result<D, AUTDInternalError>) -> Self {
         match r {
             Ok(v) => Self {
                 result: v.into(),

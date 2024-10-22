@@ -41,8 +41,11 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainGreedyIsDefault(greedy: GainPtr) -> bool {
-    let g = take_gain!(greedy, Greedy<Sphere>);
+pub unsafe extern "C" fn AUTDGainGreedyIsDefault(
+    constraint: EmissionConstraintWrap,
+    phase_div: u8,
+) -> bool {
     let default = Greedy::<Sphere>::new([]);
-    g.constraint() == default.constraint() && g.phase_div() == default.phase_div()
+    let constraint: EmissionConstraint = constraint.into();
+    constraint == default.constraint() && phase_div == default.phase_div().get()
 }

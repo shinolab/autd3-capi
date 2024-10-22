@@ -29,6 +29,9 @@ pub unsafe extern "C" fn AUTDDatagramSwapSegmentGainSTM(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramSwapSegmentGain(segment: Segment) -> DatagramPtr {
-    SwapSegment::Gain(segment.into()).into()
+pub unsafe extern "C" fn AUTDDatagramSwapSegmentGain(
+    segment: Segment,
+    transition_mode: TransitionModeWrap,
+) -> DatagramPtr {
+    SwapSegment::Gain(segment.into(), transition_mode.into()).into()
 }

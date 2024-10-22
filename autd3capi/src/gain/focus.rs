@@ -12,8 +12,7 @@ pub unsafe extern "C" fn AUTDGainFocus(p: Vector3, intensity: u8, phase_offset: 
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainFocusIsDefault(focus: GainPtr) -> bool {
-    let g = take_gain!(focus, Focus);
+pub unsafe extern "C" fn AUTDGainFocusIsDefault(intensity: u8, phase_offset: u8) -> bool {
     let default = Focus::new(Vector3::zeros());
-    g.intensity() == default.intensity() && g.phase_offset() == default.phase_offset()
+    intensity == default.intensity().value() && phase_offset == default.phase_offset().value()
 }

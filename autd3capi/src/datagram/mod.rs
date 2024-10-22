@@ -14,46 +14,41 @@ pub mod with_timeout;
 use std::time::Duration;
 
 use autd3capi_driver::{
-    autd3::derive::Geometry,
+    autd3::derive::{Datagram, Geometry},
     driver::{
-        error::AUTDInternalError, firmware::operation::Operation,
-        firmware::operation::OperationGenerator, geometry::Device,
+        error::AUTDInternalError,
+        firmware::operation::{Operation, OperationGenerator},
+        geometry::Device,
     },
-    DatagramPtr, DynamicDatagram,
+    DatagramPtr, DynamicDatagram, DynamicOperationGenerator,
 };
 
 #[derive(Debug)]
 pub struct DynamicDatagramTuple {
-    pub d1: Box<Box<dyn DynamicDatagram>>,
-    pub d2: Box<Box<dyn DynamicDatagram>>,
+    pub d1: Box<DynamicDatagram>,
+    pub d2: Box<DynamicDatagram>,
 }
 
 pub struct DynamicOperationGeneratorTuple {
-    pub g1: Box<dyn OperationGenerator<O1 = Box<dyn Operation>, O2 = Box<dyn Operation>>>,
-    pub g2: Box<dyn OperationGenerator<O1 = Box<dyn Operation>, O2 = Box<dyn Operation>>>,
+    pub g1: DynamicOperationGenerator,
+    pub g2: DynamicOperationGenerator,
 }
 
 impl OperationGenerator for DynamicOperationGeneratorTuple {
     type O1 = Box<dyn Operation>;
     type O2 = Box<dyn Operation>;
 
-    fn generate(&self, device: &Device) -> (Self::O1, Self::O2) {
+    fn generate(&mut self, device: &Device) -> (Self::O1, Self::O2) {
         (self.g1.generate(device).0, self.g2.generate(device).0)
     }
 }
 
-impl DynamicDatagram for DynamicDatagramTuple {
-    fn operation_generator(
-        &mut self,
-        geometry: &Geometry,
-    ) -> Result<
-        Box<dyn OperationGenerator<O1 = Box<dyn Operation>, O2 = Box<dyn Operation>>>,
-        AUTDInternalError,
-    > {
-        Ok(Box::new(DynamicOperationGeneratorTuple {
+impl Datagram for DynamicDatagramTuple {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
+        Ok(DynamicOperationGeneratorTuple {
             g1: self.d1.operation_generator(geometry)?,
             g2: self.d2.operation_generator(geometry)?,
-        }))
+        })
     }
 
     fn timeout(&self) -> Option<Duration> {
@@ -69,6 +64,8 @@ impl DynamicDatagram for DynamicDatagramTuple {
             (a, b) => a.or(b),
         }
     }
+
+    type G = DynamicOperationGeneratorTuple;
 }
 
 #[no_mangle]

@@ -1,7 +1,6 @@
 use std::{
     ffi::{c_char, CStr},
     net::SocketAddr,
-    time::Duration,
 };
 
 use autd3capi_driver::*;
@@ -54,17 +53,6 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEM(addr: *const c_char) -> ResultLinkRe
         err_len: 0,
         err: ConstPtr(std::ptr::null_mut()),
     }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkRemoteSOEMWithTimeout(
-    soem: LinkRemoteSOEMBuilderPtr,
-    timeout_ns: u64,
-) -> LinkRemoteSOEMBuilderPtr {
-    LinkRemoteSOEMBuilderPtr::new(
-        take!(soem, RemoteSOEMBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
-    )
 }
 
 #[no_mangle]

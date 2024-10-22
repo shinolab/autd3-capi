@@ -1,9 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use std::{
-    ffi::{c_char, CStr},
-    time::Duration,
-};
+use std::ffi::{c_char, CStr};
 
 use autd3capi_driver::*;
 
@@ -29,17 +26,6 @@ impl LinkTwinCATBuilderPtr {
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkTwinCAT() -> LinkTwinCATBuilderPtr {
     LinkTwinCATBuilderPtr::new(TwinCAT::builder())
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkTwinCATWithTimeout(
-    twincat: LinkTwinCATBuilderPtr,
-    timeout_ns: u64,
-) -> LinkTwinCATBuilderPtr {
-    LinkTwinCATBuilderPtr::new(
-        take!(twincat, TwinCATBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
-    )
 }
 
 #[no_mangle]
@@ -113,17 +99,6 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithClientAmsNetId(
     LinkRemoteTwinCATBuilderPtr::new(
         take!(twincat, RemoteTwinCATBuilder)
             .with_client_ams_net_id(CStr::from_ptr(id).to_str().unwrap()),
-    )
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkRemoteTwinCATWithTimeout(
-    twincat: LinkRemoteTwinCATBuilderPtr,
-    timeout_ns: u64,
-) -> LinkRemoteTwinCATBuilderPtr {
-    LinkRemoteTwinCATBuilderPtr::new(
-        take!(twincat, RemoteTwinCATBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
     )
 }
 

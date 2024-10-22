@@ -2,7 +2,6 @@
 
 use autd3::prelude::ULTRASOUND_PERIOD;
 use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
-use std::time::Duration;
 
 #[repr(C)]
 pub struct LinkAuditBuilderPtr(pub *const libc::c_void);
@@ -21,17 +20,6 @@ pub unsafe extern "C" fn AUTDLinkAudit() -> LinkAuditBuilderPtr {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditWithTimeout(
-    audit: LinkAuditBuilderPtr,
-    timeout_ns: u64,
-) -> LinkAuditBuilderPtr {
-    LinkAuditBuilderPtr::new(
-        take!(audit, AuditBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
-    )
-}
-
-#[no_mangle]
-#[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIntoBuilder(audit: LinkAuditBuilderPtr) -> LinkBuilderPtr {
     DynamicLinkBuilder::new(*take!(audit, AuditBuilder))
 }
@@ -40,24 +28,6 @@ pub unsafe extern "C" fn AUTDLinkAuditIntoBuilder(audit: LinkAuditBuilderPtr) ->
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIsOpen(audit: LinkPtr) -> bool {
     audit.is_open()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditTimeoutNs(audit: LinkPtr) -> u64 {
-    audit.timeout().as_nanos() as _
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastTimeoutNs(audit: LinkPtr) -> u64 {
-    audit.cast::<Audit>().last_timeout().as_nanos() as _
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastParallelThreshold(audit: LinkPtr) -> u64 {
-    audit.cast::<Audit>().last_parallel_threshold() as _
 }
 
 #[no_mangle]

@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     async_ffi::LocalFfiFuture, autd3::driver::geometry::Device, ConstPtr, DatagramPtr,
-    DynamicDatagramPack, GeometryPtr, ResultI32,
+    DynamicDatagram, GeometryPtr, ResultI32,
 };
 
 use super::ControllerPtr;
@@ -29,7 +29,7 @@ pub unsafe extern "C" fn AUTDControllerGroup(
             |acc, i| {
                 let k = keys.add(i as _).read();
                 let d = d.add(i as _).read();
-                acc.set(k, DynamicDatagramPack { d: d.into() })
+                acc.set(k, *Box::<DynamicDatagram>::from(d))
             },
         ) {
             Ok(g) => g.send().await.into(),

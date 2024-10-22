@@ -1,6 +1,6 @@
 use autd3::derive::SamplingConfig;
 use autd3capi_driver::{driver::datagram::FociSTM, *};
-use driver::{datagram::IntoDatagramWithSegmentTransition, defined::ControlPoints};
+use driver::{datagram::IntoDatagramWithSegment, defined::ControlPoints};
 
 #[no_mangle]
 #[must_use]

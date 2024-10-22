@@ -1,24 +1,28 @@
-use autd3capi_driver::{take, take_gain, BoxedGainCache, GainPtr, G};
+use autd3capi_driver::{take, BoxedGain, BoxedGainCache, GainPtr};
+
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct GainCachePtr(pub *const libc::c_void);
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainPtr {
-    BoxedGainCache::new(take!(g, Box<G>)).into()
+pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainCachePtr {
+    GainCachePtr(Box::into_raw(Box::new(BoxedGainCache::new(*take!(g, BoxedGain)))) as _)
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainCacheClone(g: GainPtr) -> GainPtr {
-    (*(g.0 as *mut Box<G> as *mut Box<BoxedGainCache>)
+pub unsafe extern "C" fn AUTDGainCacheClone(g: GainCachePtr) -> GainPtr {
+    (g.0 as *mut BoxedGainCache)
         .as_ref()
         .unwrap()
-        .clone())
-    .into()
+        .clone()
+        .into()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDGainCacheFree(g: GainPtr) {
-    let _ = take_gain!(g, BoxedGainCache);
+pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
+    let _ = take!(g, BoxedGainCache);
 }
 
 #[cfg(test)]
@@ -63,16 +67,9 @@ mod tests {
             let cnt = AUTDWaitResultController(handle, cnt);
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
-
-            let count = |gc: GainPtr| {
-                Arc::strong_count(
-                    &(gc.0 as *mut Box<G> as *mut Box<BoxedGainCache>)
-                        .as_ref()
-                        .unwrap()
-                        .gain,
-                )
+            let count = |gc: GainCachePtr| {
+                Arc::strong_count(&(gc.0 as *mut BoxedGainCache).as_ref().unwrap().cache)
             };
-
             let mut i: i32 = 0;
             let g = gain::custom::AUTDGainCustom(
                 std::mem::transmute::<
@@ -86,15 +83,22 @@ mod tests {
             assert_eq!(1, count(gc));
 
             {
+                dbg!(0);
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));
+                dbg!(0);
                 let d = gain::AUTDGainIntoDatagram(gg);
+                dbg!(0);
                 let future = controller::AUTDControllerSend(cnt, d);
+                dbg!(0);
                 let result = AUTDWaitResultI32(handle, future);
+                dbg!(0);
                 assert_eq!(AUTD3_TRUE, result.result);
+                dbg!(0);
                 assert_eq!(1, i);
             }
             assert_eq!(1, count(gc));
+            dbg!(1);
 
             {
                 let gg = AUTDGainCacheClone(gc);
@@ -105,7 +109,6 @@ mod tests {
                 assert_eq!(AUTD3_TRUE, result.result);
                 assert_eq!(1, i);
             }
-
             assert_eq!(1, count(gc));
             AUTDGainCacheFree(gc);
 
