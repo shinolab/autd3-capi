@@ -1,21 +1,12 @@
-use autd3_driver::derive::Gain;
-
-use crate::G;
+use autd3_driver::datagram::{BoxedGain, IntoBoxedGain};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct GainPtr(pub *const libc::c_void);
 
-impl<T: Gain + Send + Sync + 'static> From<T> for GainPtr {
+impl<T: IntoBoxedGain + 'static> From<T> for GainPtr {
     fn from(g: T) -> Self {
-        let g: Box<Box<G>> = Box::new(Box::new(g));
+        let g: Box<BoxedGain> = Box::new(g.into_boxed());
         Self(Box::into_raw(g) as _)
     }
-}
-
-#[macro_export]
-macro_rules! take_gain {
-    ($ptr:expr, $type:ty) => {
-        Box::from_raw($ptr.0 as *mut Box<G> as *mut Box<$type>)
-    };
 }

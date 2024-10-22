@@ -6,7 +6,6 @@ pub mod process_priority;
 pub mod remote;
 pub mod status;
 pub mod thread_priority;
-pub mod timer_strategy;
 
 use std::{
     ffi::{c_char, CStr, CString},
@@ -16,11 +15,10 @@ use std::{
 
 use autd3capi_driver::*;
 
-use autd3_link_soem::{local::link_soem::*, ThreadPriority};
+use autd3_link_soem::{local::link_soem::*, ThreadPriority, TimerStrategy};
 use process_priority::ProcessPriority;
 use status::Status;
 use thread_priority::ThreadPriorityPtr;
-use timer_strategy::TimerStrategy;
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDAUTDLinkSOEMTracingInit() {
@@ -83,7 +81,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithTimerStrategy(
     soem: LinkSOEMBuilderPtr,
     timer_strategy: TimerStrategy,
 ) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_timer_strategy(timer_strategy.into()))
+    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_timer_strategy(timer_strategy))
 }
 
 #[no_mangle]
@@ -174,15 +172,6 @@ pub unsafe extern "C" fn AUTDLinkSOEMWithErrHandler(
         out_f(context, slave as _, status.into());
     };
     LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_err_handler(out_func))
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSOEMWithTimeout(
-    soem: LinkSOEMBuilderPtr,
-    timeout_ns: u64,
-) -> LinkSOEMBuilderPtr {
-    LinkSOEMBuilderPtr::new(take!(soem, SOEMBuilder).with_timeout(Duration::from_nanos(timeout_ns)))
 }
 
 #[no_mangle]

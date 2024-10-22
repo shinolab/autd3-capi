@@ -15,8 +15,7 @@ pub unsafe extern "C" fn AUTDModulationStatic(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationStaticIsDefault(s: ModulationPtr) -> bool {
-    let m = take_mod!(s, Static);
+pub unsafe extern "C" fn AUTDModulationStaticIsDefault(intensity: u8) -> bool {
     let default = Static::new();
-    m.intensity() == default.intensity()
+    intensity == default.intensity()
 }

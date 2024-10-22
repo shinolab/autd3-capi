@@ -64,13 +64,21 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainLMIsDefault(gs: GainPtr) -> bool {
-    let g = take_gain!(gs, LM<Sphere,NalgebraBackend<Sphere>>);
+pub unsafe extern "C" fn AUTDGainLMIsDefault(
+    constraint: EmissionConstraintWrap,
+    eps_1: f32,
+    eps_2: f32,
+    tau: f32,
+    k_max: u32,
+    initial_ptr: *const f32,
+    initial_len: u32,
+) -> bool {
     let default = LM::new(std::sync::Arc::new(NalgebraBackend::default()), []);
-    g.constraint() == default.constraint()
-        && g.eps_1() == default.eps_1()
-        && g.eps_2() == default.eps_2()
-        && g.tau() == default.tau()
-        && g.k_max() == default.k_max()
-        && g.initial() == default.initial()
+    let constraint: EmissionConstraint = constraint.into();
+    constraint == default.constraint()
+        && eps_1 == default.eps_1()
+        && eps_2 == default.eps_2()
+        && tau == default.tau()
+        && k_max as usize == default.k_max().get()
+        && vec_from_raw!(initial_ptr, f32, initial_len) == default.initial()
 }

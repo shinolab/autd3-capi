@@ -1,28 +1,35 @@
-use autd3capi_driver::{take, take_mod, BoxedModulationCache, LoopBehavior, ModulationPtr, M};
+use autd3capi_driver::{take, BoxedModulation, BoxedModulationCache, LoopBehavior, ModulationPtr};
+
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct ModulationCachePtr(pub *const libc::c_void);
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationPtr {
-    BoxedModulationCache::new(take!(m, Box<M>)).into()
+pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationCachePtr {
+    ModulationCachePtr(Box::into_raw(Box::new(BoxedModulationCache::new(*take!(
+        m,
+        BoxedModulation
+    )))) as _)
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCacheClone(
-    m: ModulationPtr,
+    m: ModulationCachePtr,
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
-    (*(m.0 as *mut Box<M> as *mut Box<BoxedModulationCache>)
+    (m.0 as *mut BoxedModulationCache)
         .as_ref()
         .unwrap()
-        .clone())
-    .with_loop_behavior(loop_behavior.into())
-    .into()
+        .clone()
+        .with_loop_behavior(loop_behavior.into())
+        .into()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationPtr) {
-    let _ = take_mod!(m, BoxedModulationCache);
+pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
+    let _ = take!(m, BoxedModulationCache);
 }
 
 #[cfg(test)]
@@ -51,13 +58,8 @@ mod tests {
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
-            let count = |mc: ModulationPtr| {
-                Arc::strong_count(
-                    &(mc.0 as *mut Box<M> as *mut Box<BoxedModulationCache>)
-                        .as_ref()
-                        .unwrap()
-                        .m,
-                )
+            let count = |gc: ModulationCachePtr| {
+                Arc::strong_count(&(gc.0 as *mut BoxedModulationCache).as_ref().unwrap().cache)
             };
 
             let m = modulation::r#static::AUTDModulationStatic(

@@ -1,6 +1,6 @@
 use autd3::derive::SamplingConfig;
 use autd3capi_driver::{driver::datagram::GainSTM, *};
-use driver::datagram::IntoDatagramWithSegmentTransition;
+use driver::datagram::IntoDatagramWithSegment;
 
 #[no_mangle]
 #[must_use]
@@ -9,9 +9,9 @@ pub unsafe extern "C" fn AUTDSTMGain(
     gains: *const GainPtr,
     size: u16,
 ) -> ResultGainSTM {
-    GainSTM::<Box<G>>::new(
+    GainSTM::<BoxedGain>::new(
         config,
-        (0..size as usize).map(|i| *take!(gains.add(i).read(), Box<G>)),
+        (0..size as usize).map(|i| *take!(gains.add(i).read(), BoxedGain)),
     )
     .into()
 }
@@ -19,7 +19,7 @@ pub unsafe extern "C" fn AUTDSTMGain(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainWithMode(stm: GainSTMPtr, mode: GainSTMMode) -> GainSTMPtr {
-    take!(stm, GainSTM<Box<G>>).with_mode(mode.into()).into()
+    take!(stm, GainSTM<BoxedGain>).with_mode(mode.into()).into()
 }
 
 #[no_mangle]
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn AUTDSTMGainWithLoopBehavior(
     stm: GainSTMPtr,
     loop_behavior: LoopBehavior,
 ) -> GainSTMPtr {
-    take!(stm, GainSTM<Box<G>>)
+    take!(stm, GainSTM<BoxedGain>)
         .with_loop_behavior(loop_behavior.into())
         .into()
 }
@@ -39,7 +39,7 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     stm: GainSTMPtr,
     segment: Segment,
 ) -> DatagramPtr {
-    take!(stm, GainSTM<Box<G>>)
+    take!(stm, GainSTM<BoxedGain>)
         .with_segment(segment.into(), None)
         .into()
 }
@@ -51,7 +51,7 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegmentTransition(
     segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
-    take!(stm, GainSTM<Box<G>>)
+    take!(stm, GainSTM<BoxedGain>)
         .with_segment(segment.into(), Some(transition_mode.into()))
         .into()
 }
@@ -59,5 +59,5 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegmentTransition(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagram(stm: GainSTMPtr) -> DatagramPtr {
-    (*take!(stm, GainSTM<Box<G>>)).into()
+    (*take!(stm, GainSTM<BoxedGain>)).into()
 }

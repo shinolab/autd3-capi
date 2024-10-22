@@ -41,12 +41,12 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithParallelThreshold(
+pub unsafe extern "C" fn AUTDControllerBuilderWithFallbackParallelThreshold(
     builder: ControllerBuilderPtr,
     parallel_threshold: u16,
 ) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(
-        take!(builder, ControllerBuilder).with_parallel_threshold(parallel_threshold as _),
+        take!(builder, ControllerBuilder).with_fallback_parallel_threshold(parallel_threshold as _),
     )
 }
 
@@ -74,27 +74,6 @@ pub unsafe extern "C" fn AUTDControllerBuilderWithReceiveInterval(
         take!(builder, ControllerBuilder)
             .with_receive_interval(std::time::Duration::from_nanos(interval_ns)),
     )
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithTimerResolution(
-    builder: ControllerBuilderPtr,
-    resolution: u32,
-) -> ControllerBuilderPtr {
-    #[cfg(target_os = "windows")]
-    {
-        ControllerBuilderPtr::new(
-            take!(builder, ControllerBuilder)
-                .with_timer_resolution(std::num::NonZeroU32::new(resolution)),
-        )
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        let _ = resolution;
-        builder
-    }
 }
 
 #[no_mangle]

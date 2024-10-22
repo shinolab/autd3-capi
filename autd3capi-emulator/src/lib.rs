@@ -43,11 +43,13 @@ pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> Geometry
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulatorWithParallelThreshold(
+pub unsafe extern "C" fn AUTDEmulatorWithFallbackParallelThreshold(
     emulator: EmulatorPtr,
     parallel_threshold: u16,
 ) -> EmulatorPtr {
-    EmulatorPtr::new(take!(emulator, Emulator).with_parallel_threshold(parallel_threshold as _))
+    EmulatorPtr::new(
+        take!(emulator, Emulator).with_fallback_parallel_threshold(parallel_threshold as _),
+    )
 }
 
 #[no_mangle]
@@ -73,26 +75,6 @@ pub unsafe extern "C" fn AUTDEmulatorWithReceiveInterval(
         take!(emulator, Emulator)
             .with_receive_interval(std::time::Duration::from_nanos(interval_ns)),
     )
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulatorWithTimerResolution(
-    emulator: EmulatorPtr,
-    resolution: u32,
-) -> EmulatorPtr {
-    #[cfg(target_os = "windows")]
-    {
-        EmulatorPtr::new(
-            take!(emulator, Emulator).with_timer_resolution(std::num::NonZeroU32::new(resolution)),
-        )
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        let _ = resolution;
-        emulator
-    }
 }
 
 #[no_mangle]
@@ -171,7 +153,7 @@ pub unsafe extern "C" fn AUTDEmulatorRecordDriveLen(record: RecordPtr) -> u64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDEmulatorRecordDriveTime(record: RecordPtr, time: *mut f32) {
+pub unsafe extern "C" fn AUTDEmulatorRecordDriveTime(record: RecordPtr, time: *mut u64) {
     record.drive_time_inplace(std::slice::from_raw_parts_mut(
         time,
         record.drive_time_len(),
@@ -213,7 +195,7 @@ pub unsafe extern "C" fn AUTDEmulatorRecordOutputLen(record: RecordPtr) -> u64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDEmulatorRecordOutputTime(record: RecordPtr, time: *mut f32) {
+pub unsafe extern "C" fn AUTDEmulatorRecordOutputTime(record: RecordPtr, time: *mut u64) {
     record.output_voltage_time_inplace(std::slice::from_raw_parts_mut(time, record.output_len()));
 }
 
@@ -335,7 +317,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldSkip(
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldNext(
     mut sound_field: SoundFieldPtr,
     duration_ns: u64,
-    time: *mut f32,
+    time: *mut u64,
     v: *const *mut f32,
 ) -> LocalFfiFuture<ResultEmualtorErr> {
     let n = sound_field.next_time_len(std::time::Duration::from_nanos(duration_ns));
@@ -416,7 +398,7 @@ mod tests {
             let record = record.result;
 
             let len = AUTDEmulatorRecordDriveLen(record);
-            let mut time = vec![0.0; len as _];
+            let mut time = vec![0; len as _];
             let mut pulsewidth = vec![0; len as _];
             let mut phase = vec![0; len as _];
             AUTDEmulatorRecordDriveTime(record, time.as_mut_ptr());
@@ -424,10 +406,7 @@ mod tests {
             AUTDEmulatorRecordDrivePhase(record, 0, 0, phase.as_mut_ptr());
 
             assert_eq!(
-                vec![
-                    0.0, 2.5e-5, 5e-5, 7.5e-5, 0.0001, 0.000125, 0.00015, 0.000175, 0.0002,
-                    0.000225
-                ],
+                vec![0, 25000, 50000, 75000, 100000, 125000, 150000, 175000, 200000, 225000],
                 time
             );
             assert_eq!(vec![8, 16, 25, 34, 42, 52, 63, 76, 91, 128,], pulsewidth);
@@ -481,272 +460,12 @@ mod tests {
             let record = record.result;
 
             let len = AUTDEmulatorRecordOutputLen(record);
-            let mut time = vec![0.0; len as _];
+            let mut time = vec![0; len as _];
             let mut v = vec![0.; len as _];
             AUTDEmulatorRecordOutputTime(record, time.as_mut_ptr());
             AUTDEmulatorRecordOutputVoltage(record, 0, 0, v.as_mut_ptr());
 
-            assert_eq!(
-                vec![
-                    0.0,
-                    9.765625e-8,
-                    1.953125e-7,
-                    2.9296874e-7,
-                    3.90625e-7,
-                    4.882812e-7,
-                    5.8593747e-7,
-                    6.835937e-7,
-                    7.8125e-7,
-                    8.7890623e-7,
-                    9.765624e-7,
-                    1.0742187e-6,
-                    1.1718749e-6,
-                    1.2695313e-6,
-                    1.3671875e-6,
-                    1.4648438e-6,
-                    1.5625e-6,
-                    1.6601562e-6,
-                    1.7578125e-6,
-                    1.8554687e-6,
-                    1.9531249e-6,
-                    2.0507812e-6,
-                    2.1484375e-6,
-                    2.2460938e-6,
-                    2.3437499e-6,
-                    2.4414062e-6,
-                    2.5390625e-6,
-                    2.6367186e-6,
-                    2.734375e-6,
-                    2.8320312e-6,
-                    2.9296875e-6,
-                    3.0273436e-6,
-                    3.125e-6,
-                    3.2226562e-6,
-                    3.3203123e-6,
-                    3.4179686e-6,
-                    3.515625e-6,
-                    3.6132813e-6,
-                    3.7109373e-6,
-                    3.8085936e-6,
-                    3.9062497e-6,
-                    4.0039063e-6,
-                    4.1015624e-6,
-                    4.1992184e-6,
-                    4.296875e-6,
-                    4.394531e-6,
-                    4.4921876e-6,
-                    4.5898437e-6,
-                    4.6874998e-6,
-                    4.7851563e-6,
-                    4.8828124e-6,
-                    4.9804685e-6,
-                    5.078125e-6,
-                    5.175781e-6,
-                    5.273437e-6,
-                    5.3710937e-6,
-                    5.46875e-6,
-                    5.566406e-6,
-                    5.6640624e-6,
-                    5.7617185e-6,
-                    5.859375e-6,
-                    5.957031e-6,
-                    6.054687e-6,
-                    6.1523438e-6,
-                    6.25e-6,
-                    6.347656e-6,
-                    6.4453125e-6,
-                    6.5429685e-6,
-                    6.6406246e-6,
-                    6.738281e-6,
-                    6.8359373e-6,
-                    6.933594e-6,
-                    7.03125e-6,
-                    7.128906e-6,
-                    7.2265625e-6,
-                    7.3242186e-6,
-                    7.4218747e-6,
-                    7.519531e-6,
-                    7.6171873e-6,
-                    7.714843e-6,
-                    7.8124995e-6,
-                    7.9101565e-6,
-                    8.0078125e-6,
-                    8.105469e-6,
-                    8.203125e-6,
-                    8.300781e-6,
-                    8.398437e-6,
-                    8.496094e-6,
-                    8.59375e-6,
-                    8.691406e-6,
-                    8.789062e-6,
-                    8.886718e-6,
-                    8.984375e-6,
-                    9.082031e-6,
-                    9.179687e-6,
-                    9.277343e-6,
-                    9.3749995e-6,
-                    9.472656e-6,
-                    9.570313e-6,
-                    9.667969e-6,
-                    9.765625e-6,
-                    9.863281e-6,
-                    9.960937e-6,
-                    1.0058594e-5,
-                    1.015625e-5,
-                    1.0253906e-5,
-                    1.0351562e-5,
-                    1.0449218e-5,
-                    1.0546874e-5,
-                    1.0644531e-5,
-                    1.0742187e-5,
-                    1.08398435e-5,
-                    1.09375e-5,
-                    1.1035156e-5,
-                    1.1132812e-5,
-                    1.1230469e-5,
-                    1.1328125e-5,
-                    1.1425781e-5,
-                    1.1523437e-5,
-                    1.1621093e-5,
-                    1.171875e-5,
-                    1.1816406e-5,
-                    1.1914062e-5,
-                    1.2011718e-5,
-                    1.2109374e-5,
-                    1.22070305e-5,
-                    1.23046875e-5,
-                    1.2402344e-5,
-                    1.25e-5,
-                    1.2597656e-5,
-                    1.2695312e-5,
-                    1.2792969e-5,
-                    1.2890625e-5,
-                    1.2988281e-5,
-                    1.3085937e-5,
-                    1.3183593e-5,
-                    1.3281249e-5,
-                    1.3378906e-5,
-                    1.3476562e-5,
-                    1.3574218e-5,
-                    1.36718745e-5,
-                    1.3769531e-5,
-                    1.3867188e-5,
-                    1.3964844e-5,
-                    1.40625e-5,
-                    1.4160156e-5,
-                    1.4257812e-5,
-                    1.4355468e-5,
-                    1.4453125e-5,
-                    1.4550781e-5,
-                    1.4648437e-5,
-                    1.4746093e-5,
-                    1.4843749e-5,
-                    1.4941405e-5,
-                    1.5039062e-5,
-                    1.51367185e-5,
-                    1.5234375e-5,
-                    1.533203e-5,
-                    1.5429687e-5,
-                    1.5527343e-5,
-                    1.5624999e-5,
-                    1.5722655e-5,
-                    1.5820313e-5,
-                    1.5917969e-5,
-                    1.6015625e-5,
-                    1.6113281e-5,
-                    1.6210937e-5,
-                    1.6308593e-5,
-                    1.640625e-5,
-                    1.6503905e-5,
-                    1.6601562e-5,
-                    1.6699218e-5,
-                    1.6796874e-5,
-                    1.6894532e-5,
-                    1.6992188e-5,
-                    1.7089844e-5,
-                    1.71875e-5,
-                    1.7285156e-5,
-                    1.7382812e-5,
-                    1.7480468e-5,
-                    1.7578124e-5,
-                    1.767578e-5,
-                    1.7773436e-5,
-                    1.7871092e-5,
-                    1.796875e-5,
-                    1.8066406e-5,
-                    1.8164063e-5,
-                    1.8261719e-5,
-                    1.8359375e-5,
-                    1.845703e-5,
-                    1.8554687e-5,
-                    1.8652343e-5,
-                    1.8749999e-5,
-                    1.8847655e-5,
-                    1.8945311e-5,
-                    1.904297e-5,
-                    1.9140625e-5,
-                    1.9238281e-5,
-                    1.9335937e-5,
-                    1.9433593e-5,
-                    1.953125e-5,
-                    1.9628906e-5,
-                    1.9726562e-5,
-                    1.9824218e-5,
-                    1.9921874e-5,
-                    2.001953e-5,
-                    2.0117188e-5,
-                    2.0214844e-5,
-                    2.03125e-5,
-                    2.0410156e-5,
-                    2.0507812e-5,
-                    2.0605468e-5,
-                    2.0703124e-5,
-                    2.080078e-5,
-                    2.0898437e-5,
-                    2.0996093e-5,
-                    2.1093749e-5,
-                    2.1191405e-5,
-                    2.1289063e-5,
-                    2.1386719e-5,
-                    2.1484375e-5,
-                    2.1582031e-5,
-                    2.1679687e-5,
-                    2.1777343e-5,
-                    2.1875e-5,
-                    2.1972655e-5,
-                    2.2070311e-5,
-                    2.2167967e-5,
-                    2.2265624e-5,
-                    2.2363281e-5,
-                    2.2460938e-5,
-                    2.2558594e-5,
-                    2.265625e-5,
-                    2.2753906e-5,
-                    2.2851562e-5,
-                    2.2949218e-5,
-                    2.3046874e-5,
-                    2.314453e-5,
-                    2.3242186e-5,
-                    2.3339842e-5,
-                    2.34375e-5,
-                    2.3535156e-5,
-                    2.3632812e-5,
-                    2.3730468e-5,
-                    2.3828125e-5,
-                    2.392578e-5,
-                    2.4023437e-5,
-                    2.4121093e-5,
-                    2.4218749e-5,
-                    2.4316405e-5,
-                    2.4414061e-5,
-                    2.4511719e-5,
-                    2.4609375e-5,
-                    2.4707031e-5,
-                    2.4804687e-5,
-                    2.4902343e-5,
-                ],
-                time
-            );
+            assert_eq!((0..len).collect::<Vec<_>>(), time);
             assert_eq!(
                 vec![
                     12.0, 12.0, 12.0, 12.0, 12.0, -12.0, -12.0, -12.0, -12.0, -12.0, -12.0, -12.0,
@@ -856,7 +575,7 @@ mod tests {
                 let duration_ns = ULTRASOUND_PERIOD.as_nanos() as u64;
                 let len = AUTDEmulatorSoundFieldTimeLen(sound_field, duration_ns);
                 let points_len = AUTDEmulatorSoundFieldPointsLen(sound_field);
-                let mut time = vec![0.0f32; len as _];
+                let mut time = vec![0; len as _];
                 let mut v = vec![vec![0.0f32; points_len as _]; len as _];
 
                 let vp = v.iter_mut().map(|v| v.as_mut_ptr()).collect::<Vec<_>>();
@@ -871,31 +590,9 @@ mod tests {
 
                 assert_eq!(
                     vec![
-                        0.000225,
-                        0.00022599999,
-                        0.000227,
-                        0.00022799999,
-                        0.000229,
-                        0.00022999999,
-                        0.000231,
-                        0.00023199999,
-                        0.000233,
-                        0.00023399999,
-                        0.000235,
-                        0.00023599999,
-                        0.000237,
-                        0.000238,
-                        0.000239,
-                        0.00024,
-                        0.000241,
-                        0.000242,
-                        0.000243,
-                        0.000244,
-                        0.000245,
-                        0.000246,
-                        0.000247,
-                        0.000248,
-                        0.000249,
+                        225000, 226000, 227000, 228000, 229000, 230000, 231000, 232000, 233000,
+                        234000, 235000, 236000, 237000, 238000, 239000, 240000, 241000, 242000,
+                        243000, 244000, 245000, 246000, 247000, 248000, 249000
                     ],
                     time
                 );

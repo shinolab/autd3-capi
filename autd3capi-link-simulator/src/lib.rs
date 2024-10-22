@@ -3,7 +3,6 @@
 use std::{
     ffi::{c_char, CStr},
     net::SocketAddr,
-    time::Duration,
 };
 
 use autd3capi_driver::*;
@@ -65,17 +64,6 @@ pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLinkSim
         err_len: 0,
         err: ConstPtr(std::ptr::null_mut()),
     }
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulatorWithTimeout(
-    simulator: LinkSimulatorBuilderPtr,
-    timeout_ns: u64,
-) -> LinkSimulatorBuilderPtr {
-    LinkSimulatorBuilderPtr::new(
-        take!(simulator, SimulatorBuilder).with_timeout(Duration::from_nanos(timeout_ns)),
-    )
 }
 
 #[no_mangle]

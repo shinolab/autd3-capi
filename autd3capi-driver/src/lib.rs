@@ -32,8 +32,8 @@ unsafe impl Send for ConstPtr {}
 unsafe impl Sync for ConstPtr {}
 
 pub type L = dyn autd3_driver::link::Link;
-pub type G = dyn autd3_driver::datagram::Gain + Send + Sync;
-pub type M = dyn autd3_driver::datagram::Modulation + Send + Sync;
+pub use autd3_driver::datagram::BoxedGain;
+pub use autd3_driver::datagram::BoxedModulation;
 
 pub use autd3_driver::geometry::Vector3;
 

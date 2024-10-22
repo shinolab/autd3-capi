@@ -74,7 +74,7 @@ pub unsafe extern "C" fn AUTDGainGroup(
     (0..kv_len as usize)
         .map(|i| (keys_ptr.add(i).read(), values_ptr.add(i).read()))
         .fold(Group::new(f).with_parallel(parallel), |acc, (k, v)| {
-            acc.set(k, *take!(v, Box<G>))
+            acc.set(k, *take!(v, BoxedGain))
         })
         .into()
 }

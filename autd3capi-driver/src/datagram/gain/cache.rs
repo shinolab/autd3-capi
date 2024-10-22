@@ -1,53 +1,87 @@
 use std::{collections::HashMap, sync::Mutex};
 
-use crate::{
-    autd3::{derive::*, prelude::Drive},
-    G,
-};
+use crate::autd3::{derive::*, prelude::Drive};
 
-use derive_more::{Debug, Deref};
+use autd3_driver::datagram::BoxedGain;
+use derive_more::Debug;
 
-#[derive(Gain, Deref, Debug, Clone)]
+#[derive(Gain, Debug, Clone)]
 pub struct BoxedCache {
-    #[deref]
-    pub gain: Arc<G>,
+    pub gain: Arc<Mutex<Option<BoxedGain>>>,
     #[debug("{}", !self.cache.lock().unwrap().is_empty())]
-    cache: Arc<Mutex<HashMap<usize, Arc<Vec<Drive>>>>>,
+    pub cache: Arc<Mutex<HashMap<usize, Arc<Vec<Drive>>>>>,
 }
 
 impl BoxedCache {
-    pub fn new(gain: Box<G>) -> Self {
+    pub fn new(gain: BoxedGain) -> Self {
         Self {
-            gain: Arc::from(gain),
+            gain: Arc::new(Mutex::new(Some(gain))),
             cache: Default::default(),
         }
     }
-}
 
-impl Gain for BoxedCache {
-    fn calc(&self, geometry: &Geometry) -> Result<GainCalcFn, AUTDInternalError> {
+    pub fn init(&self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
+        dbg!("init");
+        if let Some(gain) = self.gain.lock().unwrap().take() {
+            let mut f = gain.init(geometry)?;
+            geometry
+                .devices()
+                .filter(|dev| !self.cache.lock().unwrap().contains_key(&dev.idx()))
+                .for_each(|dev| {
+                    tracing::debug!("Initializing cache for device {}", dev.idx());
+                    let f = f.generate(dev);
+                    self.cache.lock().unwrap().insert(
+                        dev.idx(),
+                        Arc::new(dev.iter().map(|tr| f.calc(tr)).collect()),
+                    );
+                });
+        }
+
         if self.cache.lock().unwrap().len() != geometry.devices().count()
             || geometry
                 .devices()
                 .any(|dev| !self.cache.lock().unwrap().contains_key(&dev.idx()))
         {
-            let mut f = self.gain.calc(geometry)?;
-            geometry
-                .devices()
-                .filter(|dev| !self.cache.lock().unwrap().contains_key(&dev.idx()))
-                .for_each(|dev| {
-                    tracing::debug!("Initialize cache for device {}", dev.idx());
-                    self.cache
-                        .lock()
-                        .unwrap()
-                        .insert(dev.idx(), Arc::new(dev.iter().map(f(dev)).collect()));
-                });
+            return Err(AUTDInternalError::GainError(
+                "Cache is initialized with different geometry".to_string(),
+            ));
         }
 
-        let cache = self.cache.lock().unwrap();
-        Ok(Box::new(move |dev| {
-            let drives = cache[&dev.idx()].clone();
-            Box::new(move |tr| drives[tr.idx()])
-        }))
+        Ok(())
+    }
+}
+
+pub struct Context {
+    g: Arc<Vec<Drive>>,
+}
+
+impl GainContext for Context {
+    fn calc(&self, tr: &Transducer) -> Drive {
+        self.g[tr.idx()]
+    }
+}
+
+impl GainContextGenerator for BoxedCache {
+    type Context = Context;
+
+    fn generate(&mut self, device: &Device) -> Self::Context {
+        Context {
+            g: self.cache.lock().unwrap()[&device.idx()].clone(),
+        }
+    }
+}
+
+impl Gain for BoxedCache {
+    type G = Self;
+
+    fn init_with_filter(
+        self,
+        geometry: &Geometry,
+        _filter: Option<HashMap<usize, BitVec<u32>>>,
+    ) -> Result<Self::G, AUTDInternalError> {
+        dbg!('a');
+        BoxedCache::init(&self, geometry)?;
+        dbg!('b');
+        Ok(self)
     }
 }
