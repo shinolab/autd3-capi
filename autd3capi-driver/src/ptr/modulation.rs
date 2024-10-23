@@ -1,21 +1,16 @@
-use std::convert::Infallible;
+use autd3_driver::datagram::IntoBoxedModulation;
 
-use autd3::derive::AUTDInternalError;
-use autd3_driver::{
-    datagram::{BoxedModulation, IntoBoxedModulation},
-    derive::Modulation,
-};
-
-use crate::ConstPtr;
+use crate::{impl_ffi_result, impl_ptr, ConstPtr};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ModulationPtr(pub *const libc::c_void);
 
+impl_ptr!(ModulationPtr);
+
 impl<T: IntoBoxedModulation> From<T> for ModulationPtr {
     fn from(m: T) -> Self {
-        let m: Box<BoxedModulation> = Box::new(m.into_boxed());
-        Self(Box::into_raw(m) as _)
+        Self(Box::into_raw(Box::new(m.into_boxed())) as _)
     }
 }
 
@@ -26,37 +21,4 @@ pub struct ResultModulation {
     pub err: ConstPtr,
 }
 
-impl<T: Modulation + Send + Sync + 'static> From<Result<T, AUTDInternalError>>
-    for ResultModulation
-{
-    fn from(r: Result<T, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v.into(),
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: ModulationPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
-
-impl<T: Modulation + Send + Sync + 'static> From<Result<T, Infallible>> for ResultModulation {
-    fn from(r: Result<T, Infallible>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v.into(),
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            _ => unreachable!(),
-        }
-    }
-}
+impl_ffi_result!(ResultModulation, ModulationPtr);

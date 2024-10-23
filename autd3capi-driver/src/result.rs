@@ -1,84 +1,85 @@
 use autd3::prelude::*;
-use autd3_driver::error::AUTDInternalError;
 
-use crate::ConstPtr;
+use crate::{ConstPtr, FfiResult};
 
-pub const AUTD3_ERR: i32 = -1;
-pub const AUTD3_TRUE: i32 = 1;
-pub const AUTD3_FALSE: i32 = 0;
+#[macro_export]
+macro_rules! impl_ffi_result {
+    ($type:ty, $inner:ident) => {
+        impl<T, E> From<Result<T, E>> for $type
+        where
+            $inner: From<T>,
+            E: std::error::Error,
+        {
+            fn from(value: Result<T, E>) -> Self {
+                match value {
+                    Ok(value) => Self {
+                        result: value.into(),
+                        err_len: 0,
+                        err: ConstPtr(std::ptr::null_mut()),
+                    },
+                    Err(e) => {
+                        let err = e.to_string();
+                        Self {
+                            result: $inner::NULL,
+                            err_len: err.as_bytes().len() as u32 + 1,
+                            err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                        }
+                    }
+                }
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! validate_cstr {
+    ($path:expr, $type:tt, $retty:tt) => {
+        match std::ffi::CStr::from_ptr($path).to_str() {
+            Ok(v) => v,
+            Err(e) => {
+                let err = e.to_string();
+                return $retty {
+                    result: $type::NULL,
+                    err_len: err.as_bytes().len() as u32 + 1,
+                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
+                };
+            }
+        }
+    };
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u8)]
+pub enum AUTDStatus {
+    TRUE = 0,
+    FALSE = 1,
+    ERR = 2,
+}
+
+impl AUTDStatus {
+    pub const NULL: Self = Self::ERR;
+}
 
 #[repr(C)]
-
-pub struct ResultI32 {
-    pub result: i32,
+pub struct ResultStatus {
+    pub result: AUTDStatus,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl From<()> for ResultI32 {
+impl From<()> for AUTDStatus {
     fn from(_: ()) -> Self {
-        Self {
-            result: AUTD3_TRUE,
-            err_len: 0,
-            err: ConstPtr(std::ptr::null_mut()),
-        }
+        Self::TRUE
     }
 }
 
-impl From<bool> for ResultI32 {
-    fn from(v: bool) -> Self {
-        Self {
-            result: if v { AUTD3_TRUE } else { AUTD3_FALSE },
-            err_len: 0,
-            err: ConstPtr(std::ptr::null_mut()),
-        }
+impl From<AUTDInternalError> for AUTDStatus {
+    fn from(_: AUTDInternalError) -> Self {
+        Self::ERR
     }
 }
 
-impl From<usize> for ResultI32 {
-    fn from(v: usize) -> Self {
-        Self {
-            result: v as i32,
-            err_len: 0,
-            err: ConstPtr(std::ptr::null_mut()),
-        }
-    }
-}
-
-impl From<AUTDInternalError> for ResultI32 {
-    fn from(e: AUTDInternalError) -> Self {
-        let err = e.to_string();
-        Self {
-            result: AUTD3_ERR,
-            err_len: err.as_bytes().len() as u32 + 1,
-            err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-        }
-    }
-}
-
-impl From<AUTDError> for ResultI32 {
-    fn from(e: AUTDError) -> Self {
-        let err = e.to_string();
-        Self {
-            result: AUTD3_ERR,
-            err_len: err.as_bytes().len() as u32 + 1,
-            err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-        }
-    }
-}
-
-impl<T, E> From<Result<T, E>> for ResultI32
-where
-    T: Into<Self>,
-    E: Into<Self>,
-{
-    fn from(r: Result<T, E>) -> Self {
-        match r {
-            Ok(t) => t.into(),
-            Err(e) => e.into(),
-        }
-    }
-}
+impl_ffi_result!(ResultStatus, AUTDStatus);
 
 #[repr(C)]
 pub struct ResultSamplingConfig {
@@ -87,22 +88,8 @@ pub struct ResultSamplingConfig {
     pub err: ConstPtr,
 }
 
-impl From<Result<SamplingConfig, AUTDInternalError>> for ResultSamplingConfig {
-    fn from(r: Result<SamplingConfig, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v,
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: SamplingConfig::FREQ_40K,
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
+impl FfiResult for SamplingConfig {
+    const NULL: Self = SamplingConfig::FREQ_40K;
 }
+
+impl_ffi_result!(ResultSamplingConfig, SamplingConfig);

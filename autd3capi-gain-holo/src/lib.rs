@@ -16,7 +16,6 @@ use constraint::EmissionConstraintWrap;
 pub struct BackendPtr(pub *const libc::c_void);
 
 #[repr(C)]
-
 pub struct ResultBackend {
     pub result: BackendPtr,
     pub err_len: u32,

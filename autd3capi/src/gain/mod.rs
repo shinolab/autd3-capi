@@ -1,4 +1,6 @@
+use autd3::derive::Segment;
 use autd3capi_driver::{autd3::prelude::IntoDatagramWithSegment, *};
+use driver::datagram::BoxedGain;
 
 pub mod bessel;
 pub mod cache;
@@ -14,21 +16,10 @@ pub mod uniform;
 pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     gain: GainPtr,
     segment: Segment,
-) -> DatagramPtr {
-    (*take!(gain, BoxedGain))
-        .with_segment(segment.into(), None)
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegmentTransition(
-    gain: GainPtr,
-    segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     (*take!(gain, BoxedGain))
-        .with_segment(segment.into(), Some(transition_mode.into()))
+        .with_segment(segment, transition_mode.into())
         .into()
 }
 

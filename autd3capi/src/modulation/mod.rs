@@ -1,14 +1,14 @@
-use autd3::derive::{ModulationProperty, SamplingConfig};
+use autd3::derive::{ModulationProperty, SamplingConfig, Segment};
 use autd3capi_driver::*;
-use driver::datagram::IntoDatagramWithSegment;
+use driver::datagram::{BoxedModulation, IntoDatagramWithSegment};
 
 pub mod cache;
 pub mod custom;
 pub mod fir;
-// pub mod fourier;
+pub mod fourier;
 pub mod radiation_pressure;
-// pub mod sine;
-// pub mod square;
+pub mod sine;
+pub mod square;
 pub mod r#static;
 
 #[no_mangle]
@@ -25,21 +25,10 @@ pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> Sampl
 pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
     m: ModulationPtr,
     segment: Segment,
-) -> DatagramPtr {
-    (*take!(m, BoxedModulation))
-        .with_segment(segment.into(), None)
-        .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegmentTransition(
-    m: ModulationPtr,
-    segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     (*take!(m, BoxedModulation))
-        .with_segment(segment.into(), Some(transition_mode.into()))
+        .with_segment(segment, transition_mode.into())
         .into()
 }
 

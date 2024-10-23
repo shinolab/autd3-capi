@@ -5,7 +5,7 @@ use autd3capi_driver::*;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransducer(dev: DevicePtr, idx: u8) -> TransducerPtr {
-    TransducerPtr(&dev[idx as usize] as *const _ as _)
+    TransducerPtr(&raw const dev[idx as usize] as _)
 }
 
 #[no_mangle]

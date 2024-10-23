@@ -1,3 +1,4 @@
+use autd3::derive::Drive;
 use autd3capi_driver::{autd3::gain::Custom, *};
 
 #[no_mangle]

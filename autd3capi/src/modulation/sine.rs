@@ -1,12 +1,11 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::{
-    derive::SamplingConfig,
-    modulation::sampling_mode::{ExactFreq, NearestFreq},
-    prelude::rad,
-};
 use autd3capi_driver::{
-    autd3::modulation::{sampling_mode::ExactFreqFloat, Sine},
+    autd3::{
+        derive::{LoopBehavior, SamplingConfig},
+        modulation::Sine,
+        prelude::rad,
+    },
     driver::{defined::Hz, derive::ModulationProperty},
     *,
 };
@@ -27,7 +26,7 @@ pub unsafe extern "C" fn AUTDModulationSineExact(
         .with_offset(offset)
         .with_phase(phase * rad)
         .with_clamp(clamp)
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .with_sampling_config(config)
         .into()
 }
@@ -47,7 +46,7 @@ pub unsafe extern "C" fn AUTDModulationSineExactFloat(
         .with_intensity(intensity)
         .with_offset(offset)
         .with_phase(phase * rad)
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .with_clamp(clamp)
         .with_sampling_config(config)
         .into()
@@ -69,38 +68,44 @@ pub unsafe extern "C" fn AUTDModulationSineNearest(
         .with_offset(offset)
         .with_phase(phase * rad)
         .with_clamp(clamp)
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .with_sampling_config(config)
         .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSineExactFreq(sine: ModulationPtr) -> u32 {
-    take_mod!(sine, Sine<ExactFreq>).freq().hz()
+pub unsafe extern "C" fn AUTDModulationSineExactFreq(freq: u32) -> u32 {
+    Sine::new(freq * Hz).freq().hz()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSineExactFloatFreq(sine: ModulationPtr) -> f32 {
-    take_mod!(sine, Sine<ExactFreqFloat>).freq().hz()
+pub unsafe extern "C" fn AUTDModulationSineExactFloatFreq(freq: f32) -> f32 {
+    Sine::new(freq * Hz).freq().hz()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSineNearestFreq(sine: ModulationPtr) -> f32 {
-    take_mod!(sine, Sine<NearestFreq>).freq().hz()
+pub unsafe extern "C" fn AUTDModulationSineNearestFreq(freq: f32) -> f32 {
+    Sine::new_nearest(freq * Hz).freq().hz()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationSineIsDefault(sine: ModulationPtr) -> bool {
-    let m = take_mod!(sine, Sine<ExactFreqFloat>);
+pub unsafe extern "C" fn AUTDModulationSineIsDefault(
+    config: SamplingConfig,
+    intensity: u8,
+    offset: u8,
+    phase: f32,
+    clamp: bool,
+    loop_behavior: LoopBehavior,
+) -> bool {
     let default = Sine::new(0. * Hz);
-    m.intensity() == default.intensity()
-        && m.offset() == default.offset()
-        && m.phase() == default.phase()
-        && m.sampling_config() == default.sampling_config()
-        && m.loop_behavior() == default.loop_behavior()
-        && m.clamp() == default.clamp()
+    intensity == default.intensity()
+        && offset == default.offset()
+        && phase == default.phase().radian()
+        && config == default.sampling_config()
+        && loop_behavior == default.loop_behavior()
+        && clamp == default.clamp()
 }

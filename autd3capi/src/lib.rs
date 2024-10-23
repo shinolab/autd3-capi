@@ -3,9 +3,10 @@
 use autd3capi_driver::{
     async_ffi::{FfiFuture, LocalFfiFuture},
     tokio::{self, runtime::Runtime},
-    HandlePtr, ResultI32, RuntimePtr,
+    validate_cstr, AUTDStatus, ConstPtr, HandlePtr, ResultStatus, RuntimePtr,
 };
 use controller::{ResultController, ResultFPGAStateList, ResultFirmwareVersionList};
+use libc::c_char;
 
 pub mod controller;
 pub mod datagram;
@@ -40,19 +41,19 @@ pub unsafe extern "C" fn AUTDDeleteRuntime(runtime: RuntimePtr) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDWaitResultI32(
+pub unsafe extern "C" fn AUTDWaitResultStatus(
     handle: HandlePtr,
-    future: FfiFuture<ResultI32>,
-) -> ResultI32 {
+    future: FfiFuture<ResultStatus>,
+) -> ResultStatus {
     handle.block_on(future)
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDWaitLocalResultI32(
+pub unsafe extern "C" fn AUTDWaitLocalResultStatus(
     handle: HandlePtr,
-    future: LocalFfiFuture<ResultI32>,
-) -> ResultI32 {
+    future: LocalFfiFuture<ResultStatus>,
+) -> ResultStatus {
     handle.block_on(future)
 }
 
@@ -90,9 +91,28 @@ pub unsafe extern "C" fn AUTDTracingInit() {
         .init();
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultStatus {
+    let path = validate_cstr!(path, AUTDStatus, ResultStatus);
+    std::fs::File::options()
+        .append(true)
+        .create(true)
+        .open(path)
+        .map(|f| {
+            tracing_subscriber::fmt()
+                .with_writer(f)
+                .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+                .with_ansi(false)
+                .init();
+            AUTDStatus::TRUE
+        })
+        .into()
+}
+
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{driver::geometry::Quaternion, Vector3, AUTD3_TRUE};
+    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, Vector3};
+    use controller::timer::AUTDTimerStrategySpinDefault;
 
     use super::*;
 
@@ -105,7 +125,16 @@ mod tests {
 
             let pos = [Vector3::new(0., 0., 0.)];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
-            let builder = controller::builder::AUTDControllerBuilder(pos.as_ptr(), rot.as_ptr(), 1);
+            let builder = controller::builder::AUTDControllerBuilder(
+                pos.as_ptr(),
+                rot.as_ptr(),
+                1,
+                4,
+                20_000_000,
+                1_000_000,
+                1_000_000,
+                AUTDTimerStrategySpinDefault(),
+            );
             let link_builder = link::nop::AUTDLinkNop();
             let cnt = controller::builder::AUTDControllerOpen(builder, link_builder, -1);
             let cnt = AUTDWaitResultController(handle, cnt);
@@ -122,12 +151,12 @@ mod tests {
             let d2 = modulation::AUTDModulationIntoDatagram(m);
             let d = datagram::AUTDDatagramTuple(d1, d2);
             let future = controller::AUTDControllerSend(cnt, d);
-            let result = AUTDWaitResultI32(handle, future);
-            assert_eq!(AUTD3_TRUE, result.result);
+            let result = AUTDWaitResultStatus(handle, future);
+            assert_eq!(AUTDStatus::TRUE, result.result);
 
             let future = controller::AUTDControllerClose(cnt);
-            let result = AUTDWaitResultI32(handle, future);
-            assert_eq!(AUTD3_TRUE, result.result);
+            let result = AUTDWaitResultStatus(handle, future);
+            assert_eq!(AUTDStatus::TRUE, result.result);
 
             AUTDDeleteRuntime(runtime);
         }

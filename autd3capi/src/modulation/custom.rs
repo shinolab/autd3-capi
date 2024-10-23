@@ -8,13 +8,13 @@ use autd3capi_driver::{
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDModulationCustom(
     config: SamplingConfig,
-    loop_behavior: autd3capi_driver::LoopBehavior,
+    loop_behavior: LoopBehavior,
     ptr: *const u8,
     len: u16,
 ) -> ModulationPtr {
     modulation::Custom::new((0..len as usize).map(|i| ptr.add(i).read()), config)
         .unwrap()
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .into()
 }
 
@@ -22,7 +22,7 @@ pub unsafe extern "C" fn AUTDModulationCustom(
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDModulationCustomWithResample(
-    loop_behavior: autd3capi_driver::LoopBehavior,
+    loop_behavior: LoopBehavior,
     ptr: *const u8,
     len: u16,
     src: f32,
@@ -36,6 +36,6 @@ pub unsafe extern "C" fn AUTDModulationCustomWithResample(
         resample,
     )
     .unwrap()
-    .with_loop_behavior(loop_behavior.into())
+    .with_loop_behavior(loop_behavior)
     .into()
 }

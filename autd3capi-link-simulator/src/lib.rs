@@ -1,31 +1,10 @@
 #![allow(clippy::missing_safety_doc)]
 
-use std::{
-    ffi::{c_char, CStr},
-    net::SocketAddr,
-};
+use std::{ffi::c_char, net::SocketAddr};
 
 use autd3capi_driver::*;
 
 use autd3_link_simulator::*;
-
-#[repr(C)]
-
-pub struct LinkSimulatorBuilderPtr(pub *const libc::c_void);
-
-impl LinkSimulatorBuilderPtr {
-    pub fn new(builder: SimulatorBuilder) -> Self {
-        Self(Box::into_raw(Box::new(builder)) as _)
-    }
-}
-
-#[repr(C)]
-
-pub struct ResultLinkSimulatorBuilder {
-    pub result: LinkSimulatorBuilderPtr,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkSimulatorTracingInit() {
@@ -35,54 +14,30 @@ pub unsafe extern "C" fn AUTDLinkSimulatorTracingInit() {
 }
 
 #[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLinkSimulatorBuilder {
-    let addr = match CStr::from_ptr(addr).to_str() {
-        Ok(v) => v,
-        Err(e) => {
-            let err = e.to_string();
-            return ResultLinkSimulatorBuilder {
-                result: LinkSimulatorBuilderPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-            };
-        }
-    };
-    let addr = match addr.parse::<SocketAddr>() {
-        Ok(v) => v,
-        Err(e) => {
-            let err = e.to_string();
-            return ResultLinkSimulatorBuilder {
-                result: LinkSimulatorBuilderPtr(std::ptr::null()),
-                err_len: err.as_bytes().len() as u32 + 1,
-                err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-            };
-        }
-    };
-    ResultLinkSimulatorBuilder {
-        result: LinkSimulatorBuilderPtr::new(Simulator::builder(addr)),
-        err_len: 0,
-        err: ConstPtr(std::ptr::null_mut()),
-    }
+pub unsafe extern "C" fn AUTDLinkSimulatorTracingInitWithFile(path: *const c_char) -> ResultStatus {
+    let path = validate_cstr!(path, AUTDStatus, ResultStatus);
+    std::fs::File::options()
+        .append(true)
+        .create(true)
+        .open(path)
+        .map(|f| {
+            tracing_subscriber::fmt()
+                .with_writer(f)
+                .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+                .with_ansi(false)
+                .init();
+            AUTDStatus::TRUE
+        })
+        .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulatorIntoBuilder(
-    simulator: LinkSimulatorBuilderPtr,
-) -> LinkBuilderPtr {
-    #[cfg(feature = "static")]
-    {
-        DynamicLinkBuilder::new(*take!(simulator, SimulatorBuilder))
-    }
-    #[cfg(not(feature = "static"))]
-    {
-        DynamicLinkBuilder::new(SyncLinkBuilder {
-            runtime: tokio::runtime::Builder::new_multi_thread()
-                .enable_all()
-                .build()
-                .unwrap(),
-            inner: *take!(simulator, SimulatorBuilder),
-        })
-    }
+pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultSyncLinkBuilder {
+    let addr = if addr.is_null() {
+        ""
+    } else {
+        validate_cstr!(addr, LinkBuilderPtr, ResultSyncLinkBuilder)
+    };
+    addr.parse::<SocketAddr>().map(Simulator::builder).into()
 }

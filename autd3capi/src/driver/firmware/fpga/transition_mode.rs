@@ -1,7 +1,7 @@
 use autd3capi_driver::{
-    autd3::derive::TransitionMode,
+    autd3::{derive::TransitionMode, prelude::GPIOIn},
     driver::ethercat::{DcSysTime, ECAT_DC_SYS_TIME_BASE},
-    GPIOIn, TransitionModeWrap,
+    TransitionModeWrap,
 };
 
 #[no_mangle]
@@ -23,7 +23,7 @@ pub unsafe extern "C" fn AUTDTransitionModeSysTime(sys_time: u64) -> TransitionM
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeGPIO(gpio: GPIOIn) -> TransitionModeWrap {
-    TransitionMode::GPIO(gpio.into()).into()
+    TransitionMode::GPIO(gpio).into()
 }
 
 #[no_mangle]
@@ -36,4 +36,13 @@ pub unsafe extern "C" fn AUTDTransitionModeExt() -> TransitionModeWrap {
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeImmediate() -> TransitionModeWrap {
     TransitionMode::Immediate.into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDTransitionModeNone() -> TransitionModeWrap {
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::None,
+        value: 0,
+    }
 }

@@ -1,10 +1,11 @@
-use autd3::derive::AUTDInternalError;
 use autd3_driver::datagram::{BoxedGain, FociSTM, GainSTM};
 
-use crate::ConstPtr;
+use crate::{impl_ffi_result, impl_ptr, ConstPtr};
 
 #[repr(C)]
 pub struct FociSTMPtr(pub *const libc::c_void);
+
+impl_ptr!(FociSTMPtr);
 
 impl<const N: usize> From<FociSTM<N>> for FociSTMPtr {
     fn from(stm: FociSTM<N>) -> Self {
@@ -14,6 +15,8 @@ impl<const N: usize> From<FociSTM<N>> for FociSTMPtr {
 
 #[repr(C)]
 pub struct GainSTMPtr(pub *const libc::c_void);
+
+impl_ptr!(GainSTMPtr);
 
 impl From<GainSTM<BoxedGain>> for GainSTMPtr {
     fn from(stm: GainSTM<BoxedGain>) -> Self {
@@ -28,25 +31,7 @@ pub struct ResultFociSTM {
     pub err: ConstPtr,
 }
 
-impl<const N: usize> From<Result<FociSTM<N>, AUTDInternalError>> for ResultFociSTM {
-    fn from(r: Result<FociSTM<N>, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v.into(),
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: FociSTMPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
+impl_ffi_result!(ResultFociSTM, FociSTMPtr);
 
 #[repr(C)]
 pub struct ResultGainSTM {
@@ -55,22 +40,4 @@ pub struct ResultGainSTM {
     pub err: ConstPtr,
 }
 
-impl From<Result<GainSTM<BoxedGain>, AUTDInternalError>> for ResultGainSTM {
-    fn from(r: Result<GainSTM<BoxedGain>, AUTDInternalError>) -> Self {
-        match r {
-            Ok(v) => Self {
-                result: v.into(),
-                err_len: 0,
-                err: ConstPtr(std::ptr::null_mut()),
-            },
-            Err(e) => {
-                let err = e.to_string();
-                Self {
-                    result: GainSTMPtr(std::ptr::null()),
-                    err_len: err.as_bytes().len() as u32 + 1,
-                    err: ConstPtr(Box::into_raw(Box::new(err)) as _),
-                }
-            }
-        }
-    }
-}
+impl_ffi_result!(ResultGainSTM, GainSTMPtr);

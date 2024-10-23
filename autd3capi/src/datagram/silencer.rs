@@ -1,9 +1,9 @@
 use std::{num::NonZeroU16, time::Duration};
 
 use autd3capi_driver::{
-    autd3::derive::SamplingConfig,
+    autd3::{derive::SamplingConfig, prelude::SilencerTarget},
     driver::datagram::{FixedCompletionTime, FixedUpdateRate, Silencer, WithSampling},
-    take, DatagramPtr, SilencerTarget,
+    take, DatagramPtr,
 };
 
 #[no_mangle]
@@ -17,7 +17,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
         intensity: NonZeroU16::new_unchecked(value_intensity),
         phase: NonZeroU16::new_unchecked(value_phase),
     })
-    .with_target(target.into())
+    .with_target(target)
     .into()
 }
 
@@ -45,7 +45,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
         phase: Duration::from_nanos(value_phase),
     })
     .with_strict_mode(strict_mode)
-    .with_target(target.into())
+    .with_target(target)
     .into()
 }
 
