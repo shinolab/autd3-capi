@@ -1,7 +1,7 @@
 use std::{
     convert::Infallible,
     ffi::{c_char, CStr, CString},
-    num::{NonZeroU64, NonZeroUsize},
+    num::NonZeroUsize,
     time::Duration,
 };
 
