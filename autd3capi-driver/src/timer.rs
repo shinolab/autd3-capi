@@ -1,4 +1,6 @@
-use autd3::prelude::AsyncSleeper;
+use std::num::NonZeroU32;
+
+use autd3::controller::timer::*;
 use spin_sleep::{SpinSleeper, SpinStrategy};
 
 #[repr(u8)]
@@ -42,16 +44,19 @@ pub struct TimerStrategyWrap {
     pub spin_strategy: SpinStrategyTag,
 }
 
-impl From<TimerStrategyWrap> for autd3::controller::TimerStrategy {
+impl From<TimerStrategyWrap> for TimerStrategy {
     fn from(value: TimerStrategyWrap) -> Self {
         match value.tag {
-            TimerStrategyTag::Std => autd3::controller::TimerStrategy::Std,
-            TimerStrategyTag::Spin => autd3::controller::TimerStrategy::Spin(
+            TimerStrategyTag::Std => TimerStrategy::Std(StdSleeper {
+                timer_resolution: NonZeroU32::new(value.value),
+            }),
+            TimerStrategyTag::Spin => TimerStrategy::Spin(
                 SpinSleeper::new(value.value).with_spin_strategy(value.spin_strategy.into()),
             ),
             TimerStrategyTag::Async => {
-                autd3::controller::TimerStrategy::Async(AsyncSleeper::default())
-                // todo
+                TimerStrategy::Async(autd3::controller::timer::AsyncSleeper {
+                    timer_resolution: NonZeroU32::new(value.value),
+                })
             }
         }
     }

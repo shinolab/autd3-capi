@@ -26,7 +26,6 @@ pub unsafe extern "C" fn AUTDLinkSOEMTracingInitWithFile(path: *const c_char) ->
     std::fs::File::options()
         .append(true)
         .create(true)
-  
         .open(path)
         .map(|f| {
             tracing_subscriber::fmt()
@@ -44,14 +43,14 @@ pub unsafe extern "C" fn AUTDLinkSOEMTracingInitWithFile(path: *const c_char) ->
 pub unsafe extern "C" fn AUTDLinkSOEM(
     ifname: *const c_char,
     buf_size: u32,
-    send_cycle: u64,
-    sync0_cycle: u64,
+    send_cycle_ns: u64,
+    sync0_cycle_ns: u64,
     err_handler: ConstPtr,
     err_context: ConstPtr,
     mode: SyncMode,
     process_priority: ProcessPriority,
     thread_priority: ThreadPriorityPtr,
-    state_check_interval_ms: u32,
+    state_check_interval_ns: u64,
     timer_strategy: TimerStrategy,
     tolerance_ns: u64,
     sync_timeout_ns: u64,
@@ -64,11 +63,11 @@ pub unsafe extern "C" fn AUTDLinkSOEM(
     let builder = SOEM::builder()
         .with_ifname(ifname)
         .with_buf_size(NonZeroUsize::new_unchecked(buf_size as _))
-        .with_send_cycle(NonZeroU64::new_unchecked(send_cycle))
-        .with_sync0_cycle(NonZeroU64::new_unchecked(sync0_cycle))
+        .with_send_cycle(Duration::from_nanos(send_cycle_ns))
+        .with_sync0_cycle(Duration::from_nanos(sync0_cycle_ns))
         .with_sync_mode(mode)
         .with_thread_priority(*take!(thread_priority, ThreadPriority))
-        .with_state_check_interval(Duration::from_millis(state_check_interval_ms as _))
+        .with_state_check_interval(Duration::from_nanos(state_check_interval_ns))
         .with_timer_strategy(timer_strategy)
         .with_sync_tolerance(std::time::Duration::from_nanos(tolerance_ns))
         .with_sync_timeout(std::time::Duration::from_nanos(sync_timeout_ns));
@@ -99,24 +98,24 @@ pub unsafe extern "C" fn AUTDLinkSOEM(
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkSOEMIsDefault(
     buf_size: u32,
-    send_cycle: u64,
-    sync0_cycle: u64,
+    send_cycle_ns: u64,
+    sync0_cycle_ns: u64,
     mode: SyncMode,
     process_priority: ProcessPriority,
     thread_priority: ThreadPriorityPtr,
-    state_check_interval_ms: u32,
+    state_check_interval_ns: u64,
     timer_strategy: TimerStrategy,
     tolerance_ns: u64,
     sync_timeout_ns: u64,
 ) -> bool {
     let default = SOEM::builder();
     buf_size as usize == default.buf_size().get()
-        && send_cycle == default.send_cycle().get()
-        && sync0_cycle == default.sync0_cycle().get()
+        && send_cycle_ns as u128 == default.send_cycle().as_nanos()
+        && sync0_cycle_ns as u128 == default.sync0_cycle().as_nanos()
         && mode == default.sync_mode()
         && process_priority == default.process_priority()
         && *take!(thread_priority, ThreadPriority) == default.thread_priority()
-        && state_check_interval_ms as u128 == default.state_check_interval().as_millis()
+        && state_check_interval_ns as u128 == default.state_check_interval().as_nanos()
         && timer_strategy == default.timer_strategy()
         && tolerance_ns as u128 == default.sync_tolerance().as_nanos()
         && sync_timeout_ns as u128 == default.sync_timeout().as_nanos()
