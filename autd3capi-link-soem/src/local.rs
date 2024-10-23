@@ -8,7 +8,7 @@ use std::{
 use autd3capi_driver::*;
 
 use autd3_link_soem::{
-    local::link_soem::*, ProcessPriority, SyncMode, ThreadPriority, TimerStrategy,
+    local::link_soem::*, local::ProcessPriority, SyncMode, ThreadPriority, TimerStrategy,
 };
 
 use crate::{status::Status, thread_priority::ThreadPriorityPtr};
@@ -96,6 +96,7 @@ pub unsafe extern "C" fn AUTDLinkSOEM(
 
 #[no_mangle]
 #[must_use]
+#[allow(unused_variables)]
 pub unsafe extern "C" fn AUTDLinkSOEMIsDefault(
     buf_size: u32,
     send_cycle_ns: u64,
@@ -109,16 +110,18 @@ pub unsafe extern "C" fn AUTDLinkSOEMIsDefault(
     sync_timeout_ns: u64,
 ) -> bool {
     let default = SOEM::builder();
-    buf_size as usize == default.buf_size().get()
+    let res = buf_size as usize == default.buf_size().get()
         && send_cycle_ns as u128 == default.send_cycle().as_nanos()
         && sync0_cycle_ns as u128 == default.sync0_cycle().as_nanos()
         && mode == default.sync_mode()
-        && process_priority == default.process_priority()
         && *take!(thread_priority, ThreadPriority) == default.thread_priority()
         && state_check_interval_ns as u128 == default.state_check_interval().as_nanos()
         && timer_strategy == default.timer_strategy()
         && tolerance_ns as u128 == default.sync_tolerance().as_nanos()
-        && sync_timeout_ns as u128 == default.sync_timeout().as_nanos()
+        && sync_timeout_ns as u128 == default.sync_timeout().as_nanos();
+    #[cfg(target_os = "windows")]
+    let res = res && process_priority == default.process_priority();
+    res
 }
 
 #[no_mangle]
