@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::prelude::SpinSleeper, SpinStrategyTag, TimerStrategyTag, TimerStrategyWrap,
+    autd3::controller::timer::SpinSleeper, SpinStrategyTag, TimerStrategyTag, TimerStrategyWrap,
 };
 
 #[no_mangle]

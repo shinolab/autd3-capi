@@ -3,7 +3,9 @@ use std::time::Duration;
 use autd3capi_driver::{
     async_ffi::{FfiFuture, FutureExt},
     autd3::{
-        controller::ControllerBuilder, derive::Device, link::Nop, prelude::TimerStrategy,
+        controller::{timer::TimerStrategy, ControllerBuilder},
+        derive::Device,
+        link::Nop,
         Controller,
     },
     driver::{

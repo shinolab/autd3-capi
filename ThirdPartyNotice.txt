@@ -30,7 +30,7 @@ android_system_properties 0.1.5 (Apache-2.0 OR MIT)
 https://github.com/nical/android_system_properties
 ---------------------------------------------------------
 
-anyhow 1.0.90 (Apache-2.0 OR MIT)
+anyhow 1.0.91 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/anyhow
 ---------------------------------------------------------
 
@@ -82,15 +82,15 @@ atomic-waker 1.1.2 (Apache-2.0 OR MIT)
 https://github.com/smol-rs/atomic-waker
 ---------------------------------------------------------
 
-autd3 29.0.0-alpha.2 (MIT)
+autd3 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-derive 29.0.0-alpha.2 (MIT)
+autd3-derive 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-driver 29.0.0-alpha.2 (MIT)
+autd3-driver 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
@@ -98,19 +98,19 @@ autd3-emulator 29.0.0-alpha.0 (MIT)
 https://github.com/shinolab/autd3-emulator
 ---------------------------------------------------------
 
-autd3-firmware-emulator 29.0.0-alpha.2 (MIT)
+autd3-firmware-emulator 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-gain-holo 29.0.0-alpha.2 (MIT)
+autd3-gain-holo 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-simulator 29.0.0-alpha.2 (MIT)
+autd3-link-simulator 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-link-soem 29.0.0-alpha.2
+autd3-link-soem 29.0.0-alpha.3
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -176,7 +176,7 @@ SOEM write to Beckhoff Automation GmbH, Eiserstrasse 5, D-33415 Verl, Germany
 
 ---------------------------------------------------------
 
-autd3-link-twincat 29.0.0-alpha.2
+autd3-link-twincat 29.0.0-alpha.3
 https://github.com/shinolab/autd3-rs
 
 ---
@@ -228,43 +228,43 @@ SOFTWARE.
 
 ---------------------------------------------------------
 
-autd3-modulation-audio-file 29.0.0-alpha.2 (MIT)
+autd3-modulation-audio-file 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3-protobuf 29.0.0-alpha.2 (MIT)
+autd3-protobuf 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-rs
 ---------------------------------------------------------
 
-autd3capi 29.0.0-alpha.2 (MIT)
+autd3capi 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-driver 29.0.0-alpha.2 (MIT)
+autd3capi-driver 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-emulator 29.0.0-alpha.2 (MIT)
+autd3capi-emulator 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-gain-holo 29.0.0-alpha.2 (MIT)
+autd3capi-gain-holo 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-simulator 29.0.0-alpha.2 (MIT)
+autd3capi-link-simulator 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-soem 29.0.0-alpha.2 (MIT)
+autd3capi-link-soem 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-link-twincat 29.0.0-alpha.2 (MIT)
+autd3capi-link-twincat 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
-autd3capi-modulation-audio-file 29.0.0-alpha.2 (MIT)
+autd3capi-modulation-audio-file 29.0.0-alpha.3 (MIT)
 https://github.com/shinolab/autd3-capi
 ---------------------------------------------------------
 
@@ -968,7 +968,7 @@ presser 0.3.1 (Apache-2.0 OR MIT)
 https://github.com/EmbarkStudios/presser
 ---------------------------------------------------------
 
-proc-macro2 1.0.88 (Apache-2.0 OR MIT)
+proc-macro2 1.0.89 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/proc-macro2
 ---------------------------------------------------------
 
@@ -1096,11 +1096,11 @@ seq-macro 0.3.5 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/seq-macro
 ---------------------------------------------------------
 
-serde 1.0.210 (Apache-2.0 OR MIT)
+serde 1.0.213 (Apache-2.0 OR MIT)
 https://github.com/serde-rs/serde
 ---------------------------------------------------------
 
-serde_derive 1.0.210 (Apache-2.0 OR MIT)
+serde_derive 1.0.213 (Apache-2.0 OR MIT)
 https://github.com/serde-rs/serde
 ---------------------------------------------------------
 
@@ -1200,11 +1200,11 @@ termcolor 1.4.1 (MIT OR Unlicense)
 https://github.com/BurntSushi/termcolor
 ---------------------------------------------------------
 
-thiserror 1.0.64 (Apache-2.0 OR MIT)
+thiserror 1.0.65 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/thiserror
 ---------------------------------------------------------
 
-thiserror-impl 1.0.64 (Apache-2.0 OR MIT)
+thiserror-impl 1.0.65 (Apache-2.0 OR MIT)
 https://github.com/dtolnay/thiserror
 ---------------------------------------------------------
 
@@ -1228,7 +1228,7 @@ time-macros 0.2.18 (Apache-2.0 OR MIT)
 https://github.com/time-rs/time
 ---------------------------------------------------------
 
-tokio 1.40.0 (MIT)
+tokio 1.41.0 (MIT)
 https://github.com/tokio-rs/tokio
 ---------------------------------------------------------
 
