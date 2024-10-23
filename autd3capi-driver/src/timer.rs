@@ -9,6 +9,7 @@ pub enum TimerStrategyTag {
     Std = 0,
     Spin = 1,
     Async = 2,
+    Waitable = 3,
 }
 
 #[repr(u8)]
@@ -58,6 +59,13 @@ impl From<TimerStrategyWrap> for TimerStrategy {
                     timer_resolution: NonZeroU32::new(value.value),
                 })
             }
+            #[cfg(target_os = "windows")]
+            TimerStrategyTag::Waitable => TimerStrategy::Waitable(
+                autd3::controller::timer::WaitableSleeper::new()
+                    .expect("Failed to create WaitableSleeper"),
+            ),
+            #[cfg(not(target_os = "windows"))]
+            TimerStrategyTag::Waitable => unimplemented!(),
         }
     }
 }

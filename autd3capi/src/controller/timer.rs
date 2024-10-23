@@ -44,3 +44,13 @@ pub unsafe extern "C" fn AUTDTimerStrategyAsync(timer_resolution: u32) -> TimerS
         spin_strategy: SpinStrategyTag::SpinLoopHint,
     }
 }
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDTimerStrategyWaitable() -> TimerStrategyWrap {
+    TimerStrategyWrap {
+        tag: TimerStrategyTag::Waitable,
+        value: 0,
+        spin_strategy: SpinStrategyTag::SpinLoopHint,
+    }
+}
