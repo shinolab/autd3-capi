@@ -1,7 +1,10 @@
 use std::{collections::HashMap, sync::Arc};
 
 use autd3capi_driver::{autd3::prelude::Group, driver::autd3_device::AUTD3, *};
-use driver::geometry::{Device, Transducer};
+use driver::{
+    datagram::BoxedGain,
+    geometry::{Device, Transducer},
+};
 
 type M = HashMap<usize, Vec<i32>>;
 

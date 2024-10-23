@@ -1,7 +1,7 @@
 use autd3capi_driver::{
-    autd3::driver::geometry::Device,
+    autd3::{driver::geometry::Device, prelude::GPIOOut},
     driver::{datagram::DebugSettings, firmware::fpga::DebugType},
-    ConstPtr, DatagramPtr, DebugTypeWrap, GPIOOut, GeometryPtr,
+    ConstPtr, DatagramPtr, DebugTypeWrap, GeometryPtr,
 };
 
 #[no_mangle]
@@ -15,16 +15,14 @@ pub unsafe extern "C" fn AUTDDatagramDebugSettings(
         ConstPtr,
         unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
     >(f);
-    DebugSettings::<
-        Box<dyn Fn(&Device, autd3capi_driver::autd3::prelude::GPIOOut) -> DebugType + Send + Sync>,
-    >::new(Box::new(
-        move |dev: &Device, gpio: autd3capi_driver::autd3::prelude::GPIOOut| {
+    DebugSettings::<Box<dyn Fn(&Device, GPIOOut) -> DebugType + Send + Sync>>::new(Box::new(
+        move |dev: &Device, gpio: GPIOOut| {
             let mut debug_type = DebugTypeWrap::default();
             f(
                 context,
                 geometry,
                 dev.idx() as _,
-                gpio.into(),
+                gpio,
                 &mut debug_type as *mut _,
             );
             debug_type.convert(dev)

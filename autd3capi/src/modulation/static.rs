@@ -1,5 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
+use autd3::derive::LoopBehavior;
 use autd3capi_driver::{autd3::modulation::Static, *};
 
 #[no_mangle]
@@ -9,7 +10,7 @@ pub unsafe extern "C" fn AUTDModulationStatic(
     loop_behavior: LoopBehavior,
 ) -> ModulationPtr {
     Static::with_intensity(intensity)
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .into()
 }
 

@@ -5,42 +5,50 @@ use autd3_driver::{
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
-enum TransitionModeTag {
+pub enum TransitionModeTag {
     SyncIdx = 0,
     SysTime = 1,
     Gpio = 2,
     Ext = 3,
     Immediate = 4,
+    None = 0xFF,
 }
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
 pub struct TransitionModeWrap {
-    tag: TransitionModeTag,
-    value: u64,
+    pub tag: TransitionModeTag,
+    pub value: u64,
 }
 
-impl From<TransitionModeWrap> for autd3_driver::firmware::fpga::TransitionMode {
+impl From<TransitionModeWrap> for Option<autd3_driver::firmware::fpga::TransitionMode> {
     fn from(mode: TransitionModeWrap) -> Self {
         match mode.tag {
-            TransitionModeTag::SyncIdx => autd3_driver::firmware::fpga::TransitionMode::SyncIdx,
-            TransitionModeTag::SysTime => autd3_driver::firmware::fpga::TransitionMode::SysTime(
-                DcSysTime::from_utc(
-                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(mode.value),
-                )
-                .unwrap(),
-            ),
-            TransitionModeTag::Gpio => {
-                autd3_driver::firmware::fpga::TransitionMode::GPIO(match mode.value {
+            TransitionModeTag::SyncIdx => {
+                Some(autd3_driver::firmware::fpga::TransitionMode::SyncIdx)
+            }
+            TransitionModeTag::SysTime => {
+                Some(autd3_driver::firmware::fpga::TransitionMode::SysTime(
+                    DcSysTime::from_utc(
+                        ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(mode.value),
+                    )
+                    .unwrap(),
+                ))
+            }
+            TransitionModeTag::Gpio => Some(autd3_driver::firmware::fpga::TransitionMode::GPIO(
+                match mode.value {
                     0 => GPIOIn::I0,
                     1 => GPIOIn::I1,
                     2 => GPIOIn::I2,
                     3 => GPIOIn::I3,
                     _ => unreachable!(),
-                })
+                },
+            )),
+            TransitionModeTag::Ext => Some(autd3_driver::firmware::fpga::TransitionMode::Ext),
+            TransitionModeTag::Immediate => {
+                Some(autd3_driver::firmware::fpga::TransitionMode::Immediate)
             }
-            TransitionModeTag::Ext => autd3_driver::firmware::fpga::TransitionMode::Ext,
-            TransitionModeTag::Immediate => autd3_driver::firmware::fpga::TransitionMode::Immediate,
+            TransitionModeTag::None => None,
         }
     }
 }

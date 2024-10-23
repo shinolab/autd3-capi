@@ -2,21 +2,19 @@
 
 mod autd3_device;
 mod datagram;
-mod ethercat;
 mod firmware;
-mod link;
 mod ptr;
 mod resampler;
 mod result;
+mod timer;
 
 pub use autd3_device::*;
 pub use datagram::*;
-pub use ethercat::*;
 pub use firmware::*;
-pub use link::*;
 pub use ptr::*;
 pub use resampler::*;
 pub use result::*;
+pub use timer::*;
 
 pub use async_ffi;
 pub use autd3;
@@ -30,10 +28,6 @@ pub struct ConstPtr(pub *const libc::c_void);
 
 unsafe impl Send for ConstPtr {}
 unsafe impl Sync for ConstPtr {}
-
-pub type L = dyn autd3_driver::link::Link;
-pub use autd3_driver::datagram::BoxedGain;
-pub use autd3_driver::datagram::BoxedModulation;
 
 pub use autd3_driver::geometry::Vector3;
 

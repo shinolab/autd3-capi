@@ -5,17 +5,11 @@ use autd3capi_driver::{autd3::Controller, impl_ptr, libc};
 #[repr(C)]
 pub struct EmulatorControllerPtr(pub *const libc::c_void);
 
-unsafe impl Send for EmulatorControllerPtr {}
-unsafe impl Sync for EmulatorControllerPtr {}
-
 impl_ptr!(EmulatorControllerPtr, Controller<Recorder>);
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct EmulatorPtr(pub *const libc::c_void);
-
-unsafe impl Send for EmulatorPtr {}
-unsafe impl Sync for EmulatorPtr {}
 
 impl EmulatorPtr {
     pub fn new(emulator: Emulator) -> Self {
@@ -29,9 +23,6 @@ impl_ptr!(EmulatorPtr, Emulator);
 #[repr(C)]
 pub struct RecordPtr(pub *const libc::c_void);
 
-unsafe impl Send for RecordPtr {}
-unsafe impl Sync for RecordPtr {}
-
 impl_ptr!(RecordPtr, Record);
 
 impl RecordPtr {
@@ -43,8 +34,5 @@ impl RecordPtr {
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SoundFieldPtr(pub *const libc::c_void);
-
-unsafe impl Send for SoundFieldPtr {}
-unsafe impl Sync for SoundFieldPtr {}
 
 impl_ptr!(SoundFieldPtr, SoundField<'static>);

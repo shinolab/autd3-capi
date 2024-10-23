@@ -1,5 +1,6 @@
-use autd3::prelude::IntoRadiationPressure;
+use autd3::{derive::LoopBehavior, prelude::IntoRadiationPressure};
 use autd3capi_driver::*;
+use driver::datagram::BoxedModulation;
 
 #[no_mangle]
 #[must_use]
@@ -9,6 +10,6 @@ pub unsafe extern "C" fn AUTDModulationWithRadiationPressure(
 ) -> ModulationPtr {
     take!(m, BoxedModulation)
         .with_radiation_pressure()
-        .with_loop_behavior(loop_behavior.into())
+        .with_loop_behavior(loop_behavior)
         .into()
 }

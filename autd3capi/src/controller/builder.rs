@@ -2,12 +2,15 @@ use std::time::Duration;
 
 use autd3capi_driver::{
     async_ffi::{FfiFuture, FutureExt},
-    autd3::{controller::ControllerBuilder, Controller},
+    autd3::{
+        controller::ControllerBuilder, derive::Device, link::Nop, prelude::TimerStrategy,
+        Controller,
+    },
     driver::{
         autd3_device::AUTD3,
         geometry::{Quaternion, UnitQuaternion, Vector3},
     },
-    take, vec_from_raw, DynamicLinkBuilder, LinkBuilderPtr,
+    take, vec_from_raw, DynamicLinkBuilder, LinkBuilderPtr, TimerStrategyWrap,
 };
 
 use super::ResultController;
@@ -23,57 +26,47 @@ impl ControllerBuilderPtr {
 
 #[no_mangle]
 #[must_use]
-#[allow(clippy::box_default)]
 pub unsafe extern "C" fn AUTDControllerBuilder(
     pos: *const Vector3,
     rot: *const Quaternion,
     len: u16,
+    fallback_parallel_threshold: u16,
+    fallback_timeout: u64,
+    send_interval_ns: u64,
+    receive_interval_ns: u64,
+    timer_strategy: TimerStrategyWrap,
 ) -> ControllerBuilderPtr {
     let pos = vec_from_raw!(pos, Vector3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
-    ControllerBuilderPtr::new(Controller::builder(
-        pos.into_iter()
-            .zip(rot)
-            .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
-    ))
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithFallbackParallelThreshold(
-    builder: ControllerBuilderPtr,
-    parallel_threshold: u16,
-) -> ControllerBuilderPtr {
     ControllerBuilderPtr::new(
-        take!(builder, ControllerBuilder).with_fallback_parallel_threshold(parallel_threshold as _),
+        Controller::builder(
+            pos.into_iter()
+                .zip(rot)
+                .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
+        )
+        .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
+        .with_fallback_timeout(Duration::from_nanos(fallback_timeout))
+        .with_send_interval(Duration::from_nanos(send_interval_ns))
+        .with_receive_interval(Duration::from_nanos(receive_interval_ns))
+        .with_timer_strategy(timer_strategy.into()),
     )
 }
 
 #[no_mangle]
 #[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithSendInterval(
-    builder: ControllerBuilderPtr,
-    interval_ns: u64,
-) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(
-        take!(builder, ControllerBuilder)
-            .with_send_interval(std::time::Duration::from_nanos(interval_ns)),
-    )
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDControllerBuilderWithReceiveInterval(
-    builder: ControllerBuilderPtr,
-    interval_ns: u64,
-) -> ControllerBuilderPtr {
-    ControllerBuilderPtr::new(
-        take!(builder, ControllerBuilder)
-            .with_receive_interval(std::time::Duration::from_nanos(interval_ns)),
-    )
+pub unsafe extern "C" fn AUTDControllerBuilderIsDefault(
+    fallback_parallel_threshold: u16,
+    fallback_timeout: u64,
+    send_interval_ns: u64,
+    receive_interval_ns: u64,
+    timer_strategy: TimerStrategyWrap,
+) -> bool {
+    let default = Controller::<Nop>::builder::<Device, _>([]);
+    fallback_parallel_threshold as usize == default.fallback_parallel_threshold()
+        && fallback_timeout as u128 == default.fallback_timeout().as_nanos()
+        && send_interval_ns as u128 == default.send_interval().as_nanos()
+        && receive_interval_ns as u128 == default.receive_interval().as_nanos()
+        && &TimerStrategy::from(timer_strategy) == default.timer_strategy()
 }
 
 #[no_mangle]

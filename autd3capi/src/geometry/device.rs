@@ -8,7 +8,7 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDevice(geo: GeometryPtr, dev_idx: u16) -> DevicePtr {
-    DevicePtr(&geo[dev_idx as usize] as *const _ as _)
+    DevicePtr(&raw const geo[dev_idx as usize] as _)
 }
 
 #[no_mangle]

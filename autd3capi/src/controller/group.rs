@@ -1,6 +1,7 @@
 use autd3capi_driver::{
-    async_ffi::LocalFfiFuture, autd3::driver::geometry::Device, ConstPtr, DatagramPtr,
-    DynamicDatagram, GeometryPtr, ResultI32,
+    async_ffi::LocalFfiFuture,
+    autd3::{driver::geometry::Device, error::AUTDError},
+    ConstPtr, DatagramPtr, DynamicDatagram, GeometryPtr, ResultStatus,
 };
 
 use super::ControllerPtr;
@@ -15,11 +16,11 @@ pub unsafe extern "C" fn AUTDControllerGroup(
     keys: *const i32,
     d: *const DatagramPtr,
     n: u16,
-) -> LocalFfiFuture<ResultI32> {
+) -> LocalFfiFuture<ResultStatus> {
     let f =
         std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ConstPtr, GeometryPtr, u16) -> i32>(f);
     LocalFfiFuture::new(async move {
-        let r: ResultI32 = match (0..n).try_fold(
+        match (0..n).try_fold(
             cnt.group(Box::new(
                 move |dev: &Device| match f(context, geometry, dev.idx() as _) {
                     k if k >= 0 => Some(k),
@@ -32,9 +33,9 @@ pub unsafe extern "C" fn AUTDControllerGroup(
                 acc.set(k, *Box::<DynamicDatagram>::from(d))
             },
         ) {
-            Ok(g) => g.send().await.into(),
-            Err(e) => e.into(),
-        };
-        r
+            Ok(g) => g.send().await,
+            Err(e) => Err(AUTDError::Internal(e)),
+        }
+        .into()
     })
 }

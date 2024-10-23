@@ -5,6 +5,8 @@ mod ptr;
 mod range;
 mod result;
 
+use std::time::Duration;
+
 use option::*;
 use ptr::*;
 use range::*;
@@ -21,12 +23,26 @@ pub unsafe extern "C" fn AUTDEmulator(
     pos: *const Vector3,
     rot: *const Quaternion,
     len: u16,
+    fallback_parallel_threshold: u16,
+    fallback_timeout: u64,
+    send_interval_ns: u64,
+    receive_interval_ns: u64,
+    timer_strategy: TimerStrategyWrap,
 ) -> EmulatorPtr {
     let pos = vec_from_raw!(pos, Vector3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
-    EmulatorPtr::new(Emulator::new(pos.into_iter().zip(rot).map(|(p, r)| {
-        AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))
-    })))
+    EmulatorPtr::new(
+        Emulator::new(
+            pos.into_iter()
+                .zip(rot)
+                .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
+        )
+        .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
+        .with_fallback_timeout(Duration::from_nanos(fallback_timeout))
+        .with_send_interval(Duration::from_nanos(send_interval_ns))
+        .with_receive_interval(Duration::from_nanos(receive_interval_ns))
+        .with_timer_strategy(timer_strategy.into()),
+    )
 }
 
 #[no_mangle]
@@ -38,43 +54,6 @@ pub unsafe extern "C" fn AUTDEmulatorFree(emulator: EmulatorPtr) {
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> GeometryPtr {
     GeometryPtr(emulator.geometry() as *const _ as _)
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulatorWithFallbackParallelThreshold(
-    emulator: EmulatorPtr,
-    parallel_threshold: u16,
-) -> EmulatorPtr {
-    EmulatorPtr::new(
-        take!(emulator, Emulator).with_fallback_parallel_threshold(parallel_threshold as _),
-    )
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulatorWithSendInterval(
-    emulator: EmulatorPtr,
-    interval_ns: u64,
-) -> EmulatorPtr {
-    EmulatorPtr::new(
-        take!(emulator, Emulator).with_send_interval(std::time::Duration::from_nanos(interval_ns)),
-    )
-}
-
-#[no_mangle]
-#[must_use]
-#[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulatorWithReceiveInterval(
-    emulator: EmulatorPtr,
-    interval_ns: u64,
-) -> EmulatorPtr {
-    EmulatorPtr::new(
-        take!(emulator, Emulator)
-            .with_receive_interval(std::time::Duration::from_nanos(interval_ns)),
-    )
 }
 
 #[no_mangle]
@@ -124,10 +103,7 @@ pub unsafe extern "C" fn AUTDEmulatorWaitResultRecord(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDEmulatorTickNs(
-    mut record: LinkPtr,
-    tick_ns: u64,
-) -> ResultEmualtorErr {
+pub unsafe extern "C" fn AUTDEmulatorTickNs(mut record: LinkPtr, tick_ns: u64) -> ResultStatus {
     record
         .cast_mut::<Recorder>()
         .tick(std::time::Duration::from_nanos(tick_ns))
@@ -297,7 +273,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldGetZ(sound_field: SoundFieldPtr, 
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldSkip(
     mut sound_field: SoundFieldPtr,
     duration_ns: u64,
-) -> LocalFfiFuture<ResultEmualtorErr> {
+) -> LocalFfiFuture<ResultStatus> {
     async move {
         sound_field
             .next_inplace(
@@ -319,7 +295,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldNext(
     duration_ns: u64,
     time: *mut u64,
     v: *const *mut f32,
-) -> LocalFfiFuture<ResultEmualtorErr> {
+) -> LocalFfiFuture<ResultStatus> {
     let n = sound_field.next_time_len(std::time::Duration::from_nanos(duration_ns));
     let time = std::slice::from_raw_parts_mut(time, n as _);
     let iter = (0..n).map(move |i| v.add(i as _).read());
@@ -338,15 +314,6 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldNext(
 }
 
 #[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDEmulatorWaitResultEmualtorErr(
-    handle: HandlePtr,
-    future: LocalFfiFuture<ResultEmualtorErr>,
-) -> ResultEmualtorErr {
-    handle.block_on(future)
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldFree(sound_field: SoundFieldPtr) {
     let _ = take!(sound_field, SoundField<'static>);
 }
@@ -355,6 +322,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldFree(sound_field: SoundFieldPtr) 
 mod tests {
     use super::*;
     use autd3capi::*;
+    use controller::timer::AUTDTimerStrategySpinDefault;
     use link::AUTDLinkGet;
     use tokio::runtime::Handle;
 
@@ -363,7 +331,7 @@ mod tests {
         unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
-            let handle = HandlePtr(&handle as *const _ as _);
+            let handle = HandlePtr(&raw const handle as _);
 
             let link_ptr = AUTDLinkGet(cnt);
 
@@ -371,11 +339,11 @@ mod tests {
             let d = gain::AUTDGainIntoDatagram(g);
 
             let future = controller::AUTDControllerSend(cnt, d);
-            let result = AUTDWaitResultI32(handle, future);
-            assert_eq!(AUTD3_TRUE, result.result);
+            let result = AUTDWaitResultStatus(handle, future);
+            assert_eq!(AUTDStatus::TRUE, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTD3_TRUE, result.result);
+            assert_eq!(AUTDStatus::TRUE, result.result);
         }
 
         unsafe {
@@ -385,7 +353,16 @@ mod tests {
             let emulator = {
                 let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
                 let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(pos.as_ptr(), rot.as_ptr(), 1)
+                AUTDEmulator(
+                    pos.as_ptr(),
+                    rot.as_ptr(),
+                    1,
+                    4,
+                    20_000_000,
+                    1_000_000,
+                    1_000_000,
+                    AUTDTimerStrategySpinDefault(),
+                )
             };
 
             let record = AUTDEmulatorRecordFrom(
@@ -425,7 +402,7 @@ mod tests {
         unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
-            let handle = HandlePtr(&handle as *const _ as _);
+            let handle = HandlePtr(&raw const handle as _);
 
             let link_ptr = AUTDLinkGet(cnt);
 
@@ -433,11 +410,11 @@ mod tests {
             let d = gain::AUTDGainIntoDatagram(g);
 
             let future = controller::AUTDControllerSend(cnt, d);
-            let result = AUTDWaitResultI32(handle, future);
-            assert_eq!(AUTD3_TRUE, result.result);
+            let result = AUTDWaitResultStatus(handle, future);
+            assert_eq!(AUTDStatus::TRUE, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTD3_TRUE, result.result);
+            assert_eq!(AUTDStatus::TRUE, result.result);
         }
 
         unsafe {
@@ -447,7 +424,16 @@ mod tests {
             let emulator = {
                 let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
                 let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(pos.as_ptr(), rot.as_ptr(), 1)
+                AUTDEmulator(
+                    pos.as_ptr(),
+                    rot.as_ptr(),
+                    1,
+                    4,
+                    20_000_000,
+                    1_000_000,
+                    1_000_000,
+                    AUTDTimerStrategySpinDefault(),
+                )
             };
 
             let record = AUTDEmulatorRecordFrom(
@@ -509,7 +495,7 @@ mod tests {
         unsafe extern "C" fn f(cnt: ControllerPtr) {
             let handle = Handle::current();
 
-            let handle = HandlePtr(&handle as *const _ as _);
+            let handle = HandlePtr(&raw const handle as _);
 
             let link_ptr = AUTDLinkGet(cnt);
 
@@ -517,11 +503,11 @@ mod tests {
             let d = gain::AUTDGainIntoDatagram(g);
 
             let future = controller::AUTDControllerSend(cnt, d);
-            let result = AUTDWaitResultI32(handle, future);
-            assert_eq!(AUTD3_TRUE, result.result);
+            let result = AUTDWaitResultStatus(handle, future);
+            assert_eq!(AUTDStatus::TRUE, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTD3_TRUE, result.result);
+            assert_eq!(AUTDStatus::TRUE, result.result);
         }
 
         unsafe {
@@ -531,7 +517,16 @@ mod tests {
             let emulator = {
                 let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
                 let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(pos.as_ptr(), rot.as_ptr(), 1)
+                AUTDEmulator(
+                    pos.as_ptr(),
+                    rot.as_ptr(),
+                    1,
+                    4,
+                    20_000_000,
+                    1_000_000,
+                    1_000_000,
+                    AUTDTimerStrategySpinDefault(),
+                )
             };
 
             let record = AUTDEmulatorRecordFrom(
@@ -567,8 +562,8 @@ mod tests {
             {
                 let duration_ns = 9 * ULTRASOUND_PERIOD.as_nanos() as u64;
                 let res = AUTDEmulatorSoundFieldSkip(sound_field, duration_ns);
-                let res = AUTDEmulatorWaitResultEmualtorErr(handle, res);
-                assert_eq!(AUTD3_TRUE, res.result);
+                let res = AUTDWaitLocalResultStatus(handle, res);
+                assert_eq!(AUTDStatus::TRUE, res.result);
             }
 
             {
@@ -585,8 +580,8 @@ mod tests {
                     time.as_mut_ptr(),
                     vp.as_ptr(),
                 );
-                let res = AUTDEmulatorWaitResultEmualtorErr(handle, res);
-                assert_eq!(AUTD3_TRUE, res.result);
+                let res = AUTDWaitLocalResultStatus(handle, res);
+                assert_eq!(AUTDStatus::TRUE, res.result);
 
                 assert_eq!(
                     vec![
