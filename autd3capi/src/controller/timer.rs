@@ -14,12 +14,8 @@ pub unsafe extern "C" fn AUTDTimerStrategyStd(timer_resolution: u32) -> TimerStr
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDTimerStrategySpinDefault() -> TimerStrategyWrap {
-    TimerStrategyWrap {
-        tag: TimerStrategyTag::Spin,
-        value: SpinSleeper::default().native_accuracy_ns(),
-        spin_strategy: SpinSleeper::default().spin_strategy().into(),
-    }
+pub unsafe extern "C" fn AUTDTimerStrategySpinDefaultAccuracy() -> u32 {
+    SpinSleeper::default().native_accuracy_ns()
 }
 
 #[no_mangle]
