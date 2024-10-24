@@ -58,7 +58,7 @@ pub unsafe extern "C" fn AUTDLinkSOEM(
     let ifname = if ifname.is_null() {
         ""
     } else {
-        validate_cstr!(ifname, LinkBuilderPtr, ResultLinkBuilder)
+        validate_cstr!(ifname, LinkBuilderPtr, ResultSyncLinkBuilder)
     };
     let builder = SOEM::builder()
         .with_ifname(ifname)
