@@ -54,7 +54,7 @@ pub unsafe extern "C" fn AUTDLinkSOEM(
     timer_strategy: TimerStrategy,
     tolerance_ns: u64,
     sync_timeout_ns: u64,
-) -> ResultLinkBuilder {
+) -> ResultSyncLinkBuilder {
     let ifname = if ifname.is_null() {
         ""
     } else {
