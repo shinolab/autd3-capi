@@ -49,7 +49,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
-    sine_freq: *const u32,
+    sine_freq: *const f32,
     sine_config: *const SamplingConfig,
     sine_intensity: *const u8,
     sine_offset: *const u8,
@@ -86,7 +86,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationFourierNearest(
-    sine_freq: *const u32,
+    sine_freq: *const f32,
     sine_config: *const SamplingConfig,
     sine_intensity: *const u8,
     sine_offset: *const u8,
@@ -99,7 +99,7 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
     loop_behavior: LoopBehavior,
 ) -> ResultModulation {
     Fourier::new((0..size as usize).map(|i| {
-        Sine::new(sine_freq.add(i).read() * Hz)
+        Sine::new_nearest(sine_freq.add(i).read() * Hz)
             .with_intensity(sine_intensity.add(i).read())
             .with_offset(sine_offset.add(i).read())
             .with_phase(sine_phase.add(i).read() * rad)
