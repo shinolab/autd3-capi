@@ -4,10 +4,10 @@ use autd3capi_driver::{
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDTimerStrategyStd() -> TimerStrategyWrap {
+pub unsafe extern "C" fn AUTDTimerStrategyStd(timer_resolution: u32) -> TimerStrategyWrap {
     TimerStrategyWrap {
         tag: TimerStrategyTag::Std,
-        value: 0,
+        value: timer_resolution,
         spin_strategy: SpinStrategyTag::SpinLoopHint,
     }
 }
