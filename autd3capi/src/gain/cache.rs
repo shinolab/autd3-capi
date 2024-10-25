@@ -35,7 +35,6 @@ mod tests {
         autd3::derive::Drive, driver::geometry::Quaternion, AUTDStatus, ConstPtr, GeometryPtr,
         Vector3,
     };
-    use controller::timer::AUTDTimerStrategySpinDefault;
 
     use super::*;
 
@@ -73,7 +72,10 @@ mod tests {
                 20_000_000,
                 1_000_000,
                 1_000_000,
-                AUTDTimerStrategySpinDefault(),
+                controller::timer::AUTDTimerStrategySpin(
+                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
+                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
+                ),
             );
 
             let link_builder = link::nop::AUTDLinkNop();
