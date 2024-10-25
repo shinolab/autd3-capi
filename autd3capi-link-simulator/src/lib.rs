@@ -37,7 +37,7 @@ pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultSyncLin
     let addr = if addr.is_null() {
         ""
     } else {
-        validate_cstr!(addr, LinkBuilderPtr, ResultSyncLinkBuilder)
+        validate_cstr!(addr, SyncLinkBuilderPtr, ResultSyncLinkBuilder)
     };
     addr.parse::<SocketAddr>().map(Simulator::builder).into()
 }

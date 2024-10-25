@@ -10,7 +10,7 @@ pub unsafe extern "C" fn AUTDLinkRemoteSOEM(addr: *const c_char) -> ResultSyncLi
     let addr = if addr.is_null() {
         ""
     } else {
-        validate_cstr!(addr, LinkBuilderPtr, ResultSyncLinkBuilder)
+        validate_cstr!(addr, SyncLinkBuilderPtr, ResultSyncLinkBuilder)
     };
     addr.parse::<SocketAddr>().map(RemoteSOEM::builder).into()
 }
