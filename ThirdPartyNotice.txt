@@ -868,15 +868,15 @@ percent-encoding 2.3.1 (Apache-2.0 OR MIT)
 https://github.com/servo/rust-url/
 ---------------------------------------------------------
 
-pin-project 1.1.6 (Apache-2.0 OR MIT)
+pin-project 1.1.7 (Apache-2.0 OR MIT)
 https://github.com/taiki-e/pin-project
 ---------------------------------------------------------
 
-pin-project-internal 1.1.6 (Apache-2.0 OR MIT)
+pin-project-internal 1.1.7 (Apache-2.0 OR MIT)
 https://github.com/taiki-e/pin-project
 ---------------------------------------------------------
 
-pin-project-lite 0.2.14 (Apache-2.0 OR MIT)
+pin-project-lite 0.2.15 (Apache-2.0 OR MIT)
 https://github.com/taiki-e/pin-project-lite
 ---------------------------------------------------------
 
@@ -1048,7 +1048,7 @@ redox_syscall 0.5.7 (MIT)
 https://gitlab.redox-os.org/redox-os/syscall
 ---------------------------------------------------------
 
-regex 1.11.0 (Apache-2.0 OR MIT)
+regex 1.11.1 (Apache-2.0 OR MIT)
 https://github.com/rust-lang/regex
 ---------------------------------------------------------
 
