@@ -112,7 +112,6 @@ pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultS
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, Vector3};
-    use controller::timer::AUTDTimerStrategySpinDefault;
 
     use super::*;
 
@@ -133,7 +132,10 @@ mod tests {
                 20_000_000,
                 1_000_000,
                 1_000_000,
-                AUTDTimerStrategySpinDefault(),
+                controller::timer::AUTDTimerStrategySpin(
+                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
+                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
+                ),
             );
             let link_builder = link::nop::AUTDLinkNop();
             let cnt = controller::builder::AUTDControllerOpen(builder, link_builder, -1);

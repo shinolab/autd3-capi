@@ -322,7 +322,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldFree(sound_field: SoundFieldPtr) 
 mod tests {
     use super::*;
     use autd3capi::*;
-    use controller::timer::AUTDTimerStrategySpinDefault;
+    use controller::timer::{AUTDTimerStrategySpin, AUTDTimerStrategySpinDefaultAccuracy};
     use link::AUTDLinkGet;
     use tokio::runtime::Handle;
 
@@ -361,7 +361,10 @@ mod tests {
                     20_000_000,
                     1_000_000,
                     1_000_000,
-                    AUTDTimerStrategySpinDefault(),
+                    AUTDTimerStrategySpin(
+                        AUTDTimerStrategySpinDefaultAccuracy(),
+                        SpinStrategyTag::SpinLoopHint,
+                    ),
                 )
             };
 
@@ -432,7 +435,10 @@ mod tests {
                     20_000_000,
                     1_000_000,
                     1_000_000,
-                    AUTDTimerStrategySpinDefault(),
+                    AUTDTimerStrategySpin(
+                        AUTDTimerStrategySpinDefaultAccuracy(),
+                        SpinStrategyTag::SpinLoopHint,
+                    ),
                 )
             };
 
@@ -525,7 +531,10 @@ mod tests {
                     20_000_000,
                     1_000_000,
                     1_000_000,
-                    AUTDTimerStrategySpinDefault(),
+                    AUTDTimerStrategySpin(
+                        AUTDTimerStrategySpinDefaultAccuracy(),
+                        SpinStrategyTag::SpinLoopHint,
+                    ),
                 )
             };
 
