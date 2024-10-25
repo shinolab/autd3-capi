@@ -8,7 +8,7 @@ use autd3_driver::{
 
 use crate::{impl_ffi_result, impl_ptr, ConstPtr};
 
-use super::{DynamicLinkBuilder, LinkBuilderPtr};
+use super::DynamicLinkBuilder;
 
 #[repr(C)]
 pub struct SyncLinkBuilderPtr(pub *const libc::c_void);
@@ -84,9 +84,9 @@ where
 
 #[repr(C)]
 pub struct ResultSyncLinkBuilder {
-    pub result: LinkBuilderPtr,
+    pub result: SyncLinkBuilderPtr,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultSyncLinkBuilder, LinkBuilderPtr);
+impl_ffi_result!(ResultSyncLinkBuilder, SyncLinkBuilderPtr);
