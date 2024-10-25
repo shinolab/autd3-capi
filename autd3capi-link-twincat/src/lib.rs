@@ -7,14 +7,14 @@ use autd3capi_driver::*;
 use autd3_link_twincat::{local::*, remote::remote_twincat_link::*};
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDAUTDLinkTwinCATTracingInit() {
+pub unsafe extern "C" fn AUTDLinkTwinCATTracingInit() {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDAUTDLinkTwinCATTracingInitWithFile(
+pub unsafe extern "C" fn AUTDLinkTwinCATTracingInitWithFile(
     path: *const c_char,
 ) -> ResultStatus {
     let path = validate_cstr!(path, AUTDStatus, ResultStatus);
