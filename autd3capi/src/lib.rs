@@ -104,7 +104,7 @@ pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultS
                 .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
                 .with_ansi(false)
                 .init();
-            AUTDStatus::TRUE
+            AUTDStatus::AUTDTrue
         })
         .into()
 }
@@ -154,11 +154,11 @@ mod tests {
             let d = datagram::AUTDDatagramTuple(d1, d2);
             let future = controller::AUTDControllerSend(cnt, d);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             let future = controller::AUTDControllerClose(cnt);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             AUTDDeleteRuntime(runtime);
         }

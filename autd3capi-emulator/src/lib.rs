@@ -5,44 +5,21 @@ mod ptr;
 mod range;
 mod result;
 
-use std::time::Duration;
-
 use option::*;
 use ptr::*;
 use range::*;
 use result::*;
 
-use autd3_emulator::{Emulator, Record, Recorder, SoundField};
+use autd3::controller::ControllerBuilder;
+use autd3_emulator::{ControllerBuilderIntoEmulatorExt, Emulator, Record, Recorder, SoundField};
 use autd3capi_driver::{async_ffi::*, autd3::prelude::*, *};
 use driver::{ethercat::ECAT_DC_SYS_TIME_BASE, link::Link};
 
 #[no_mangle]
 #[must_use]
 #[allow(clippy::box_default)]
-pub unsafe extern "C" fn AUTDEmulator(
-    pos: *const Vector3,
-    rot: *const Quaternion,
-    len: u16,
-    fallback_parallel_threshold: u16,
-    fallback_timeout: u64,
-    send_interval_ns: u64,
-    receive_interval_ns: u64,
-    timer_strategy: TimerStrategyWrap,
-) -> EmulatorPtr {
-    let pos = vec_from_raw!(pos, Vector3, len);
-    let rot = vec_from_raw!(rot, Quaternion, len);
-    EmulatorPtr::new(
-        Emulator::new(
-            pos.into_iter()
-                .zip(rot)
-                .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
-        )
-        .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
-        .with_fallback_timeout(Duration::from_nanos(fallback_timeout))
-        .with_send_interval(Duration::from_nanos(send_interval_ns))
-        .with_receive_interval(Duration::from_nanos(receive_interval_ns))
-        .with_timer_strategy(timer_strategy.into()),
-    )
+pub unsafe extern "C" fn AUTDEmulator(builder: ControllerBuilderPtr) -> EmulatorPtr {
+    take!(builder, ControllerBuilder).into_emulator().into()
 }
 
 #[no_mangle]
@@ -322,7 +299,6 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldFree(sound_field: SoundFieldPtr) 
 mod tests {
     use super::*;
     use autd3capi::*;
-    use controller::timer::{AUTDTimerStrategySpin, AUTDTimerStrategySpinDefaultAccuracy};
     use link::AUTDLinkGet;
     use tokio::runtime::Handle;
 
@@ -340,33 +316,32 @@ mod tests {
 
             let future = controller::AUTDControllerSend(cnt, d);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
         unsafe {
             let runtime = AUTDCreateRuntime();
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let emulator = {
-                let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
-                let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(
-                    pos.as_ptr(),
-                    rot.as_ptr(),
-                    1,
-                    4,
-                    20_000_000,
-                    1_000_000,
-                    1_000_000,
-                    AUTDTimerStrategySpin(
-                        AUTDTimerStrategySpinDefaultAccuracy(),
-                        SpinStrategyTag::SpinLoopHint,
-                    ),
-                )
-            };
+            let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
+            let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
+            let builder = controller::builder::AUTDControllerBuilder(
+                pos.as_ptr(),
+                rot.as_ptr(),
+                1,
+                4,
+                20_000_000,
+                1_000_000,
+                1_000_000,
+                controller::timer::AUTDTimerStrategySpin(
+                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
+                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
+                ),
+            );
+            let emulator = AUTDEmulator(builder);
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
@@ -414,33 +389,32 @@ mod tests {
 
             let future = controller::AUTDControllerSend(cnt, d);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
         unsafe {
             let runtime = AUTDCreateRuntime();
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let emulator = {
-                let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
-                let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(
-                    pos.as_ptr(),
-                    rot.as_ptr(),
-                    1,
-                    4,
-                    20_000_000,
-                    1_000_000,
-                    1_000_000,
-                    AUTDTimerStrategySpin(
-                        AUTDTimerStrategySpinDefaultAccuracy(),
-                        SpinStrategyTag::SpinLoopHint,
-                    ),
-                )
-            };
+            let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
+            let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
+            let builder = controller::builder::AUTDControllerBuilder(
+                pos.as_ptr(),
+                rot.as_ptr(),
+                1,
+                4,
+                20_000_000,
+                1_000_000,
+                1_000_000,
+                controller::timer::AUTDTimerStrategySpin(
+                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
+                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
+                ),
+            );
+            let emulator = AUTDEmulator(builder);
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
@@ -510,34 +484,32 @@ mod tests {
 
             let future = controller::AUTDControllerSend(cnt, d);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
         unsafe {
             let runtime = AUTDCreateRuntime();
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let emulator = {
-                let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
-                let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
-                AUTDEmulator(
-                    pos.as_ptr(),
-                    rot.as_ptr(),
-                    1,
-                    4,
-                    20_000_000,
-                    1_000_000,
-                    1_000_000,
-                    AUTDTimerStrategySpin(
-                        AUTDTimerStrategySpinDefaultAccuracy(),
-                        SpinStrategyTag::SpinLoopHint,
-                    ),
-                )
-            };
-
+            let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
+            let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
+            let builder = controller::builder::AUTDControllerBuilder(
+                pos.as_ptr(),
+                rot.as_ptr(),
+                1,
+                4,
+                20_000_000,
+                1_000_000,
+                1_000_000,
+                controller::timer::AUTDTimerStrategySpin(
+                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
+                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
+                ),
+            );
+            let emulator = AUTDEmulator(builder);
             let record = AUTDEmulatorRecordFrom(
                 emulator,
                 0,
@@ -572,7 +544,7 @@ mod tests {
                 let duration_ns = 9 * ULTRASOUND_PERIOD.as_nanos() as u64;
                 let res = AUTDEmulatorSoundFieldSkip(sound_field, duration_ns);
                 let res = AUTDWaitLocalResultStatus(handle, res);
-                assert_eq!(AUTDStatus::TRUE, res.result);
+                assert_eq!(AUTDStatus::AUTDTrue, res.result);
             }
 
             {
@@ -590,7 +562,7 @@ mod tests {
                     vp.as_ptr(),
                 );
                 let res = AUTDWaitLocalResultStatus(handle, res);
-                assert_eq!(AUTDStatus::TRUE, res.result);
+                assert_eq!(AUTDStatus::AUTDTrue, res.result);
 
                 assert_eq!(
                     vec![

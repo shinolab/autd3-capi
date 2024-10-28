@@ -25,7 +25,6 @@ pub unsafe extern "C" fn AUTDModulationAudioFileTracingInitWithFile(
     std::fs::File::options()
         .append(true)
         .create(true)
-  
         .open(path)
         .map(|f| {
             tracing_subscriber::fmt()
@@ -33,7 +32,7 @@ pub unsafe extern "C" fn AUTDModulationAudioFileTracingInitWithFile(
                 .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
                 .with_ansi(false)
                 .init();
-            AUTDStatus::TRUE
+            AUTDStatus::AUTDTrue
         })
         .into()
 }

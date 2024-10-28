@@ -12,19 +12,11 @@ use autd3capi_driver::{
         autd3_device::AUTD3,
         geometry::{Quaternion, UnitQuaternion, Vector3},
     },
-    take, vec_from_raw, DynamicLinkBuilder, LinkBuilderPtr, TimerStrategyWrap,
+    take, vec_from_raw, ControllerBuilderPtr, DynamicLinkBuilder, LinkBuilderPtr,
+    TimerStrategyWrap,
 };
 
 use super::ResultController;
-
-#[repr(C)]
-pub struct ControllerBuilderPtr(pub *const libc::c_void);
-
-impl ControllerBuilderPtr {
-    pub fn new(builder: ControllerBuilder) -> Self {
-        Self(Box::into_raw(Box::new(builder)) as _)
-    }
-}
 
 #[no_mangle]
 #[must_use]
@@ -40,18 +32,17 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
 ) -> ControllerBuilderPtr {
     let pos = vec_from_raw!(pos, Vector3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
-    ControllerBuilderPtr::new(
-        Controller::builder(
-            pos.into_iter()
-                .zip(rot)
-                .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
-        )
-        .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
-        .with_fallback_timeout(Duration::from_nanos(fallback_timeout))
-        .with_send_interval(Duration::from_nanos(send_interval_ns))
-        .with_receive_interval(Duration::from_nanos(receive_interval_ns))
-        .with_timer_strategy(timer_strategy.into()),
+    Controller::builder(
+        pos.into_iter()
+            .zip(rot)
+            .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
     )
+    .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
+    .with_fallback_timeout(Duration::from_nanos(fallback_timeout))
+    .with_send_interval(Duration::from_nanos(send_interval_ns))
+    .with_receive_interval(Duration::from_nanos(receive_interval_ns))
+    .with_timer_strategy(timer_strategy.into())
+    .into()
 }
 
 #[no_mangle]
