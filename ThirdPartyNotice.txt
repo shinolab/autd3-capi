@@ -684,7 +684,7 @@ libloading 0.8.5 (ISC)
 https://github.com/nagisa/rust_libloading/
 ---------------------------------------------------------
 
-libm 0.2.9 (Apache-2.0) OR MIT AND (MIT)
+libm 0.2.10 (Apache-2.0) OR MIT AND (MIT)
 https://github.com/rust-lang/libm
 ---------------------------------------------------------
 
