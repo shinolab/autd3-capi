@@ -26,7 +26,7 @@ pub unsafe extern "C" fn AUTDLinkSimulatorTracingInitWithFile(path: *const c_cha
                 .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
                 .with_ansi(false)
                 .init();
-            AUTDStatus::TRUE
+            AUTDStatus::AUTDTrue
         })
         .into()
 }

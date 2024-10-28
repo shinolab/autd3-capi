@@ -11,12 +11,6 @@ impl_ptr!(EmulatorControllerPtr, Controller<Recorder>);
 #[repr(C)]
 pub struct EmulatorPtr(pub *const libc::c_void);
 
-impl EmulatorPtr {
-    pub fn new(emulator: Emulator) -> Self {
-        Self(Box::into_raw(Box::new(emulator)) as _)
-    }
-}
-
 impl_ptr!(EmulatorPtr, Emulator);
 
 #[derive(Clone, Copy)]

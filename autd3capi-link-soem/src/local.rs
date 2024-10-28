@@ -33,7 +33,7 @@ pub unsafe extern "C" fn AUTDLinkSOEMTracingInitWithFile(path: *const c_char) ->
                 .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
                 .with_ansi(false)
                 .init();
-            AUTDStatus::TRUE
+            AUTDStatus::AUTDTrue
         })
         .into()
 }

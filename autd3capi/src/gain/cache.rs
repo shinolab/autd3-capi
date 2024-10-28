@@ -109,7 +109,7 @@ mod tests {
                 let d = gain::AUTDGainIntoDatagram(gg);
                 let future = controller::AUTDControllerSend(cnt, d);
                 let result = AUTDWaitResultStatus(handle, future);
-                assert_eq!(AUTDStatus::TRUE, result.result);
+                assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
             assert_eq!(1, count(gc));
@@ -120,7 +120,7 @@ mod tests {
                 let d = gain::AUTDGainIntoDatagram(gg);
                 let future = controller::AUTDControllerSend(cnt, d);
                 let result = AUTDWaitResultStatus(handle, future);
-                assert_eq!(AUTDStatus::TRUE, result.result);
+                assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
             assert_eq!(1, count(gc));
@@ -128,7 +128,7 @@ mod tests {
 
             let future = controller::AUTDControllerClose(cnt);
             let result = AUTDWaitResultStatus(handle, future);
-            assert_eq!(AUTDStatus::TRUE, result.result);
+            assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
             AUTDDeleteRuntime(runtime);
         }

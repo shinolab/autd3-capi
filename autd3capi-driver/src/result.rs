@@ -51,13 +51,13 @@ macro_rules! validate_cstr {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[repr(u8)]
 pub enum AUTDStatus {
-    TRUE = 0,
-    FALSE = 1,
-    ERR = 2,
+    AUTDTrue = 0,
+    AUTDFalse = 1,
+    AUTDErr = 2,
 }
 
 impl AUTDStatus {
-    pub const NULL: Self = Self::ERR;
+    pub const NULL: Self = Self::AUTDErr;
 }
 
 #[repr(C)]
@@ -69,13 +69,13 @@ pub struct ResultStatus {
 
 impl From<()> for AUTDStatus {
     fn from(_: ()) -> Self {
-        Self::TRUE
+        Self::AUTDTrue
     }
 }
 
 impl From<AUTDInternalError> for AUTDStatus {
     fn from(_: AUTDInternalError) -> Self {
-        Self::ERR
+        Self::AUTDErr
     }
 }
 
