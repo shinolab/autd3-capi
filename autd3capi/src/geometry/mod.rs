@@ -17,3 +17,15 @@ pub unsafe extern "C" fn AUTDGeometry(cnt: ControllerPtr) -> GeometryPtr {
 pub unsafe extern "C" fn AUTDGeometryNumDevices(geo: GeometryPtr) -> u32 {
     geo.num_devices() as _
 }
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGeometryNumTransducers(geo: GeometryPtr) -> u32 {
+    geo.num_transducers() as _
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDGeometrCenter(geo: GeometryPtr) -> Vector3 {
+    geo.center()
+}
