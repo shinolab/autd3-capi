@@ -201,6 +201,7 @@ def util_update_ver(args) -> None:
 
 
 def util_check_license(_) -> None:
+    run_command(["cargo", "update"])
     with working_dir("tools/license-checker"):
         run_command(["cargo", "r"])
 
