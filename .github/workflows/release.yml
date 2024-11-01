@@ -39,7 +39,7 @@ jobs:
         name: release_id
         path: release_id.txt
 
-  publish:
+  publish-release:
     needs: [create-release]
     name: upload-release-asset-${{ matrix.os }}-${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
@@ -137,3 +137,12 @@ jobs:
           asset_name: ${{ steps.get_version.outputs.result }}-unity.${{ matrix.os == 'windows-latest' && 'zip' || 'tar.gz' }}
           asset_content_type: ${{ matrix.os == 'windows-latest' && 'application/zip' || 'application/octet-stream' }}
         if: ${{ matrix.unity }} 
+
+
+  publish-crateio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cd autd3capi-driver
+          cargo publish --no-verify --token ${{ secrets.CRATEIO_TOKEN }}

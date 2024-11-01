@@ -1,85 +1,33 @@
 #!/usr/bin/env python3
 
 import argparse
-import contextlib
-import glob
-import os
-import platform
 import re
 import shutil
-import subprocess
 import sys
-from typing import Optional
+from pathlib import Path
+
+from tools.autd3_build_utils.autd3_build_utils import (
+    BaseConfig,
+    err,
+    rm_glob_f,
+    run_command,
+    working_dir,
+)
 
 
-def err(msg: str):
-    print("\033[91mERR \033[0m: " + msg)
-
-
-def warn(msg: str):
-    print("\033[93mWARN\033[0m: " + msg)
-
-
-def info(msg: str):
-    print("\033[92mINFO\033[0m: " + msg)
-
-
-def rm_f(path):
-    try:
-        os.remove(path)
-    except FileNotFoundError:
-        pass
-
-
-def glob_norm(path, recursive):
-    return list(
-        map(lambda p: os.path.normpath(p), glob.glob(path, recursive=recursive))
-    )
-
-
-def rm_glob_f(path, exclude=None, recursive=True):
-    if exclude is not None:
-        for f in list(
-            set(glob_norm(path, recursive=recursive))
-            - set(glob_norm(exclude, recursive=recursive))
-        ):
-            rm_f(f)
-    else:
-        for f in glob.glob(path, recursive=recursive):
-            rm_f(f)
-
-
-@contextlib.contextmanager
-def working_dir(path):
-    cwd = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(cwd)
-
-
-def env_exists(value):
-    return value in os.environ and os.environ[value] != ""
-
-
-class Config:
-    _platform: str
+class Config(BaseConfig):
     _all: bool
     release: bool
-    target: Optional[str]
+    target: str | None
     no_examples: bool
 
-    def __init__(self, args):
-        self._platform = platform.system()
-
-        if not self.is_windows() and not self.is_macos() and not self.is_linux():
-            err(f'platform "{platform.system()}" is not supported.')
-            sys.exit(-1)
+    def __init__(self, args) -> None:
+        super().__init__()
 
         self._all = hasattr(args, "all") and args.all
         self.release = hasattr(args, "release") and args.release
         self.no_examples = hasattr(args, "no_examples") and args.no_examples
+        self.features = args.features if hasattr(args, "features") and args.features else ""
 
         if hasattr(args, "arch") and args.arch is not None:
             if self.is_linux():
@@ -107,243 +55,161 @@ class Config:
         else:
             self.target = None
 
-    def cargo_command_base(self, subcommand):
+    def cargo_command(self, subcommands: list[str]) -> list[str]:
         command = []
-        if self.is_linux() and self.target:
-            command.append("cross")
-            command.append(subcommand)
-        else:
+        if self.target is None:
             command.append("cargo")
-            command.append(subcommand)
-        if self.target:
+            command.extend(subcommands)
+        else:
+            if self.is_linux():
+                command.append("cross")
+                command.extend(subcommands)
+            else:
+                command.append("cargo")
+                command.extend(subcommands)
             command.append("--target")
             command.append(self.target)
+        command.append("--all")
         if self.release:
             command.append("--release")
-        return command
-
-    def cargo_build_capi_command(self, extra_features=None):
-        command = self.cargo_command_base("build")
-        command.append("--all")
         command.append("--features")
-        features = ""
-        if extra_features is not None:
-            features += extra_features
-        command.append(features)
-        if extra_features is not None:
-            if "static" in extra_features or "unity" in extra_features:
-                command.append("--exclude")
-                command.append("autd3capi-emulator")
+        command.append(self.features)
+        if "static" in self.features or "unity" in self.features:
+            command.append("--exclude")
+            command.append("autd3capi-emulator")
         return command
 
-    def cargo_clippy_capi_command(self, extra_features=None):
-        command = self.cargo_build_capi_command(extra_features)
-        command[1] = "clippy"
-        command.append("--")
-        command.append("-D")
-        command.append("warnings")
-        return command
 
-    def is_windows(self):
-        return self._platform == "Windows"
-
-    def is_macos(self):
-        return self._platform == "Darwin"
-
-    def is_linux(self):
-        return self._platform == "Linux"
-
-    def setup_linker(self):
-        if not self.is_linux() or self.target is None:
-            return
-
-        os.makedirs(".cargo", exist_ok=True)
-        with open(".cargo/config", "w") as f:
-            if self.target == "armv7-unknown-linux-gnueabihf":
-                f.write("[target.armv7-unknown-linux-gnueabihf]\n")
-                f.write('linker = "arm-linux-gnueabihf-gcc"\n')
-            if self.target == "aarch64-unknown-linux-gnu":
-                f.write("[target.aarch64-unknown-linux-gnu]\n")
-                f.write('linker = "aarch64-linux-gnu-gcc"\n')
-
-
-def copy_dll(config: Config, dst: str):
+def copy_dll(config: Config, dst: str) -> None:
+    path = Path.cwd()
+    target: str
+    if config.target is None:
+        target = "target/release" if config.release else "target/debug"
+    else:
+        target = f"target/{config.target}/release" if config.release else f"target/{config.target}/debug"
     if config.is_windows():
-        target = ""
-        if config.target is None:
-            target = "target/release" if config.release else "target/debug"
-        else:
-            target = (
-                f"target/{config.target}/release"
-                if config.release
-                else f"target/{config.target}/debug"
-            )
-        for dll in glob.glob(f"{target}/*.dll"):
+        for dll in path.glob(f"{target}/*.dll"):
             shutil.copy(dll, dst)
-        for lib in glob.glob(f"{target}/*.dll.lib"):
+        for lib in path.glob(f"{target}/*.dll.lib"):
             shutil.copy(lib, dst)
     elif config.is_macos():
-        target = "target/release" if config.release else "target/debug"
-        for lib in glob.glob(f"{target}/*.dylib"):
+        for lib in path.glob(f"{target}/*.dylib"):
             shutil.copy(lib, dst)
     elif config.is_linux():
-        target = ""
-        if config.target is None:
-            target = "target/release" if config.release else "target/debug"
-        else:
-            target = (
-                f"target/{config.target}/release"
-                if config.release
-                else f"target/{config.target}/debug"
-            )
-        for lib in glob.glob(f"{target}/*.so"):
+        for lib in path.glob(f"{target}/*.so"):
             shutil.copy(lib, dst)
 
 
-def copy_lib(config: Config, dst: str):
+def copy_lib(config: Config, dst: str) -> None:
+    path = Path.cwd()
+    target: str
+    if config.target is None:
+        target = "target/release" if config.release else "target/debug"
+    else:
+        target = f"target/{config.target}/release" if config.release else f"target/{config.target}/debug"
     if config.is_windows():
-        target = ""
-        if config.target is None:
-            target = "target/release" if config.release else "target/debug"
-        else:
-            target = (
-                f"target/{config.target}/release"
-                if config.release
-                else f"target/{config.target}/debug"
-            )
-        for dll in glob.glob(f"{target}/*.lib"):
+        for dll in path.glob(f"{target}/*.lib"):
             shutil.copy(dll, dst)
         rm_glob_f(f"{dst}/*.dll.lib")
         if not config.release:
-            for pdb in glob.glob(f"{target}/*.pdb"):
+            for pdb in path.glob(f"{target}/*.pdb"):
                 shutil.copy(pdb, "lib")
-    elif config.is_macos():
-        target = "target/release" if config.release else "target/debug"
-        for lib in glob.glob(f"{target}/*.a"):
-            shutil.copy(lib, dst)
-    elif config.is_linux():
-        target = ""
-        if config.target is None:
-            target = "target/release" if config.release else "target/debug"
-        else:
-            target = (
-                f"target/{config.target}/release"
-                if config.release
-                else f"target/{config.target}/debug"
-            )
-        for lib in glob.glob(f"{target}/*.a"):
+    else:
+        for lib in path.glob(f"{target}/*.a"):
             shutil.copy(lib, dst)
 
 
-def capi_build(args):
+def capi_build(args) -> None:
     config = Config(args)
 
-    with working_dir("."):
-        config.setup_linker()
-        subprocess.run(
-            config.cargo_build_capi_command(args.features)
-        ).check_returncode()
+    run_command(config.cargo_command(["build"]))
 
-        os.makedirs("bin", exist_ok=True)
-        copy_dll(config, "bin")
-        os.makedirs("lib", exist_ok=True)
-        copy_lib(config, "lib")
+    Path("bin").mkdir(exist_ok=True)
+    copy_dll(config, "bin")
+    Path("lib").mkdir(exist_ok=True)
+    copy_lib(config, "lib")
 
 
-def capi_lint(args):
+def capi_lint(args) -> None:
     config = Config(args)
 
-    with working_dir("."):
-        config.setup_linker()
-        subprocess.run(
-            config.cargo_clippy_capi_command(args.features)
-        ).check_returncode()
+    command = config.cargo_command(["clippy"])
+    command.append("--tests")
+    command.append("--")
+    command.append("-D")
+    command.append("warnings")
+    run_command(command)
 
 
-def capi_clear(_):
-    with working_dir("."):
-        subprocess.run(["cargo", "clean"]).check_returncode()
+def capi_clear(_) -> None:
+    run_command(["cargo", "clean"])
 
 
-def util_update_ver(args):
+def util_update_ver(args) -> None:
     version = args.version
 
-    with working_dir("."):
-        with open("Cargo.toml", "r") as f:
-            content = f.read()
-            content = re.sub(
-                r'^version = "(.*?)"',
-                f'version = "{version}"',
-                content,
-                flags=re.MULTILINE,
-            )
-            content = re.sub(
-                r'^autd3(.*)version = "(.*?)"',
-                f'autd3\\1version = "{version}"',
-                content,
-                flags=re.MULTILINE,
-            )
-        with open("Cargo.toml", "w") as f:
-            f.write(content)
+    with Path("Cargo.toml").open() as f:
+        content = f.read()
+        content = re.sub(
+            r'^version = "(.*?)"',
+            f'version = "{version}"',
+            content,
+            flags=re.MULTILINE,
+        )
+        content = re.sub(
+            r'^autd3(.*)version = "(.*?)"',
+            f'autd3\\1version = "{version}"',
+            content,
+            flags=re.MULTILINE,
+        )
+    with Path("Cargo.toml").open("w") as f:
+        f.write(content)
 
-        with open("ThirdPartyNotice.txt", "r") as f:
-            content = f.read()
-            content = re.sub(
-                r"^autd3(.*) (.*) \((.*)\)",
-                f"autd3\\1 {version} (MIT)",
-                content,
-                flags=re.MULTILINE,
-            )
-            content = re.sub(
-                r"^autd3-link-soem (.*)",
-                f"autd3-link-soem {version}",
-                content,
-                flags=re.MULTILINE,
-            )
-            content = re.sub(
-                r"^autd3-link-twincat (.*)",
-                f"autd3-link-twincat {version}",
-                content,
-                flags=re.MULTILINE,
-            )
-        with open("ThirdPartyNotice.txt", "w") as f:
-            f.write(content)
+    with Path("ThirdPartyNotice.txt").open() as f:
+        content = f.read()
+        content = re.sub(
+            r"^autd3(.*) (.*) \((.*)\)",
+            f"autd3\\1 {version} (MIT)",
+            content,
+            flags=re.MULTILINE,
+        )
+        content = re.sub(
+            r"^autd3-link-twincat (.*)",
+            f"autd3-link-twincat {version}",
+            content,
+            flags=re.MULTILINE,
+        )
+    with Path("ThirdPartyNotice.txt").open("w") as f:
+        f.write(content)
 
-        subprocess.run(["cargo", "update"]).check_returncode()
+    run_command(["cargo", "update"])
 
 
-def command_help(args):
+def util_check_license(_) -> None:
+    with working_dir("tools/license-checker"):
+        run_command(["cargo", "r"])
+
+
+def command_help(args) -> None:
     print(parser.parse_args([args.command, "--help"]))
 
 
 if __name__ == "__main__":
-    with working_dir(os.path.dirname(os.path.abspath(__file__))):
+    with working_dir(Path(__file__).parent):
         parser = argparse.ArgumentParser(description="autd3capi library build script")
         subparsers = parser.add_subparsers()
 
         # build
         parser_build = subparsers.add_parser("build", help="see build -h`")
-        parser_build.add_argument(
-            "--release", action="store_true", help="release build"
-        )
-        parser_build.add_argument(
-            "--arch", help="cross-compile for specific architecture"
-        )
-        parser_build.add_argument(
-            "--features",
-            help="features to build",
-            default=None,
-        )
+        parser_build.add_argument("--release", action="store_true", help="release build")
+        parser_build.add_argument("--arch", help="cross-compile for specific architecture")
+        parser_build.add_argument("--features", help="features to build", default=None)
         parser_build.set_defaults(handler=capi_build)
 
         # lint
         parser_lint = subparsers.add_parser("lint", help="see lint -h`")
         parser_lint.add_argument("--release", action="store_true", help="release build")
-        parser_lint.add_argument(
-            "--features",
-            help="features to build",
-            default=None,
-        )
+        parser_lint.add_argument("--features", help="features to build", default=None)
         parser_lint.set_defaults(handler=capi_lint)
 
         # clear
@@ -355,11 +221,13 @@ if __name__ == "__main__":
         subparsers_util = parser_util.add_subparsers()
 
         # util update version
-        parser_util_upver = subparsers_util.add_parser(
-            "upver", help="see `util upver -h`"
-        )
+        parser_util_upver = subparsers_util.add_parser("upver", help="see `util upver -h`")
         parser_util_upver.add_argument("version", help="version")
         parser_util_upver.set_defaults(handler=util_update_ver)
+
+        # util check license
+        parser_util_check_license = subparsers_util.add_parser("check-license", help="see `util check-license -h`")
+        parser_util_check_license.set_defaults(handler=util_check_license)
 
         # help
         parser_help = subparsers.add_parser("help", help="see `help -h`")
