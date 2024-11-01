@@ -1,5 +1,6 @@
 [package]
 name = "autd3capi-driver"
+description = "autd3capi base library"
 version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
