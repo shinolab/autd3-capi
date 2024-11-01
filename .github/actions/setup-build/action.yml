@@ -13,7 +13,6 @@ runs:
   steps:
     - name: Setup Python
       uses: actions/setup-python@v5
-      if: inputs.os == 'windows-latest'
       with:
         python-version: "3.13"
 
