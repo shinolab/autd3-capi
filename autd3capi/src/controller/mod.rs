@@ -112,5 +112,5 @@ pub unsafe extern "C" fn AUTDControllerSend(
     mut cnt: ControllerPtr,
     d: DatagramPtr,
 ) -> FfiFuture<ResultStatus> {
-    async move { cnt.send(*Box::<DynamicDatagram>::from(d)).await.into() }.into_ffi()
+    async move { cnt.send(*Box::<DynDatagram>::from(d)).await.into() }.into_ffi()
 }

@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::prelude::IntoDatagramWithParallelThreshold, DatagramPtr, DynamicDatagram,
+    autd3::prelude::IntoDatagramWithParallelThreshold, DatagramPtr, DynDatagram,
 };
 
 #[no_mangle]
@@ -8,7 +8,7 @@ pub unsafe extern "C" fn AUTDDatagramWithParallelThreshold(
     d: DatagramPtr,
     threshold: i32,
 ) -> DatagramPtr {
-    Box::<DynamicDatagram>::from(d)
+    Box::<DynDatagram>::from(d)
         .with_parallel_threshold(if threshold < 0 {
             None
         } else {

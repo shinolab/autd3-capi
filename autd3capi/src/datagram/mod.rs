@@ -11,12 +11,12 @@ pub mod synchronize;
 pub mod with_parallel_threshold;
 pub mod with_timeout;
 
-use autd3capi_driver::{DatagramPtr, DynamicDatagramTuple};
+use autd3capi_driver::{DatagramPtr, DynDatagramTuple};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramTuple(d1: DatagramPtr, d2: DatagramPtr) -> DatagramPtr {
-    DynamicDatagramTuple {
+    DynDatagramTuple {
         d1: d1.into(),
         d2: d2.into(),
     }
