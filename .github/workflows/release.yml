@@ -11,10 +11,10 @@ jobs:
     name: check-license
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: true
     - run: |
-        git submodule update --init tools/autd3-license-check
-        cd tools/license-checker
-        cargo run
+        python build.py util check-license
 
   create-release:
     needs: [license-check]
@@ -73,6 +73,8 @@ jobs:
             unity: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
       - uses: ./.github/actions/setup-build
         with:
           os: ${{ matrix.os }}
