@@ -43,18 +43,14 @@ impl Datagram for DynDatagramTuple {
     }
 
     fn timeout(&self) -> Option<Duration> {
-        self.d1
-            .timeout()
-            .into_iter()
-            .chain(self.d2.timeout().into_iter())
-            .max()
+        self.d1.timeout().into_iter().chain(self.d2.timeout()).max()
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
         self.d1
             .parallel_threshold()
             .into_iter()
-            .chain(self.d2.parallel_threshold().into_iter())
+            .chain(self.d2.parallel_threshold())
             .min()
     }
 
