@@ -40,6 +40,26 @@ pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
 
 #[no_mangle]
 #[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditLastTimeout(audit: LinkPtr) -> i64 {
+    audit
+        .cast::<Audit>()
+        .last_timeout()
+        .map(|t| t.as_nanos() as i64)
+        .unwrap_or(-1)
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDLinkAuditLastParallelThreshold(audit: LinkPtr) -> i64 {
+    audit
+        .cast::<Audit>()
+        .last_parallel_threshold()
+        .map(|t| t as i64)
+        .unwrap_or(-1)
+}
+
+#[no_mangle]
+#[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditCpuNumTransducers(audit: LinkPtr, idx: u16) -> u32 {
     audit.cast::<Audit>()[idx as usize].num_transducers() as _
 }
