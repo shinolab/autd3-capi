@@ -7,25 +7,25 @@ use autd3_driver::{
     geometry::Device,
 };
 
-use super::{DynamicDatagram, DynamicOperationGenerator};
+use super::{DynDatagram, DynOperationGenerator};
 
-pub struct DynamicDatagramTuple {
-    pub d1: Box<DynamicDatagram>,
-    pub d2: Box<DynamicDatagram>,
+pub struct DynDatagramTuple {
+    pub d1: Box<DynDatagram>,
+    pub d2: Box<DynDatagram>,
 }
 
-impl std::fmt::Debug for DynamicDatagramTuple {
+impl std::fmt::Debug for DynDatagramTuple {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({:?}, {:?})", self.d1, self.d2)
     }
 }
 
-pub struct DynamicOperationGeneratorTuple {
-    pub g1: DynamicOperationGenerator,
-    pub g2: DynamicOperationGenerator,
+pub struct DOperationGeneratorTuple {
+    pub g1: DynOperationGenerator,
+    pub g2: DynOperationGenerator,
 }
 
-impl OperationGenerator for DynamicOperationGeneratorTuple {
+impl OperationGenerator for DOperationGeneratorTuple {
     type O1 = Box<dyn Operation>;
     type O2 = Box<dyn Operation>;
 
@@ -34,27 +34,29 @@ impl OperationGenerator for DynamicOperationGeneratorTuple {
     }
 }
 
-impl Datagram for DynamicDatagramTuple {
+impl Datagram for DynDatagramTuple {
     fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
-        Ok(DynamicOperationGeneratorTuple {
+        Ok(DOperationGeneratorTuple {
             g1: self.d1.operation_generator(geometry)?,
             g2: self.d2.operation_generator(geometry)?,
         })
     }
 
     fn timeout(&self) -> Option<Duration> {
-        match (self.d1.timeout(), self.d2.timeout()) {
-            (Some(t1), Some(t2)) => Some(t1.max(t2)),
-            (a, b) => a.or(b),
-        }
+        self.d1
+            .timeout()
+            .into_iter()
+            .chain(self.d2.timeout().into_iter())
+            .max()
     }
 
     fn parallel_threshold(&self) -> Option<usize> {
-        match (self.d1.parallel_threshold(), self.d2.parallel_threshold()) {
-            (Some(t1), Some(t2)) => Some(t1.min(t2)),
-            (a, b) => a.or(b),
-        }
+        self.d1
+            .parallel_threshold()
+            .into_iter()
+            .chain(self.d2.parallel_threshold().into_iter())
+            .min()
     }
 
-    type G = DynamicOperationGeneratorTuple;
+    type G = DOperationGeneratorTuple;
 }

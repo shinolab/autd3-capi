@@ -1,16 +1,16 @@
 use autd3::derive::Datagram;
 use autd3_driver::firmware::operation::OperationGenerator;
 
-use crate::{impl_ffi_result, impl_ptr, take, ConstPtr, DynamicDatagram};
+use crate::{impl_ffi_result, impl_ptr, take, ConstPtr, DynDatagram};
 
 #[repr(C)]
 pub struct DatagramPtr(pub *const libc::c_void);
 
 impl_ptr!(DatagramPtr);
 
-impl From<DatagramPtr> for Box<DynamicDatagram> {
+impl From<DatagramPtr> for Box<DynDatagram> {
     fn from(value: DatagramPtr) -> Self {
-        unsafe { take!(value, DynamicDatagram) }
+        unsafe { take!(value, DynDatagram) }
     }
 }
 
@@ -23,7 +23,7 @@ pub struct ResultDatagram {
 
 impl<G: OperationGenerator + 'static, D: Datagram<G = G> + 'static> From<D> for DatagramPtr {
     fn from(d: D) -> Self {
-        Self(Box::into_raw(Box::new(DynamicDatagram::new(d))) as _)
+        Self(Box::into_raw(Box::new(DynDatagram::new(d))) as _)
     }
 }
 
