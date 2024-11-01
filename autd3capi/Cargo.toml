@@ -15,6 +15,7 @@ tracing-subscriber = { workspace = true }
 libc = { workspace = true }
 seq-macro = { workspace = true }
 derive_more = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 assert_approx_eq = { workspace = true }

@@ -12,6 +12,8 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 autd3capi-driver = { workspace = true }
 autd3-emulator = { workspace = true, features = ["async-trait", "gpu", "inplace"] }
+tracing-subscriber = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 autd3capi = { workspace = true }

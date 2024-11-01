@@ -14,6 +14,7 @@ libc = { workspace = true }
 tokio = { workspace = true, features = ["rt-multi-thread"] }
 derive_more = { workspace = true }
 spin_sleep = "1.2.1"
+tracing = { workspace = true }
 
 [features]
 static = []
