@@ -5,6 +5,8 @@ mod ptr;
 mod range;
 mod result;
 
+use std::ffi::c_char;
+
 use option::*;
 use ptr::*;
 use range::*;
@@ -14,6 +16,31 @@ use autd3::controller::ControllerBuilder;
 use autd3_emulator::{ControllerBuilderIntoEmulatorExt, Emulator, Record, Recorder, SoundField};
 use autd3capi_driver::{async_ffi::*, autd3::prelude::*, *};
 use driver::{ethercat::ECAT_DC_SYS_TIME_BASE, link::Link};
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDEmulatorTracingInit() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn AUTDEmulatorTracingInitWithFile(path: *const c_char) -> ResultStatus {
+    let path = validate_cstr!(path, AUTDStatus, ResultStatus);
+    std::fs::File::options()
+        .append(true)
+        .create(true)
+        .open(path)
+        .map(|f| {
+            tracing_subscriber::fmt()
+                .with_writer(f)
+                .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+                .with_ansi(false)
+                .init();
+            AUTDStatus::AUTDTrue
+        })
+        .into()
+}
 
 #[no_mangle]
 #[must_use]
