@@ -1,15 +1,14 @@
-use std::time::Duration;
-
-use autd3capi_driver::{autd3::prelude::IntoDatagramWithTimeout, DatagramPtr, DynDatagram};
+use autd3capi_driver::{
+    autd3::prelude::IntoDatagramWithTimeout, DatagramPtr, DynDatagram, OptionDuration,
+};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDatagramWithTimeout(d: DatagramPtr, timeout_ns: i64) -> DatagramPtr {
+pub unsafe extern "C" fn AUTDDatagramWithTimeout(
+    d: DatagramPtr,
+    timeout: OptionDuration,
+) -> DatagramPtr {
     Box::<DynDatagram>::from(d)
-        .with_timeout(if timeout_ns < 0 {
-            None
-        } else {
-            Some(Duration::from_nanos(timeout_ns as u64))
-        })
+        .with_timeout(timeout.into())
         .into()
 }

@@ -2,6 +2,7 @@
 
 mod autd3_device;
 mod datagram;
+mod duration;
 mod firmware;
 mod ptr;
 mod resampler;
@@ -10,6 +11,7 @@ mod timer;
 
 pub use autd3_device::*;
 pub use datagram::*;
+pub use duration::*;
 pub use firmware::*;
 pub use ptr::*;
 pub use resampler::*;

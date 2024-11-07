@@ -64,16 +64,14 @@ pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> Geometry
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorRecordFrom(
     emulator: EmulatorPtr,
-    start_time: u64,
+    start_time: Duration,
     f: ConstPtr,
 ) -> FfiFuture<ResultRecord> {
     async move {
         emulator
             .record_from(
-                DcSysTime::from_utc(
-                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(start_time),
-                )
-                .unwrap(),
+                DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from(start_time))
+                    .unwrap(),
                 move |cnt| async move {
                     let f = std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ControllerPtr)>(f);
                     let cnt = cnt.into_boxed_link();
@@ -107,11 +105,8 @@ pub unsafe extern "C" fn AUTDEmulatorWaitResultRecord(
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDEmulatorTickNs(mut record: LinkPtr, tick_ns: u64) -> ResultStatus {
-    record
-        .cast_mut::<Recorder>()
-        .tick(std::time::Duration::from_nanos(tick_ns))
-        .into()
+pub unsafe extern "C" fn AUTDEmulatorTickNs(mut record: LinkPtr, tick: Duration) -> ResultStatus {
+    record.cast_mut::<Recorder>().tick(tick.into()).into()
 }
 
 #[no_mangle]
@@ -237,9 +232,9 @@ pub unsafe extern "C" fn AUTDEmulatorWaitSoundField(
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldTimeLen(
     sound_field: SoundFieldPtr,
-    duration_ns: u64,
+    duration: Duration,
 ) -> u64 {
-    sound_field.next_time_len(std::time::Duration::from_nanos(duration_ns)) as _
+    sound_field.next_time_len(duration.into()) as _
 }
 
 #[no_mangle]
@@ -276,16 +271,11 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldGetZ(sound_field: SoundFieldPtr, 
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldSkip(
     mut sound_field: SoundFieldPtr,
-    duration_ns: u64,
+    duration: Duration,
 ) -> LocalFfiFuture<ResultStatus> {
     async move {
         sound_field
-            .next_inplace(
-                std::time::Duration::from_nanos(duration_ns),
-                true,
-                &mut [],
-                std::iter::empty(),
-            )
+            .next_inplace(duration.into(), true, &mut [], std::iter::empty())
             .await
             .into()
     }
@@ -296,21 +286,16 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldSkip(
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldNext(
     mut sound_field: SoundFieldPtr,
-    duration_ns: u64,
+    duration: Duration,
     time: *mut u64,
     v: *const *mut f32,
 ) -> LocalFfiFuture<ResultStatus> {
-    let n = sound_field.next_time_len(std::time::Duration::from_nanos(duration_ns));
+    let n = sound_field.next_time_len(duration.into());
     let time = std::slice::from_raw_parts_mut(time, n as _);
     let iter = (0..n).map(move |i| v.add(i as _).read());
     async move {
         sound_field
-            .next_inplace(
-                std::time::Duration::from_nanos(duration_ns),
-                false,
-                time,
-                iter,
-            )
+            .next_inplace(duration.into(), false, time, iter)
             .await
             .into()
     }
@@ -345,7 +330,7 @@ mod tests {
             let result = AUTDWaitResultStatus(handle, future);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
-            let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
+            let result = AUTDEmulatorTickNs(link_ptr, (10 * ULTRASOUND_PERIOD).into());
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
@@ -360,9 +345,9 @@ mod tests {
                 rot.as_ptr(),
                 1,
                 4,
-                20_000_000,
-                1_000_000,
-                1_000_000,
+                std::time::Duration::from_millis(20).into(),
+                std::time::Duration::from_millis(1).into(),
+                std::time::Duration::from_millis(1).into(),
                 controller::timer::AUTDTimerStrategySpin(
                     controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
                     autd3capi_driver::SpinStrategyTag::SpinLoopHint,
@@ -372,7 +357,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                std::time::Duration::ZERO.into(),
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
@@ -418,7 +403,7 @@ mod tests {
             let result = AUTDWaitResultStatus(handle, future);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
-            let result = AUTDEmulatorTickNs(link_ptr, ULTRASOUND_PERIOD.as_nanos() as u64);
+            let result = AUTDEmulatorTickNs(link_ptr, ULTRASOUND_PERIOD.into());
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
@@ -433,9 +418,9 @@ mod tests {
                 rot.as_ptr(),
                 1,
                 4,
-                20_000_000,
-                1_000_000,
-                1_000_000,
+                std::time::Duration::from_millis(20).into(),
+                std::time::Duration::from_millis(1).into(),
+                std::time::Duration::from_millis(1).into(),
                 controller::timer::AUTDTimerStrategySpin(
                     controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
                     autd3capi_driver::SpinStrategyTag::SpinLoopHint,
@@ -445,7 +430,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                std::time::Duration::ZERO.into(),
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
@@ -513,7 +498,7 @@ mod tests {
             let result = AUTDWaitResultStatus(handle, future);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
-            let result = AUTDEmulatorTickNs(link_ptr, 10 * ULTRASOUND_PERIOD.as_nanos() as u64);
+            let result = AUTDEmulatorTickNs(link_ptr, (10 * ULTRASOUND_PERIOD).into());
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
         }
 
@@ -528,9 +513,9 @@ mod tests {
                 rot.as_ptr(),
                 1,
                 4,
-                20_000_000,
-                1_000_000,
-                1_000_000,
+                std::time::Duration::from_millis(20).into(),
+                std::time::Duration::from_millis(1).into(),
+                std::time::Duration::from_millis(1).into(),
                 controller::timer::AUTDTimerStrategySpin(
                     controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
                     autd3capi_driver::SpinStrategyTag::SpinLoopHint,
@@ -539,7 +524,7 @@ mod tests {
             let emulator = AUTDEmulator(builder);
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                std::time::Duration::ZERO.into(),
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
@@ -557,7 +542,7 @@ mod tests {
             };
             let option = RecordOption {
                 sound_speed: 340e3,
-                time_step_ns: 1000,
+                time_step: std::time::Duration::from_micros(1).into(),
                 print_progress: true,
                 memory_limits_hint_mb: 128,
                 gpu: false,
@@ -568,15 +553,13 @@ mod tests {
             let sound_field = sound_field.result;
 
             {
-                let duration_ns = 9 * ULTRASOUND_PERIOD.as_nanos() as u64;
-                let res = AUTDEmulatorSoundFieldSkip(sound_field, duration_ns);
+                let res = AUTDEmulatorSoundFieldSkip(sound_field, (9 * ULTRASOUND_PERIOD).into());
                 let res = AUTDWaitLocalResultStatus(handle, res);
                 assert_eq!(AUTDStatus::AUTDTrue, res.result);
             }
 
             {
-                let duration_ns = ULTRASOUND_PERIOD.as_nanos() as u64;
-                let len = AUTDEmulatorSoundFieldTimeLen(sound_field, duration_ns);
+                let len = AUTDEmulatorSoundFieldTimeLen(sound_field, ULTRASOUND_PERIOD.into());
                 let points_len = AUTDEmulatorSoundFieldPointsLen(sound_field);
                 let mut time = vec![0; len as _];
                 let mut v = vec![vec![0.0f32; points_len as _]; len as _];
@@ -584,7 +567,7 @@ mod tests {
                 let vp = v.iter_mut().map(|v| v.as_mut_ptr()).collect::<Vec<_>>();
                 let res = AUTDEmulatorSoundFieldNext(
                     sound_field,
-                    duration_ns,
+                    ULTRASOUND_PERIOD.into(),
                     time.as_mut_ptr(),
                     vp.as_ptr(),
                 );

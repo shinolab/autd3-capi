@@ -1,6 +1,6 @@
-use std::time::Duration;
-
-use autd3capi_driver::{autd3::derive::SamplingConfig, driver::defined::Hz, ResultSamplingConfig};
+use autd3capi_driver::{
+    autd3::derive::SamplingConfig, driver::defined::Hz, Duration, ResultSamplingConfig,
+};
 
 #[no_mangle]
 #[must_use]
@@ -28,14 +28,14 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingCo
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: u64) -> ResultSamplingConfig {
-    Duration::from_nanos(p).try_into().into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> ResultSamplingConfig {
+    std::time::Duration::from(p).try_into().into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: u64) -> SamplingConfig {
-    SamplingConfig::new_nearest(Duration::from_nanos(p))
+pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> SamplingConfig {
+    SamplingConfig::new_nearest(std::time::Duration::from(p))
 }
 
 #[no_mangle]
