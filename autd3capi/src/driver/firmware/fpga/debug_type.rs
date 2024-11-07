@@ -1,7 +1,7 @@
 use autd3capi_driver::{
     autd3::{driver::firmware::fpga::DebugType, prelude::DcSysTime},
     driver::ethercat::ECAT_DC_SYS_TIME_BASE,
-    DebugTypeWrap, TransducerPtr,
+    DebugTypeWrap, Duration, TransducerPtr,
 };
 
 #[no_mangle]
@@ -78,10 +78,9 @@ pub unsafe extern "C" fn AUTDDebugTypeDirect(value: bool) -> DebugTypeWrap {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDebugTypeSysTimeEq(sys_time: u64) -> DebugTypeWrap {
+pub unsafe extern "C" fn AUTDDebugTypeSysTimeEq(sys_time: Duration) -> DebugTypeWrap {
     DebugType::SysTimeEq(
-        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(sys_time))
-            .unwrap(),
+        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from(sys_time)).unwrap(),
     )
     .into()
 }

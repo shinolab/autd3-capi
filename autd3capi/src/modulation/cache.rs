@@ -36,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
 
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, Vector3};
+    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, OptionDuration, Vector3};
 
     use super::*;
 
@@ -56,16 +56,20 @@ mod tests {
                 rot.as_ptr(),
                 1,
                 4,
-                20_000_000,
-                1_000_000,
-                1_000_000,
+                std::time::Duration::from_millis(20).into(),
+                std::time::Duration::from_millis(1).into(),
+                std::time::Duration::from_millis(1).into(),
                 controller::timer::AUTDTimerStrategySpin(
                     controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
                     autd3capi_driver::SpinStrategyTag::SpinLoopHint,
                 ),
             );
             let link_builder = link::nop::AUTDLinkNop();
-            let cnt = controller::builder::AUTDControllerOpen(builder, link_builder, -1);
+            let cnt = controller::builder::AUTDControllerOpen(
+                builder,
+                link_builder,
+                OptionDuration::NONE,
+            );
             let cnt = AUTDWaitResultController(handle, cnt);
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;

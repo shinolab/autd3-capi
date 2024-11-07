@@ -1,9 +1,9 @@
-use std::{num::NonZeroU16, time::Duration};
+use std::num::NonZeroU16;
 
 use autd3capi_driver::{
     autd3::{derive::SamplingConfig, prelude::SilencerTarget},
     driver::datagram::{FixedCompletionTime, FixedUpdateRate, Silencer, WithSampling},
-    DatagramPtr,
+    DatagramPtr, Duration,
 };
 
 #[no_mangle]
@@ -39,14 +39,14 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRateIsValid(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
-    intensity: u64,
-    phase: u64,
+    intensity: Duration,
+    phase: Duration,
     strict_mode: bool,
     target: SilencerTarget,
 ) -> DatagramPtr {
     Silencer::new(FixedCompletionTime {
-        intensity: Duration::from_nanos(intensity),
-        phase: Duration::from_nanos(phase),
+        intensity: intensity.into(),
+        phase: phase.into(),
     })
     .with_strict_mode(strict_mode)
     .with_target(target)
@@ -56,15 +56,15 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsValid(
-    intensity: u64,
-    phase: u64,
+    intensity: Duration,
+    phase: Duration,
     strict_mode: bool,
     config_intensity: SamplingConfig,
     config_phase: SamplingConfig,
 ) -> bool {
     Silencer::new(FixedCompletionTime {
-        intensity: Duration::from_nanos(intensity),
-        phase: Duration::from_nanos(phase),
+        intensity: intensity.into(),
+        phase: phase.into(),
     })
     .with_strict_mode(strict_mode)
     .is_valid(&SamplingConfigTuple(config_intensity, config_phase))

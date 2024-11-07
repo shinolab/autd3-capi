@@ -1,6 +1,8 @@
 use autd3::prelude::DcSysTime;
 use autd3_driver::{ethercat::ECAT_DC_SYS_TIME_BASE, geometry::Device};
 
+use crate::Duration;
+
 #[repr(u8)]
 #[derive(Clone, Copy, Default)]
 enum DebugTypeTag {
@@ -52,7 +54,8 @@ impl DebugTypeWrap {
             }
             DebugTypeTag::SysTimeEq => autd3_driver::firmware::fpga::DebugType::SysTimeEq(
                 DcSysTime::from_utc(
-                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(self.value),
+                    ECAT_DC_SYS_TIME_BASE
+                        + std::time::Duration::from(Duration { nanos: self.value }),
                 )
                 .unwrap(),
             ),

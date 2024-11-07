@@ -1,12 +1,10 @@
-use std::time::Duration;
-
 use autd3capi_driver::{
     autd3::derive::SamplingConfig,
     driver::{
         datagram::{STMConfig, STMConfigNearest},
         defined::Hz,
     },
-    ResultSamplingConfig,
+    Duration, ResultSamplingConfig,
 };
 
 pub mod foci;
@@ -20,10 +18,8 @@ pub unsafe extern "C" fn AUTDSTMConfigFromFreq(f: f32, n: u16) -> ResultSampling
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: u64, n: u16) -> ResultSamplingConfig {
-    (STMConfig::Period(Duration::from_nanos(p)), n as usize)
-        .try_into()
-        .into()
+pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: Duration, n: u16) -> ResultSamplingConfig {
+    (STMConfig::Period(p.into()), n as usize).try_into().into()
 }
 
 #[no_mangle]
@@ -36,11 +32,11 @@ pub unsafe extern "C" fn AUTDSTMConfigFromFreqNearest(f: f32, n: u16) -> ResultS
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(p: u64, n: u16) -> ResultSamplingConfig {
-    (
-        STMConfigNearest::Period(Duration::from_nanos(p)),
-        n as usize,
-    )
+pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(
+    p: Duration,
+    n: u16,
+) -> ResultSamplingConfig {
+    (STMConfigNearest::Period(p.into()), n as usize)
         .try_into()
         .into()
 }
