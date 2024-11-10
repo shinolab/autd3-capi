@@ -14,7 +14,7 @@ pub unsafe extern "C" fn AUTDSTMGain(
     mode: GainSTMMode,
     loop_behavior: LoopBehavior,
 ) -> ResultGainSTM {
-    GainSTM::<BoxedGain>::new(
+    GainSTM::<Vec<BoxedGain>>::new(
         config,
         (0..size as usize).map(|i| *take!(gains.add(i).read(), BoxedGain)),
     )
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
-    take!(stm, GainSTM<BoxedGain>)
+    take!(stm, GainSTM<Vec<BoxedGain>>)
         .with_segment(segment, transition_mode.into())
         .into()
 }
@@ -38,5 +38,5 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagram(stm: GainSTMPtr) -> DatagramPtr {
-    (*take!(stm, GainSTM<BoxedGain>)).into()
+    (*take!(stm, GainSTM<Vec<BoxedGain>>)).into()
 }

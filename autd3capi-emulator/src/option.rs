@@ -1,7 +1,7 @@
 use autd3capi_driver::Duration;
 
 #[repr(C)]
-pub struct RecordOption {
+pub struct RmsRecordOption {
     pub sound_speed: f32,
     pub time_step: Duration,
     pub print_progress: bool,
@@ -9,13 +9,11 @@ pub struct RecordOption {
     pub gpu: bool,
 }
 
-impl From<RecordOption> for autd3_emulator::RecordOption {
-    fn from(value: RecordOption) -> Self {
-        autd3_emulator::RecordOption {
+impl From<RmsRecordOption> for autd3_emulator::RmsRecordOption {
+    fn from(value: RmsRecordOption) -> Self {
+        autd3_emulator::RmsRecordOption {
             sound_speed: value.sound_speed,
-            time_step: value.time_step.into(),
             print_progress: value.print_progress,
-            memory_limits_hint_mb: value.memory_limits_hint_mb as _,
             gpu: value.gpu,
         }
     }

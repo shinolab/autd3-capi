@@ -37,7 +37,7 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
 ) -> DatagramPtr {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => take!(stm, FociSTM<N>)
+                #(N => take!(stm, FociSTM<N, Vec<ControlPoints<N>>>)
                 .with_segment(segment, transition_mode.into())
                 .into(),)*
             _ => unreachable!(),
@@ -50,7 +50,7 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
 pub unsafe extern "C" fn AUTDSTMFociIntoDatagram(stm: FociSTMPtr, n: u8) -> DatagramPtr {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => (*take!(stm, FociSTM<N>)).into(),)*
+                #(N => (*take!(stm, FociSTM<N, Vec<ControlPoints<N>>>)).into(),)*
             _ => unreachable!(),
         }
     })
