@@ -14,7 +14,7 @@ use result::*;
 use autd3::controller::ControllerBuilder;
 use autd3_emulator::{ControllerBuilderIntoEmulatorExt, Emulator, Record, Recorder};
 use autd3capi_driver::{async_ffi::*, autd3::prelude::*, *};
-use driver::{ethercat::ECAT_DC_SYS_TIME_BASE, link::Link};
+use driver::link::Link;
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDEmulatorTracingInit() {
@@ -63,27 +63,21 @@ pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> Geometry
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorRecordFrom(
     emulator: EmulatorPtr,
-    start_time_ns: u64,
+    start_time: DcSysTime,
     f: ConstPtr,
 ) -> FfiFuture<ResultRecord> {
     async move {
         emulator
-            .record_from(
-                DcSysTime::from_utc(
-                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(start_time_ns),
-                )
-                .unwrap(),
-                move |cnt| async move {
-                    let f = std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ControllerPtr)>(f);
-                    let cnt = cnt.into_boxed_link();
-                    let cnt_ptr = ControllerPtr(Box::into_raw(Box::new(cnt)) as _);
-                    tokio::task::block_in_place(|| f(cnt_ptr));
-                    let cnt = Controller::from_boxed_link(*Box::from_raw(
-                        cnt_ptr.0 as *mut Controller<Box<dyn Link>>,
-                    ));
-                    Ok(cnt)
-                },
-            )
+            .record_from(start_time, move |cnt| async move {
+                let f = std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ControllerPtr)>(f);
+                let cnt = cnt.into_boxed_link();
+                let cnt_ptr = ControllerPtr(Box::into_raw(Box::new(cnt)) as _);
+                tokio::task::block_in_place(|| f(cnt_ptr));
+                let cnt = Controller::from_boxed_link(*Box::from_raw(
+                    cnt_ptr.0 as *mut Controller<Box<dyn Link>>,
+                ));
+                Ok(cnt)
+            })
             .await
             .into()
     }
@@ -253,7 +247,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                DcSysTime::ZERO,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
@@ -326,7 +320,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                DcSysTime::ZERO,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);

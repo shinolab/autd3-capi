@@ -1,5 +1,5 @@
 use autd3::prelude::DcSysTime;
-use autd3_driver::{ethercat::ECAT_DC_SYS_TIME_BASE, geometry::Device};
+use autd3_driver::geometry::Device;
 
 #[repr(u8)]
 #[derive(Clone, Copy, Default)]
@@ -21,10 +21,26 @@ enum DebugTypeTag {
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Default)]
+pub union DebugTypeValue {
+    pub null: u64,
+    pub sys_time: DcSysTime,
+    pub idx: u16,
+    pub direct: bool,
+}
+
+#[repr(C)]
 pub struct DebugTypeWrap {
     ty: DebugTypeTag,
-    value: u64,
+    value: DebugTypeValue,
+}
+
+impl Default for DebugTypeWrap {
+    fn default() -> Self {
+        DebugTypeWrap {
+            ty: DebugTypeTag::None,
+            value: DebugTypeValue { null: 0 },
+        }
+    }
 }
 
 impl DebugTypeWrap {
@@ -37,25 +53,22 @@ impl DebugTypeWrap {
             DebugTypeTag::Sync => autd3_driver::firmware::fpga::DebugType::Sync,
             DebugTypeTag::ModSegment => autd3_driver::firmware::fpga::DebugType::ModSegment,
             DebugTypeTag::ModIdx => {
-                autd3_driver::firmware::fpga::DebugType::ModIdx(self.value as _)
+                autd3_driver::firmware::fpga::DebugType::ModIdx(unsafe { self.value.idx })
             }
             DebugTypeTag::StmSegment => autd3_driver::firmware::fpga::DebugType::StmSegment,
             DebugTypeTag::StmIdx => {
-                autd3_driver::firmware::fpga::DebugType::StmIdx(self.value as _)
+                autd3_driver::firmware::fpga::DebugType::StmIdx(unsafe { self.value.idx })
             }
             DebugTypeTag::IsStmMode => autd3_driver::firmware::fpga::DebugType::IsStmMode,
-            DebugTypeTag::PwmOut => {
-                autd3_driver::firmware::fpga::DebugType::PwmOut(&dev[self.value as usize])
-            }
-            DebugTypeTag::Direct => {
-                autd3_driver::firmware::fpga::DebugType::Direct(self.value != 0)
-            }
-            DebugTypeTag::SysTimeEq => autd3_driver::firmware::fpga::DebugType::SysTimeEq(
-                DcSysTime::from_utc(
-                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(self.value),
-                )
-                .unwrap(),
+            DebugTypeTag::PwmOut => autd3_driver::firmware::fpga::DebugType::PwmOut(
+                &dev[unsafe { self.value.idx } as usize],
             ),
+            DebugTypeTag::Direct => {
+                autd3_driver::firmware::fpga::DebugType::Direct(unsafe { self.value.direct })
+            }
+            DebugTypeTag::SysTimeEq => {
+                autd3_driver::firmware::fpga::DebugType::SysTimeEq(unsafe { self.value.sys_time })
+            }
         }
     }
 }
@@ -65,55 +78,55 @@ impl<'a> From<autd3_driver::firmware::fpga::DebugType<'a>> for DebugTypeWrap {
         match value {
             autd3_driver::firmware::fpga::DebugType::None => DebugTypeWrap {
                 ty: DebugTypeTag::None,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::BaseSignal => DebugTypeWrap {
                 ty: DebugTypeTag::BaseSignal,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::Thermo => DebugTypeWrap {
                 ty: DebugTypeTag::Thermo,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::ForceFan => DebugTypeWrap {
                 ty: DebugTypeTag::ForceFan,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::Sync => DebugTypeWrap {
                 ty: DebugTypeTag::Sync,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::ModSegment => DebugTypeWrap {
                 ty: DebugTypeTag::ModSegment,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::ModIdx(v) => DebugTypeWrap {
                 ty: DebugTypeTag::ModIdx,
-                value: v as _,
+                value: DebugTypeValue { idx: v },
             },
             autd3_driver::firmware::fpga::DebugType::StmSegment => DebugTypeWrap {
                 ty: DebugTypeTag::StmSegment,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::StmIdx(v) => DebugTypeWrap {
                 ty: DebugTypeTag::StmIdx,
-                value: v as _,
+                value: DebugTypeValue { idx: v },
             },
             autd3_driver::firmware::fpga::DebugType::IsStmMode => DebugTypeWrap {
                 ty: DebugTypeTag::IsStmMode,
-                value: 0,
+                value: DebugTypeValue { null: 0 },
             },
             autd3_driver::firmware::fpga::DebugType::PwmOut(v) => DebugTypeWrap {
                 ty: DebugTypeTag::PwmOut,
-                value: v.idx() as _,
+                value: DebugTypeValue { idx: v.idx() as _ },
             },
             autd3_driver::firmware::fpga::DebugType::Direct(v) => DebugTypeWrap {
                 ty: DebugTypeTag::Direct,
-                value: if v { 1 } else { 0 },
+                value: DebugTypeValue { direct: v },
             },
             autd3_driver::firmware::fpga::DebugType::SysTimeEq(v) => DebugTypeWrap {
                 ty: DebugTypeTag::SysTimeEq,
-                value: v.sys_time(),
+                value: DebugTypeValue { sys_time: v },
             },
             _ => unreachable!(),
         }
