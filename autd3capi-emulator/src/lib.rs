@@ -63,14 +63,16 @@ pub unsafe extern "C" fn AUTDEmulatorGeometry(emulator: EmulatorPtr) -> Geometry
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorRecordFrom(
     emulator: EmulatorPtr,
-    start_time: Duration,
+    start_time_ns: u64,
     f: ConstPtr,
 ) -> FfiFuture<ResultRecord> {
     async move {
         emulator
             .record_from(
-                DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from(start_time))
-                    .unwrap(),
+                DcSysTime::from_utc(
+                    ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(start_time_ns),
+                )
+                .unwrap(),
                 move |cnt| async move {
                     let f = std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ControllerPtr)>(f);
                     let cnt = cnt.into_boxed_link();
@@ -251,7 +253,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                std::time::Duration::ZERO.into(),
+                0,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
@@ -324,7 +326,7 @@ mod tests {
 
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                std::time::Duration::ZERO.into(),
+                0,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);

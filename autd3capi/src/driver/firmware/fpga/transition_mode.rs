@@ -12,9 +12,10 @@ pub unsafe extern "C" fn AUTDTransitionModeSyncIdx() -> TransitionModeWrap {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDTransitionModeSysTime(sys_time: Duration) -> TransitionModeWrap {
+pub unsafe extern "C" fn AUTDTransitionModeSysTime(sys_time_ns: u64) -> TransitionModeWrap {
     TransitionMode::SysTime(
-        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from(sys_time)).unwrap(),
+        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(sys_time_ns))
+            .unwrap(),
     )
     .into()
 }

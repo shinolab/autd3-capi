@@ -32,8 +32,7 @@ impl From<TransitionModeWrap> for Option<autd3_driver::firmware::fpga::Transitio
             TransitionModeTag::SysTime => {
                 Some(autd3_driver::firmware::fpga::TransitionMode::SysTime(
                     DcSysTime::from_utc(
-                        ECAT_DC_SYS_TIME_BASE
-                            + std::time::Duration::from(Duration { nanos: mode.value }),
+                        ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(mode.value),
                     )
                     .unwrap(),
                 ))
