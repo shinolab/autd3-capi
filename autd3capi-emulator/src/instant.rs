@@ -192,7 +192,7 @@ mod tests {
             let emulator = AUTDEmulator(builder);
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                std::time::Duration::ZERO.into(),
+                0,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);

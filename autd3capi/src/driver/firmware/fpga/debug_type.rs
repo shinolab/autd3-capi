@@ -78,9 +78,10 @@ pub unsafe extern "C" fn AUTDDebugTypeDirect(value: bool) -> DebugTypeWrap {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDDebugTypeSysTimeEq(sys_time: Duration) -> DebugTypeWrap {
+pub unsafe extern "C" fn AUTDDebugTypeSysTimeEq(sys_time_ns: u64) -> DebugTypeWrap {
     DebugType::SysTimeEq(
-        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from(sys_time)).unwrap(),
+        DcSysTime::from_utc(ECAT_DC_SYS_TIME_BASE + std::time::Duration::from_nanos(sys_time_ns))
+            .unwrap(),
     )
     .into()
 }
