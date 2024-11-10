@@ -73,14 +73,14 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsValid(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsDefault(
-    intensity: u64,
-    phase: u64,
+    intensity: Duration,
+    phase: Duration,
     strict_mode: bool,
     target: SilencerTarget,
 ) -> bool {
     let default = Silencer::default();
-    intensity as u128 == default.config().intensity().as_nanos()
-        && phase as u128 == default.config().phase().as_nanos()
+    std::time::Duration::from(intensity) == default.config().intensity()
+        && std::time::Duration::from(phase) == default.config().phase()
         && strict_mode == default.strict_mode()
         && target == default.target()
 }
