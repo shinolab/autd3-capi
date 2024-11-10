@@ -136,7 +136,7 @@ pub unsafe extern "C" fn AUTDEmulatorSoundFieldInstantFree(sound_field: InstantP
 
 #[cfg(test)]
 mod tests {
-    use autd3::prelude::{Quaternion, ULTRASOUND_PERIOD};
+    use autd3::prelude::{DcSysTime, Quaternion, ULTRASOUND_PERIOD};
     use autd3capi::{
         controller, gain, link::AUTDLinkGet, AUTDCreateRuntime, AUTDDeleteRuntime,
         AUTDGetRuntimeHandle, AUTDWaitLocalResultStatus, AUTDWaitResultStatus,
@@ -192,7 +192,7 @@ mod tests {
             let emulator = AUTDEmulator(builder);
             let record = AUTDEmulatorRecordFrom(
                 emulator,
-                0,
+                DcSysTime::ZERO,
                 std::mem::transmute::<unsafe extern "C" fn(ControllerPtr), ConstPtr>(f),
             );
             let record = AUTDEmulatorWaitResultRecord(handle, record);
