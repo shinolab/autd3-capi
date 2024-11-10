@@ -42,7 +42,7 @@ pub unsafe extern "C" fn AUTDDeviceSetSoundSpeedFromTemp(
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Vector3 {
-    dev.center()
+    *dev.center()
 }
 
 #[no_mangle]
