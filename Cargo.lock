@@ -330,7 +330,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "assert_approx_eq",
  "autd3capi-driver",
@@ -343,7 +343,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-driver"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "assert_approx_eq",
  "async-ffi",
@@ -358,7 +358,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-emulator"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "autd3-emulator",
  "autd3capi",
@@ -369,7 +369,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -377,7 +377,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
@@ -398,7 +398,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "29.0.0-rc.8"
+version = "29.0.0-rc.8.1"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-driver",
