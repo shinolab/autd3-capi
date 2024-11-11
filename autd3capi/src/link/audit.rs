@@ -40,12 +40,8 @@ pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastTimeout(audit: LinkPtr) -> i64 {
-    audit
-        .cast::<Audit>()
-        .last_timeout()
-        .map(|t| t.as_nanos() as i64)
-        .unwrap_or(-1)
+pub unsafe extern "C" fn AUTDLinkAuditLastTimeout(audit: LinkPtr) -> OptionDuration {
+    audit.cast::<Audit>().last_timeout().into()
 }
 
 #[no_mangle]
@@ -146,13 +142,12 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> u16 {
-    (audit.cast::<Audit>()[idx as usize]
+) -> Duration {
+    audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps()
         .intensity
-        .as_nanos()
-        / ULTRASOUND_PERIOD.as_nanos()) as u16
+        .into()
 }
 
 #[no_mangle]
@@ -160,13 +155,12 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
     audit: LinkPtr,
     idx: u16,
-) -> u16 {
-    (audit.cast::<Audit>()[idx as usize]
+) -> Duration {
+    audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps()
         .phase
-        .as_nanos()
-        / ULTRASOUND_PERIOD.as_nanos()) as u16
+        .into()
 }
 
 #[no_mangle]
