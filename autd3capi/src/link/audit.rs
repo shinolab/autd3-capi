@@ -2,7 +2,7 @@
 
 use autd3::{
     derive::{Drive, LoopBehavior, Segment},
-    prelude::{SilencerTarget, ULTRASOUND_PERIOD},
+    prelude::SilencerTarget,
 };
 use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
 
