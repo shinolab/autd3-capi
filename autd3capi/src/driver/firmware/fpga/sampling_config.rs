@@ -52,6 +52,6 @@ pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfig) -> f32 {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfig) -> u64 {
-    c.period().as_nanos() as u64
+pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfig) -> Duration {
+    c.period().into()
 }

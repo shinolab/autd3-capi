@@ -41,3 +41,15 @@ impl From<OptionDuration> for Option<std::time::Duration> {
         }
     }
 }
+
+impl From<Option<std::time::Duration>> for OptionDuration {
+    fn from(d: Option<std::time::Duration>) -> Self {
+        match d {
+            Some(d) => Self {
+                has_value: true,
+                value: d.into(),
+            },
+            None => Self::NONE,
+        }
+    }
+}
