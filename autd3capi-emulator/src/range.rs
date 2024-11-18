@@ -1,5 +1,5 @@
 #[repr(C)]
-pub struct Range {
+pub struct RangeXYZ {
     pub x_start: f32,
     pub x_end: f32,
     pub y_start: f32,
@@ -9,9 +9,9 @@ pub struct Range {
     pub resolution: f32,
 }
 
-impl From<Range> for autd3_emulator::Range {
-    fn from(value: Range) -> Self {
-        autd3_emulator::Range {
+impl From<RangeXYZ> for autd3_emulator::RangeXYZ {
+    fn from(value: RangeXYZ) -> Self {
+        autd3_emulator::RangeXYZ {
             x: value.x_start..=value.x_end,
             y: value.y_start..=value.y_end,
             z: value.z_start..=value.z_end,

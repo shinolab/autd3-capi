@@ -26,12 +26,15 @@ impl From<RmsRecordOption> for autd3_emulator::RmsRecordOption {
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldRms(
     record: RecordPtr,
-    range: Range,
+    range: RangeXYZ,
     option: RmsRecordOption,
 ) -> LocalFfiFuture<ResultRms> {
     async move {
         let r = record
-            .sound_field(range.into(), autd3_emulator::RmsRecordOption::from(option))
+            .sound_field(
+                autd3_emulator::RangeXYZ::from(range),
+                autd3_emulator::RmsRecordOption::from(option),
+            )
             .await;
         r.into()
     }
@@ -191,7 +194,7 @@ mod tests {
             assert!(!record.result.0.is_null());
             let record = record.result;
 
-            let range = Range {
+            let range = RangeXYZ {
                 x_start: -1.,
                 x_end: 1.,
                 y_start: 0.,

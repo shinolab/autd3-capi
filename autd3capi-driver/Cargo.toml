@@ -9,17 +9,13 @@ repository = { workspace = true }
 
 [dependencies]
 async-ffi = { workspace = true }
-autd3 = { workspace = true, features = ["async-trait"] }
-autd3-driver = { workspace = true, features = ["derive", "async-trait"] }
+autd3 = { workspace = true}
+autd3-driver = { workspace = true}
 libc = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
-derive_more = { workspace = true }
-spin_sleep = "1.2.1"
+tokio = { workspace = true}
+spin_sleep = { workspace = true }
 tracing = { workspace = true }
 
 [features]
 static = []
 unity = ["autd3-driver/left_handed", "autd3-driver/use_meter"]
-
-[dev-dependencies]
-assert_approx_eq = { workspace = true }
