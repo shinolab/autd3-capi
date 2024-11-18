@@ -30,14 +30,14 @@ impl From<InstantRecordOption> for autd3_emulator::InstantRecordOption {
 #[must_use]
 pub unsafe extern "C" fn AUTDEmulatorSoundFieldInstant(
     record: RecordPtr,
-    range: Range,
+    range: RangeXYZ,
     option: InstantRecordOption,
 ) -> LocalFfiFuture<ResultInstant> {
     async move {
         let r = record
             .static_deref()
             .sound_field(
-                range.into(),
+                autd3_emulator::RangeXYZ::from(range),
                 autd3_emulator::InstantRecordOption::from(option),
             )
             .await;
@@ -199,7 +199,7 @@ mod tests {
             assert!(!record.result.0.is_null());
             let record = record.result;
 
-            let range = Range {
+            let range = RangeXYZ {
                 x_start: -1.,
                 x_end: 1.,
                 y_start: 0.,
