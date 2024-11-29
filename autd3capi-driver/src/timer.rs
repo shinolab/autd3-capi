@@ -1,7 +1,6 @@
 use std::num::NonZeroU32;
 
 use autd3::controller::timer::*;
-use spin_sleep::{SpinSleeper, SpinStrategy};
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
