@@ -73,7 +73,7 @@ impl DebugTypeWrap {
     }
 }
 
-impl<'a> From<autd3_driver::firmware::fpga::DebugType<'a>> for DebugTypeWrap {
+impl From<autd3_driver::firmware::fpga::DebugType<'_>> for DebugTypeWrap {
     fn from(value: autd3_driver::firmware::fpga::DebugType) -> Self {
         match value {
             autd3_driver::firmware::fpga::DebugType::None => DebugTypeWrap {
