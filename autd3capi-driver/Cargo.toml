@@ -9,11 +9,10 @@ repository = { workspace = true }
 
 [dependencies]
 async-ffi = { workspace = true }
-autd3 = { workspace = true}
-autd3-driver = { workspace = true}
+autd3 = { workspace = true }
+autd3-driver = { workspace = true }
 libc = { workspace = true }
-tokio = { workspace = true}
-spin_sleep = { workspace = true }
+tokio = { workspace = true }
 tracing = { workspace = true }
 
 [features]
