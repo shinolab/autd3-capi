@@ -4,7 +4,7 @@ use autd3::{
     derive::{Drive, LoopBehavior, Segment},
     prelude::SilencerTarget,
 };
-use autd3capi_driver::{autd3::link::audit::*, driver::link::Link, *};
+use autd3capi_driver::{autd3::link::Audit, driver::link::Link, *};
 
 #[no_mangle]
 #[must_use]

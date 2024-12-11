@@ -57,7 +57,7 @@ pub unsafe extern "C" fn AUTDGainGroup(
     keys_ptr: *const i32,
     values_ptr: *const GainPtr,
     kv_len: u32,
-) -> GainPtr {
+) -> ResultGain {
     let map: HashMap<_, _> = take!(map, M)
         .into_iter()
         .map(|(k, v)| (k, Arc::new(v)))
@@ -75,7 +75,7 @@ pub unsafe extern "C" fn AUTDGainGroup(
     };
     (0..kv_len as usize)
         .map(|i| (keys_ptr.add(i).read(), values_ptr.add(i).read()))
-        .fold(Group::new(f), |acc, (k, v)| {
+        .try_fold(Group::new(f), |acc, (k, v)| {
             acc.set(k, *take!(v, BoxedGain))
         })
         .into()
