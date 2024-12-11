@@ -22,8 +22,8 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
     pos: *const Vector3,
     rot: *const Quaternion,
     len: u16,
-    fallback_parallel_threshold: u16,
-    fallback_timeout: Duration,
+    default_parallel_threshold: u16,
+    default_timeout: Duration,
     send_interval: Duration,
     receive_interval: Duration,
     timer_strategy: TimerStrategyWrap,
@@ -35,8 +35,8 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
             .zip(rot)
             .map(|(p, r)| AUTD3::new(p).with_rotation(UnitQuaternion::from_quaternion(r))),
     )
-    .with_fallback_parallel_threshold(fallback_parallel_threshold as _)
-    .with_fallback_timeout(fallback_timeout.into())
+    .with_default_parallel_threshold(default_parallel_threshold as _)
+    .with_default_timeout(default_timeout.into())
     .with_send_interval(send_interval.into())
     .with_receive_interval(receive_interval.into())
     .with_timer_strategy(timer_strategy.into())
@@ -46,15 +46,15 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerBuilderIsDefault(
-    fallback_parallel_threshold: u16,
-    fallback_timeout: Duration,
+    default_parallel_threshold: u16,
+    default_timeout: Duration,
     send_interval_ns: Duration,
     receive_interval: Duration,
     timer_strategy: TimerStrategyWrap,
 ) -> bool {
     let default = Controller::<Nop>::builder::<Device, _>([]);
-    fallback_parallel_threshold as usize == default.fallback_parallel_threshold()
-        && std::time::Duration::from(fallback_timeout) == default.fallback_timeout()
+    default_parallel_threshold as usize == default.default_parallel_threshold()
+        && std::time::Duration::from(default_timeout) == default.default_timeout()
         && std::time::Duration::from(send_interval_ns) == default.send_interval()
         && std::time::Duration::from(receive_interval) == default.receive_interval()
         && &TimerStrategy::from(timer_strategy) == default.timer_strategy()
