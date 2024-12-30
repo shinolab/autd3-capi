@@ -31,7 +31,7 @@ pub struct ConstPtr(pub *const libc::c_void);
 unsafe impl Send for ConstPtr {}
 unsafe impl Sync for ConstPtr {}
 
-pub use autd3_driver::geometry::Vector3;
+pub use autd3_driver::geometry::Point3;
 
 #[macro_export]
 macro_rules! vec_from_raw {

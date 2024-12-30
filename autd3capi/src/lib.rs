@@ -111,7 +111,7 @@ pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultS
 
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, OptionDuration, Vector3};
+    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, OptionDuration, Point3};
 
     use super::*;
 
@@ -122,7 +122,7 @@ mod tests {
 
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let pos = [Vector3::new(0., 0., 0.)];
+            let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let builder = controller::builder::AUTDControllerBuilder(
                 pos.as_ptr(),
@@ -147,7 +147,7 @@ mod tests {
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
-            let g = gain::focus::AUTDGainFocus(Vector3::new(0., 0., 150.), 0xFF, 0x00);
+            let g = gain::focus::AUTDGainFocus(Point3::new(0., 0., 150.), 0xFF, 0x00);
             let m = modulation::r#static::AUTDModulationStatic(
                 0xFF,
                 driver::firmware::fpga::loop_behavior::AUTDLoopBehaviorInfinite(),

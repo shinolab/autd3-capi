@@ -1,6 +1,6 @@
 use autd3_driver::{
     async_trait,
-    error::AUTDInternalError,
+    error::AUTDDriverError,
     firmware::cpu::{RxMessage, TxMessage},
     geometry::Geometry,
     link::{Link, LinkBuilder},
@@ -22,15 +22,15 @@ pub struct SyncLink<T: Link> {
 
 #[async_trait]
 impl<T: Link> Link for SyncLink<T> {
-    async fn close(&mut self) -> Result<(), AUTDInternalError> {
+    async fn close(&mut self) -> Result<(), AUTDDriverError> {
         self.runtime.block_on(self.inner.close())
     }
 
-    async fn send(&mut self, tx: &[TxMessage]) -> Result<bool, AUTDInternalError> {
+    async fn send(&mut self, tx: &[TxMessage]) -> Result<bool, AUTDDriverError> {
         self.runtime.block_on(self.inner.send(tx))
     }
 
-    async fn receive(&mut self, rx: &mut [RxMessage]) -> Result<bool, AUTDInternalError> {
+    async fn receive(&mut self, rx: &mut [RxMessage]) -> Result<bool, AUTDDriverError> {
         self.runtime.block_on(self.inner.receive(rx))
     }
 
@@ -39,7 +39,7 @@ impl<T: Link> Link for SyncLink<T> {
         self.inner.is_open()
     }
 
-    async fn update(&mut self, geometry: &Geometry) -> Result<(), AUTDInternalError> {
+    async fn update(&mut self, geometry: &Geometry) -> Result<(), AUTDDriverError> {
         self.runtime.block_on(self.inner.update(geometry))
     }
 }
@@ -53,7 +53,7 @@ pub struct SyncLinkBuilder<L: Link, T: LinkBuilder<L = L>> {
 impl<L: Link, T: LinkBuilder<L = L>> LinkBuilder for SyncLinkBuilder<L, T> {
     type L = SyncLink<L>;
 
-    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDInternalError> {
+    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDDriverError> {
         let inner = self.runtime.block_on(self.inner.open(geometry))?;
         Ok(SyncLink {
             runtime: self.runtime,

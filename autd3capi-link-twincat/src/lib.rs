@@ -4,7 +4,7 @@ use std::ffi::{c_char, CStr};
 
 use autd3capi_driver::*;
 
-use autd3_link_twincat::{local::*, remote::remote_twincat_link::*};
+use autd3_link_twincat::{local::*, remote::*};
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkTwinCATTracingInit() {

@@ -5,7 +5,7 @@ use driver::geometry::UnitVector3;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
-    p: Vector3,
+    p: Point3,
     n: Vector3,
     theta_z: f32,
     intensity: u8,
@@ -20,6 +20,6 @@ pub unsafe extern "C" fn AUTDGainBessel(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBesselIsDefault(intensity: u8, phase_offset: u8) -> bool {
-    let default = Bessel::new(Vector3::zeros(), Vector3::x_axis(), 0.0 * rad);
+    let default = Bessel::new(Point3::origin(), Vector3::x_axis(), 0.0 * rad);
     intensity == default.intensity().value() && phase_offset == default.phase_offset().value()
 }

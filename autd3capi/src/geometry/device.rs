@@ -41,7 +41,7 @@ pub unsafe extern "C" fn AUTDDeviceSetSoundSpeedFromTemp(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Vector3 {
+pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
     *dev.center()
 }
 
@@ -95,15 +95,15 @@ pub unsafe extern "C" fn AUTDDeviceRotation(dev: DevicePtr) -> Quaternion {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeviceDirectionX(dev: DevicePtr) -> Vector3 {
-    *dev.x_direction()
+    dev.x_direction().into_inner()
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeviceDirectionY(dev: DevicePtr) -> Vector3 {
-    *dev.y_direction()
+    dev.y_direction().into_inner()
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDDeviceDirectionAxial(dev: DevicePtr) -> Vector3 {
-    *dev.axial_direction()
+    dev.axial_direction().into_inner()
 }

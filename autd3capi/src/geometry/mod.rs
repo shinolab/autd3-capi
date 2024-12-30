@@ -26,6 +26,6 @@ pub unsafe extern "C" fn AUTDGeometryNumTransducers(geo: GeometryPtr) -> u32 {
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGeometrCenter(geo: GeometryPtr) -> Vector3 {
+pub unsafe extern "C" fn AUTDGeometrCenter(geo: GeometryPtr) -> Point3 {
     geo.center()
 }

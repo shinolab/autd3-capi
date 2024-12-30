@@ -12,7 +12,7 @@ use autd3capi_driver::{
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
-    points: *const Vector3,
+    points: *const Point3,
     amps: *const f32,
     size: u32,
     div: u8,
@@ -27,7 +27,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
-    points: *const Vector3,
+    points: *const Point3,
     amps: *const f32,
     size: u32,
     div: u8,
