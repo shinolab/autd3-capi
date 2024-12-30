@@ -3,10 +3,7 @@
 use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
-    driver::{
-        acoustics::directivity::{Sphere, T4010A1},
-        geometry::Vector3,
-    },
+    driver::acoustics::directivity::{Sphere, T4010A1},
     *,
 };
 
@@ -14,7 +11,7 @@ use autd3capi_driver::{
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
     backend: BackendPtr,
-    points: *const Vector3,
+    points: *const Point3,
     amps: *const f32,
     size: u32,
     constraint: EmissionConstraintWrap,
@@ -28,7 +25,7 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
     backend: BackendPtr,
-    points: *const Vector3,
+    points: *const Point3,
     amps: *const f32,
     size: u32,
     constraint: EmissionConstraintWrap,

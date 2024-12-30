@@ -75,8 +75,8 @@ impl From<()> for AUTDStatus {
     }
 }
 
-impl From<AUTDInternalError> for AUTDStatus {
-    fn from(_: AUTDInternalError) -> Self {
+impl From<AUTDDriverError> for AUTDStatus {
+    fn from(_: AUTDDriverError) -> Self {
         Self::AUTDErr
     }
 }

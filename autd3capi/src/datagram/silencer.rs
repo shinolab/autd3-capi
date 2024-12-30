@@ -2,7 +2,7 @@ use std::num::NonZeroU16;
 
 use autd3capi_driver::{
     autd3::{derive::SamplingConfig, prelude::SilencerTarget},
-    driver::datagram::{FixedCompletionTime, FixedUpdateRate, Silencer, WithSampling},
+    driver::datagram::{FixedCompletionTime, FixedUpdateRate, HasSamplingConfig, Silencer},
     DatagramPtr, Duration,
 };
 
@@ -19,21 +19,6 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
     })
     .with_target(target)
     .into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDDatagramSilencerFixedUpdateRateIsValid(
-    intensity: u16,
-    phase: u16,
-    config_intensity: SamplingConfig,
-    config_phase: SamplingConfig,
-) -> bool {
-    Silencer::new(FixedUpdateRate {
-        intensity: NonZeroU16::new_unchecked(intensity),
-        phase: NonZeroU16::new_unchecked(phase),
-    })
-    .is_valid(&SamplingConfigTuple(config_intensity, config_phase))
 }
 
 #[no_mangle]
@@ -79,20 +64,20 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionTimeIsDefault(
     target: SilencerTarget,
 ) -> bool {
     let default = Silencer::default();
-    std::time::Duration::from(intensity) == default.config().intensity()
-        && std::time::Duration::from(phase) == default.config().phase()
+    std::time::Duration::from(intensity) == default.config().intensity
+        && std::time::Duration::from(phase) == default.config().phase
         && strict_mode == default.strict_mode()
         && target == default.target()
 }
 
 struct SamplingConfigTuple(SamplingConfig, SamplingConfig);
 
-impl WithSampling for SamplingConfigTuple {
-    fn sampling_config_intensity(&self) -> Option<SamplingConfig> {
+impl HasSamplingConfig for SamplingConfigTuple {
+    fn intensity(&self) -> Option<SamplingConfig> {
         Some(self.0)
     }
 
-    fn sampling_config_phase(&self) -> Option<SamplingConfig> {
+    fn phase(&self) -> Option<SamplingConfig> {
         Some(self.1)
     }
 }

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use autd3::derive::{Datagram, Geometry};
 use autd3_driver::{
-    error::AUTDInternalError,
+    error::AUTDDriverError,
     firmware::operation::{Operation, OperationGenerator},
     geometry::Device,
 };
@@ -35,7 +35,7 @@ impl OperationGenerator for DOperationGeneratorTuple {
 }
 
 impl Datagram for DynDatagramTuple {
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDDriverError> {
         Ok(DOperationGeneratorTuple {
             g1: self.d1.operation_generator(geometry)?,
             g2: self.d2.operation_generator(geometry)?,

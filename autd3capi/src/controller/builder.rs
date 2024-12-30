@@ -8,7 +8,7 @@ use autd3capi_driver::{
     },
     driver::{
         autd3_device::AUTD3,
-        geometry::{Quaternion, UnitQuaternion, Vector3},
+        geometry::{Point3, Quaternion, UnitQuaternion},
     },
     take, vec_from_raw, ControllerBuilderPtr, Duration, DynamicLinkBuilder, LinkBuilderPtr,
     OptionDuration, TimerStrategyWrap,
@@ -19,7 +19,7 @@ use super::ResultController;
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerBuilder(
-    pos: *const Vector3,
+    pos: *const Point3,
     rot: *const Quaternion,
     len: u16,
     default_parallel_threshold: u16,
@@ -28,7 +28,7 @@ pub unsafe extern "C" fn AUTDControllerBuilder(
     receive_interval: Duration,
     timer_strategy: TimerStrategyWrap,
 ) -> ControllerBuilderPtr {
-    let pos = vec_from_raw!(pos, Vector3, len);
+    let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
     Controller::builder(
         pos.into_iter()

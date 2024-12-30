@@ -1,6 +1,6 @@
 use autd3::derive::{LoopBehavior, SamplingConfig, Segment};
 use autd3capi_driver::{driver::datagram::FociSTM, *};
-use driver::{datagram::IntoDatagramWithSegment, defined::ControlPoints};
+use driver::{datagram::IntoDatagramWithSegment, firmware::operation::ControlPoints};
 
 #[no_mangle]
 #[must_use]

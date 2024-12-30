@@ -33,7 +33,7 @@ mod tests {
 
     use autd3capi_driver::{
         autd3::derive::Drive, driver::geometry::Quaternion, AUTDStatus, ConstPtr, GeometryPtr,
-        OptionDuration, Vector3,
+        OptionDuration, Point3,
     };
 
     use super::*;
@@ -62,7 +62,7 @@ mod tests {
 
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let pos = [Vector3::new(0., 0., 0.)];
+            let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let builder = controller::builder::AUTDControllerBuilder(
                 pos.as_ptr(),

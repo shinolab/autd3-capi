@@ -1,7 +1,7 @@
 use async_ffi::BorrowingFfiFuture;
 
 use autd3_driver::{
-    error::AUTDInternalError,
+    error::AUTDDriverError,
     geometry::Geometry,
     link::{Link, LinkBuilder},
 };
@@ -41,7 +41,7 @@ impl LinkPtr {
 pub struct DynamicLinkBuilder {
     #[allow(clippy::type_complexity)]
     pub gen:
-        Box<dyn FnOnce(&Geometry) -> BorrowingFfiFuture<Result<Box<dyn Link>, AUTDInternalError>>>,
+        Box<dyn FnOnce(&Geometry) -> BorrowingFfiFuture<Result<Box<dyn Link>, AUTDDriverError>>>,
 }
 
 unsafe impl Send for DynamicLinkBuilder {}
@@ -55,7 +55,7 @@ impl DynamicLinkBuilder {
         Self {
             gen: Box::new(move |geometry| {
                 BorrowingFfiFuture::new(async move {
-                    let r: Result<Box<dyn Link>, AUTDInternalError> =
+                    let r: Result<Box<dyn Link>, AUTDDriverError> =
                         match builder.open(geometry).await {
                             Ok(v) => Ok(Box::new(v)),
                             Err(e) => Err(e),
@@ -80,7 +80,7 @@ where
 impl LinkBuilder for DynamicLinkBuilder {
     type L = Box<dyn Link>;
 
-    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDInternalError> {
+    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDDriverError> {
         (self.gen)(geometry).await
     }
 }

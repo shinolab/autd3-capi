@@ -4,7 +4,7 @@ pub use tuple::DynDatagramTuple;
 
 use std::{mem::MaybeUninit, time::Duration};
 
-use autd3::derive::{AUTDInternalError, Geometry};
+use autd3::derive::{AUTDDriverError, Geometry};
 use autd3_driver::{
     datagram::Datagram,
     firmware::operation::{Operation, OperationGenerator},
@@ -43,7 +43,7 @@ pub trait DDatagram: std::fmt::Debug {
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
-    ) -> Result<Box<dyn DOperationGenerator>, AUTDInternalError>;
+    ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError>;
     fn dyn_timeout(&self) -> Option<Duration>;
     fn dyn_parallel_threshold(&self) -> Option<usize>;
     fn dyn_fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result;
@@ -53,7 +53,7 @@ impl<G: DOperationGenerator + 'static, T: Datagram<G = G>> DDatagram for MaybeUn
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
-    ) -> Result<Box<dyn DOperationGenerator>, AUTDInternalError> {
+    ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError> {
         let mut tmp = MaybeUninit::<T>::uninit();
         std::mem::swap(&mut tmp, self);
         let d = unsafe { tmp.assume_init() };
@@ -97,7 +97,7 @@ impl DynDatagram {
 impl Datagram for DynDatagram {
     type G = DynOperationGenerator;
 
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDInternalError> {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDDriverError> {
         let Self { mut d } = self;
         Ok(DynOperationGenerator {
             g: d.dyn_operation_generator(geometry)?,

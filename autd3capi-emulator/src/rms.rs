@@ -169,7 +169,7 @@ mod tests {
             let runtime = AUTDCreateRuntime();
             let handle = AUTDGetRuntimeHandle(runtime);
 
-            let pos = [Vector3::new(0.0, 0.0, 0.0); 1];
+            let pos = [Point3::origin(); 1];
             let rot = [Quaternion::new(1.0, 0.0, 0.0, 0.0); 1];
             let builder = controller::builder::AUTDControllerBuilder(
                 pos.as_ptr(),
