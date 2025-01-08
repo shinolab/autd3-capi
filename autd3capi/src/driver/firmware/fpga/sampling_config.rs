@@ -1,6 +1,6 @@
-use autd3capi_driver::{
-    autd3::derive::SamplingConfig, driver::defined::Hz, Duration, ResultSamplingConfig,
-};
+#[cfg(not(feature = "dynamic_freq"))]
+use autd3capi_driver::Duration;
+use autd3capi_driver::{autd3::derive::SamplingConfig, driver::defined::Hz, ResultSamplingConfig};
 
 #[no_mangle]
 #[must_use]
@@ -26,12 +26,14 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingCo
     SamplingConfig::new_nearest(f * Hz)
 }
 
+#[cfg(not(feature = "dynamic_freq"))]
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> ResultSamplingConfig {
     std::time::Duration::from(p).try_into().into()
 }
 
+#[cfg(not(feature = "dynamic_freq"))]
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> SamplingConfig {
@@ -50,6 +52,7 @@ pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfig) -> f32 {
     c.freq().hz()
 }
 
+#[cfg(not(feature = "dynamic_freq"))]
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfig) -> Duration {

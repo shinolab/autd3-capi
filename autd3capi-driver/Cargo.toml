@@ -18,3 +18,4 @@ tracing = { workspace = true }
 [features]
 static = []
 unity = ["autd3-driver/left_handed", "autd3-driver/use_meter"]
+dynamic_freq = ["autd3-driver/dynamic_freq", "autd3/dynamic_freq"]

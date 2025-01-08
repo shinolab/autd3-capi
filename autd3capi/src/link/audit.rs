@@ -142,12 +142,12 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
     audit: LinkPtr,
     idx: u16,
-) -> Duration {
+) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps()
         .intensity
-        .into()
+        .get()
 }
 
 #[no_mangle]
@@ -155,12 +155,12 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
     audit: LinkPtr,
     idx: u16,
-) -> Duration {
+) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .silencer_completion_steps()
         .phase
-        .into()
+        .get()
 }
 
 #[no_mangle]
