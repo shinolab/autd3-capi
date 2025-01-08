@@ -69,7 +69,7 @@ jobs:
           arch: ${{ matrix.arch }}
       - run: python3 build.py build --arch ${{ matrix.arch }} --features "${{ matrix.features }}"
         shell: bash
-      - run: python3 build.py lint --arch ${{ matrix.arch }} --features "${{ matrix.features }}"
+      - run: python3 build.py lint --features "${{ matrix.features }}"
         if: ${{ matrix.lint == true }}
         shell: bash
 
