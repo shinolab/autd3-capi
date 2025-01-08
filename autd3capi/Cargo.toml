@@ -15,3 +15,6 @@ tracing-subscriber = { workspace = true }
 libc = { workspace = true }
 seq-macro = { workspace = true }
 tracing = { workspace = true }
+
+[features]
+dynamic_freq = ["autd3capi-driver/dynamic_freq"]

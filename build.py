@@ -70,8 +70,6 @@ class Config(BaseConfig):
         if self.release:
             command.append("--release")
         command.extend(["--features", self.features])
-        if "static" in self.features or "unity" in self.features:
-            command.extend(["--exclude", "autd3capi-emulator"])
         return command
 
     def setup_linker(self) -> None:
