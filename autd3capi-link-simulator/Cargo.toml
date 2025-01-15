@@ -9,8 +9,6 @@ repository = { workspace = true }
 [lib]
 crate-type = ["cdylib", "staticlib"]
 
-[features]
-static = ["autd3capi-driver/static"]
 
 [dependencies]
 autd3-link-simulator = { workspace = true, features = ["blocking"] }
