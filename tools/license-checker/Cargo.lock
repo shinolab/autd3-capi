@@ -93,9 +93,8 @@ version = "0.4.0"
 dependencies = [
  "anyhow",
  "cargo-license",
- "cargo_metadata 0.18.1",
+ "cargo_metadata",
  "console",
- "csv",
  "glob",
  "reqwest",
  "serde",
@@ -175,7 +174,7 @@ checksum = "f061c0dbae23c1fe7ace394590d59b7e9bd24c7c678cd1b5f179081592d5894b"
 dependencies = [
  "ansi_term",
  "anyhow",
- "cargo_metadata 0.18.1",
+ "cargo_metadata",
  "clap",
  "csv",
  "getopts",
@@ -208,21 +207,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "thiserror 1.0.64",
-]
-
-[[package]]
-name = "cargo_metadata"
-version = "0.19.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8769706aad5d996120af43197bf46ef6ad0fda35216b4505f926a365a232d924"
-dependencies = [
- "camino",
- "cargo-platform",
- "semver",
- "serde",
- "serde_json",
- "thiserror 2.0.6",
+ "thiserror",
 ]
 
 [[package]]
@@ -714,8 +699,6 @@ version = "21.0.0-alpha.3"
 dependencies = [
  "anyhow",
  "autd3-license-check",
- "cargo-license",
- "cargo_metadata 0.19.1",
 ]
 
 [[package]]
@@ -1225,16 +1208,7 @@ version = "1.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d50af8abc119fb8bb6dbabcfa89656f46f84aa0ac7688088608076ad2b459a84"
 dependencies = [
- "thiserror-impl 1.0.64",
-]
-
-[[package]]
-name = "thiserror"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fec2a1820ebd077e2b90c4df007bebf344cd394098a13c563957d0afc83ea47"
-dependencies = [
- "thiserror-impl 2.0.6",
+ "thiserror-impl",
 ]
 
 [[package]]
@@ -1242,17 +1216,6 @@ name = "thiserror-impl"
 version = "1.0.64"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08904e7672f5eb876eaaf87e0ce17857500934f4981c4a0ab2b4aa98baac7fc3"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "2.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d65750cab40f4ff1929fb1ba509e9914eb756131cef4210da8d5d700d26f6312"
 dependencies = [
  "proc-macro2",
  "quote",
