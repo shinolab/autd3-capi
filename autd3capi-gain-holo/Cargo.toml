@@ -11,4 +11,4 @@ crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-autd3-gain-holo = { workspace = true, features = ["async-trait"] }
+autd3-gain-holo = { workspace = true }

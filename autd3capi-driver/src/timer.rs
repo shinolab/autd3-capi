@@ -7,7 +7,6 @@ use autd3::controller::timer::*;
 pub enum TimerStrategyTag {
     Std = 0,
     Spin = 1,
-    Async = 2,
     Waitable = 3,
 }
 
@@ -53,11 +52,6 @@ impl From<TimerStrategyWrap> for TimerStrategy {
             TimerStrategyTag::Spin => TimerStrategy::Spin(
                 SpinSleeper::new(value.value).with_spin_strategy(value.spin_strategy.into()),
             ),
-            TimerStrategyTag::Async => {
-                TimerStrategy::Async(autd3::controller::timer::AsyncSleeper {
-                    timer_resolution: NonZeroU32::new(value.value),
-                })
-            }
             #[cfg(target_os = "windows")]
             TimerStrategyTag::Waitable => TimerStrategy::Waitable(
                 autd3::controller::timer::WaitableSleeper::new()

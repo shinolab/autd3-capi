@@ -1,6 +1,8 @@
 #[cfg(not(feature = "dynamic_freq"))]
 use autd3capi_driver::Duration;
-use autd3capi_driver::{autd3::derive::SamplingConfig, driver::defined::Hz, ResultSamplingConfig};
+use autd3capi_driver::{
+    autd3::core::modulation::SamplingConfig, driver::defined::Hz, ResultSamplingConfig,
+};
 
 #[no_mangle]
 #[must_use]

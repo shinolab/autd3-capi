@@ -2,12 +2,8 @@ pub mod builder;
 pub mod group;
 pub mod timer;
 
-use autd3::Controller;
-use autd3capi_driver::{
-    async_ffi::{FfiFuture, FutureExt},
-    driver::firmware::{fpga::FPGAState, version::FirmwareVersion},
-};
-use driver::link::Link;
+use autd3::{core::link::Link, Controller};
+use autd3capi_driver::driver::firmware::{fpga::FPGAState, version::FirmwareVersion};
 
 use std::ffi::c_char;
 
@@ -20,13 +16,12 @@ pub struct ResultController {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultController, ControllerPtr);
+impl_result!(ResultController, ControllerPtr);
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> FfiFuture<ResultStatus> {
-    let cnt = take!(cnt, Controller<Box<dyn Link>>);
-    async move { cnt.close().await.into() }.into_ffi()
+pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> ResultStatus {
+    take!(cnt, Controller<Box<dyn Link>>).close().into()
 }
 
 #[repr(C)]
@@ -41,14 +36,12 @@ pub struct ResultFPGAStateList {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultFPGAStateList, FPGAStateListPtr);
+impl_result!(ResultFPGAStateList, FPGAStateListPtr);
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDControllerFPGAState(
-    mut cnt: ControllerPtr,
-) -> FfiFuture<ResultFPGAStateList> {
-    async move { cnt.fpga_state().await.into() }.into_ffi()
+pub unsafe extern "C" fn AUTDControllerFPGAState(mut cnt: ControllerPtr) -> ResultFPGAStateList {
+    cnt.fpga_state().into()
 }
 
 #[no_mangle]
@@ -73,14 +66,14 @@ pub struct ResultFirmwareVersionList {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultFirmwareVersionList, FirmwareVersionListPtr);
+impl_result!(ResultFirmwareVersionList, FirmwareVersionListPtr);
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerFirmwareVersionListPointer(
     mut cnt: ControllerPtr,
-) -> FfiFuture<ResultFirmwareVersionList> {
-    async move { cnt.firmware_version().await.into() }.into_ffi()
+) -> ResultFirmwareVersionList {
+    cnt.firmware_version().into()
 }
 
 #[no_mangle]
@@ -111,6 +104,6 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
 pub unsafe extern "C" fn AUTDControllerSend(
     mut cnt: ControllerPtr,
     d: DatagramPtr,
-) -> FfiFuture<ResultStatus> {
-    async move { cnt.send(*Box::<DynDatagram>::from(d)).await.into() }.into_ffi()
+) -> ResultStatus {
+     cnt.send(*Box::<DynDatagram>::from(d)).into() 
 }

@@ -1,7 +1,9 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::derive::LoopBehavior;
-use autd3capi_driver::{autd3::modulation::Static, *};
+use autd3capi_driver::{
+    autd3::{core::modulation::LoopBehavior, modulation::Static},
+    *,
+};
 
 #[no_mangle]
 #[must_use]

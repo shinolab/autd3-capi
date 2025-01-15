@@ -1,9 +1,9 @@
 use autd3::prelude::*;
 
-use crate::{ConstPtr, FfiResult};
+use crate::{CapiResult, ConstPtr};
 
 #[macro_export]
-macro_rules! impl_ffi_result {
+macro_rules! impl_result {
     ($type:ty, $inner:ident) => {
         impl<T, E> From<Result<T, E>> for $type
         where
@@ -81,7 +81,7 @@ impl From<AUTDDriverError> for AUTDStatus {
     }
 }
 
-impl_ffi_result!(ResultStatus, AUTDStatus);
+impl_result!(ResultStatus, AUTDStatus);
 
 #[repr(C)]
 pub struct ResultSamplingConfig {
@@ -90,8 +90,8 @@ pub struct ResultSamplingConfig {
     pub err: ConstPtr,
 }
 
-impl FfiResult for SamplingConfig {
+impl CapiResult for SamplingConfig {
     const NULL: Self = SamplingConfig::FREQ_40K;
 }
 
-impl_ffi_result!(ResultSamplingConfig, SamplingConfig);
+impl_result!(ResultSamplingConfig, SamplingConfig);

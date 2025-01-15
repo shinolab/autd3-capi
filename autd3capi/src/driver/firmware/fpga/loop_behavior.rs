@@ -1,4 +1,4 @@
-use autd3capi_driver::autd3::derive::LoopBehavior;
+use autd3capi_driver::autd3::core::modulation::LoopBehavior;
 
 #[no_mangle]
 #[must_use]

@@ -18,11 +18,9 @@ pub use resampler::*;
 pub use result::*;
 pub use timer::*;
 
-pub use async_ffi;
 pub use autd3;
 pub use autd3_driver as driver;
 pub use libc;
-pub use tokio;
 
 #[derive(Clone, Copy)]
 #[repr(C)]

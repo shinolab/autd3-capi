@@ -1,4 +1,4 @@
-use autd3::{derive::LoopBehavior, prelude::IntoRadiationPressure};
+use autd3::{core::modulation::LoopBehavior, prelude::IntoRadiationPressure};
 use autd3capi_driver::*;
 use driver::datagram::BoxedModulation;
 

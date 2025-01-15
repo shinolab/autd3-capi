@@ -1,5 +1,7 @@
-use autd3::derive::Drive;
-use autd3capi_driver::{autd3::gain::Custom, *};
+use autd3capi_driver::{
+    autd3::{core::gain::Drive, gain::Custom},
+    *,
+};
 
 #[no_mangle]
 #[must_use]

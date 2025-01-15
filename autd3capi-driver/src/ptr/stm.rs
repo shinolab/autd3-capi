@@ -1,7 +1,7 @@
 use autd3::prelude::ControlPoints;
 use autd3_driver::datagram::{BoxedGain, FociSTM, GainSTM};
 
-use crate::{impl_ffi_result, impl_ptr, ConstPtr};
+use crate::{impl_result, impl_ptr, ConstPtr};
 
 #[repr(C)]
 pub struct FociSTMPtr(pub *const libc::c_void);
@@ -32,7 +32,7 @@ pub struct ResultFociSTM {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultFociSTM, FociSTMPtr);
+impl_result!(ResultFociSTM, FociSTMPtr);
 
 #[repr(C)]
 pub struct ResultGainSTM {
@@ -41,4 +41,4 @@ pub struct ResultGainSTM {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultGainSTM, GainSTMPtr);
+impl_result!(ResultGainSTM, GainSTMPtr);

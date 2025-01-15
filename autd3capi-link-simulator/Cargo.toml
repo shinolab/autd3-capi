@@ -13,8 +13,7 @@ crate-type = ["cdylib", "staticlib"]
 static = ["autd3capi-driver/static"]
 
 [dependencies]
-autd3-link-simulator = { workspace = true, features = ["async-trait"] }
+autd3-link-simulator = { workspace = true, features = ["blocking"] }
 autd3capi-driver = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread"] }
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }

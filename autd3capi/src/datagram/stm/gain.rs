@@ -1,8 +1,12 @@
-use autd3::{
-    derive::{LoopBehavior, SamplingConfig, Segment},
-    prelude::GainSTMMode,
+use autd3capi_driver::{
+    autd3::core::{
+        datagram::Segment,
+        modulation::{LoopBehavior, SamplingConfig},
+    },
+    autd3::prelude::GainSTMMode,
+    driver::datagram::GainSTM,
+    *,
 };
-use autd3capi_driver::{driver::datagram::GainSTM, *};
 use driver::datagram::{BoxedGain, IntoDatagramWithSegment};
 
 #[no_mangle]

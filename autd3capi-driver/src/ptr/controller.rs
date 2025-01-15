@@ -1,5 +1,5 @@
 use autd3::{controller::ControllerBuilder, Controller};
-use autd3_driver::link::Link;
+use autd3_core::link::Link;
 
 use crate::impl_ptr;
 

@@ -2,7 +2,7 @@
 
 use autd3capi_driver::{
     autd3::{
-        derive::{LoopBehavior, SamplingConfig},
+        core::modulation::{LoopBehavior, SamplingConfig},
         modulation::{Fourier, Sine},
         prelude::{rad, Hz},
     },

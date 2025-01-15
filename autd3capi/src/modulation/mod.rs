@@ -1,4 +1,7 @@
-use autd3::derive::{ModulationProperty, SamplingConfig, Segment};
+use autd3::core::{
+    datagram::Segment,
+    modulation::{ModulationProperty, SamplingConfig},
+};
 use autd3capi_driver::*;
 use driver::datagram::{BoxedModulation, IntoDatagramWithSegment};
 

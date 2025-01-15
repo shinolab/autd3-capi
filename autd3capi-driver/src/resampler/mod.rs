@@ -1,6 +1,6 @@
 use std::num::NonZeroUsize;
 
-use autd3::modulation::resampler::{Blackman, Rectangular, Resampler, SincInterpolation};
+use autd3_core::resampler::{Blackman, Rectangular, Resampler, SincInterpolation};
 
 #[repr(u32)]
 #[derive(Debug)]

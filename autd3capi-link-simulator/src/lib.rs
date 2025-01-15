@@ -33,11 +33,11 @@ pub unsafe extern "C" fn AUTDLinkSimulatorTracingInitWithFile(path: *const c_cha
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultSyncLinkBuilder {
+pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLinkBuilder {
     let addr = if addr.is_null() {
         ""
     } else {
-        validate_cstr!(addr, SyncLinkBuilderPtr, ResultSyncLinkBuilder)
+        validate_cstr!(addr, LinkBuilderPtr, ResultLinkBuilder)
     };
     addr.parse::<SocketAddr>().map(Simulator::builder).into()
 }

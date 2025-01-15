@@ -1,11 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_driver::{
-    async_ffi::{FfiFuture, LocalFfiFuture},
-    tokio::{self, runtime::Runtime},
-    validate_cstr, AUTDStatus, ConstPtr, HandlePtr, ResultStatus, RuntimePtr,
-};
-use controller::{ResultController, ResultFPGAStateList, ResultFirmwareVersionList};
+use autd3capi_driver::{validate_cstr, AUTDStatus, ConstPtr, ResultStatus};
 use libc::c_char;
 
 pub mod controller;
@@ -16,73 +11,6 @@ pub mod geometry;
 pub mod link;
 pub mod modulation;
 pub mod result;
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDCreateRuntime() -> RuntimePtr {
-    RuntimePtr(Box::into_raw(Box::new(
-        tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap(),
-    )) as _)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDGetRuntimeHandle(runtime: RuntimePtr) -> HandlePtr {
-    HandlePtr(runtime.handle() as *const _ as _)
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDDeleteRuntime(runtime: RuntimePtr) {
-    let _ = Box::from_raw(runtime.0 as *mut Runtime);
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDWaitResultStatus(
-    handle: HandlePtr,
-    future: FfiFuture<ResultStatus>,
-) -> ResultStatus {
-    handle.block_on(future)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDWaitLocalResultStatus(
-    handle: HandlePtr,
-    future: LocalFfiFuture<ResultStatus>,
-) -> ResultStatus {
-    handle.block_on(future)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDWaitResultController(
-    handle: HandlePtr,
-    future: FfiFuture<ResultController>,
-) -> ResultController {
-    handle.block_on(future)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDWaitResultFPGAStateList(
-    handle: HandlePtr,
-    future: FfiFuture<ResultFPGAStateList>,
-) -> ResultFPGAStateList {
-    handle.block_on(future)
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDWaitResultFirmwareVersionList(
-    handle: HandlePtr,
-    future: FfiFuture<ResultFirmwareVersionList>,
-) -> ResultFirmwareVersionList {
-    handle.block_on(future)
-}
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDTracingInit() {
@@ -118,10 +46,6 @@ mod tests {
     #[test]
     fn simple() {
         unsafe {
-            let runtime = AUTDCreateRuntime();
-
-            let handle = AUTDGetRuntimeHandle(runtime);
-
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let builder = controller::builder::AUTDControllerBuilder(
@@ -143,7 +67,6 @@ mod tests {
                 link_builder,
                 OptionDuration::NONE,
             );
-            let cnt = AUTDWaitResultController(handle, cnt);
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
@@ -156,15 +79,11 @@ mod tests {
             let d1 = gain::AUTDGainIntoDatagram(g);
             let d2 = modulation::AUTDModulationIntoDatagram(m);
             let d = datagram::AUTDDatagramTuple(d1, d2);
-            let future = controller::AUTDControllerSend(cnt, d);
-            let result = AUTDWaitResultStatus(handle, future);
+            let result = controller::AUTDControllerSend(cnt, d);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
 
-            let future = controller::AUTDControllerClose(cnt);
-            let result = AUTDWaitResultStatus(handle, future);
+            let result = controller::AUTDControllerClose(cnt);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
-
-            AUTDDeleteRuntime(runtime);
         }
     }
 }
