@@ -52,23 +52,23 @@ impl From<TransitionModeWrap> for Option<autd3_driver::firmware::fpga::Transitio
 impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionModeWrap {
     fn from(transition_mode: autd3_driver::firmware::fpga::TransitionMode) -> Self {
         match transition_mode {
-            autd3::derive::TransitionMode::SyncIdx => Self {
+            autd3_driver::firmware::fpga::TransitionMode::SyncIdx => Self {
                 tag: TransitionModeTag::SyncIdx,
                 value: TransitionModeValue { null: 0 },
             },
-            autd3::derive::TransitionMode::SysTime(sys_time) => Self {
+            autd3_driver::firmware::fpga::TransitionMode::SysTime(sys_time) => Self {
                 tag: TransitionModeTag::SysTime,
                 value: TransitionModeValue { sys_time },
             },
-            autd3::derive::TransitionMode::GPIO(gpio) => Self {
+            autd3_driver::firmware::fpga::TransitionMode::GPIO(gpio) => Self {
                 tag: TransitionModeTag::Gpio,
                 value: TransitionModeValue { gpio_in: gpio },
             },
-            autd3::derive::TransitionMode::Ext => Self {
+            autd3_driver::firmware::fpga::TransitionMode::Ext => Self {
                 tag: TransitionModeTag::Ext,
                 value: TransitionModeValue { null: 0 },
             },
-            autd3::derive::TransitionMode::Immediate => Self {
+            autd3_driver::firmware::fpga::TransitionMode::Immediate => Self {
                 tag: TransitionModeTag::Immediate,
                 value: TransitionModeValue { null: 0 },
             },

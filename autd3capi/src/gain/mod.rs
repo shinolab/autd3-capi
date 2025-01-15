@@ -1,5 +1,7 @@
-use autd3::derive::Segment;
-use autd3capi_driver::{autd3::prelude::IntoDatagramWithSegment, *};
+use autd3capi_driver::{
+    autd3::{core::datagram::Segment, prelude::IntoDatagramWithSegment},
+    *,
+};
 use driver::datagram::BoxedGain;
 
 pub mod bessel;

@@ -1,6 +1,8 @@
 use autd3capi_driver::{
-    autd3::datagram::modulation::ModulationCache,
-    autd3::{derive::*, prelude::IntoModulationCache},
+    autd3::{
+        core::modulation::LoopBehavior, datagram::modulation::ModulationCache,
+        prelude::IntoModulationCache,
+    },
     driver::datagram::BoxedModulation,
     take, ModulationPtr,
 };
@@ -45,10 +47,6 @@ mod tests {
     #[test]
     fn modulation_cache() {
         unsafe {
-            let runtime = AUTDCreateRuntime();
-
-            let handle = AUTDGetRuntimeHandle(runtime);
-
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let builder = controller::builder::AUTDControllerBuilder(
@@ -70,7 +68,6 @@ mod tests {
                 link_builder,
                 OptionDuration::NONE,
             );
-            let cnt = AUTDWaitResultController(handle, cnt);
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
@@ -95,8 +92,7 @@ mod tests {
                 );
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
-                let future = controller::AUTDControllerSend(cnt, d);
-                let result = AUTDWaitResultStatus(handle, future);
+                let result = controller::AUTDControllerSend(cnt, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
             }
             assert_eq!(1, count(mc));
@@ -108,19 +104,15 @@ mod tests {
                 );
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
-                let future = controller::AUTDControllerSend(cnt, d);
-                let result = AUTDWaitResultStatus(handle, future);
+                let result = controller::AUTDControllerSend(cnt, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
             }
 
             assert_eq!(1, count(mc));
             AUTDModulationCacheFree(mc);
 
-            let future = controller::AUTDControllerClose(cnt);
-            let result = AUTDWaitResultStatus(handle, future);
+            let result = controller::AUTDControllerClose(cnt);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
-
-            AUTDDeleteRuntime(runtime);
         }
     }
 }

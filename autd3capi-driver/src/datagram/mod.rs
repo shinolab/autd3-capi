@@ -4,15 +4,16 @@ pub use tuple::DynDatagramTuple;
 
 use std::{mem::MaybeUninit, time::Duration};
 
-use autd3::derive::{AUTDDriverError, Geometry};
+use autd3_core::{datagram::Operation, geometry::Geometry};
 use autd3_driver::{
     datagram::Datagram,
-    firmware::operation::{Operation, OperationGenerator},
+    error::AUTDDriverError,
+    firmware::operation::{BoxedOperation, OperationGenerator},
     geometry::Device,
 };
 
 pub trait DOperationGenerator {
-    fn dyn_generate(&mut self, device: &Device) -> (Box<dyn Operation>, Box<dyn Operation>);
+    fn dyn_generate(&mut self, device: &Device) -> (BoxedOperation, BoxedOperation);
 }
 
 pub struct DynOperationGenerator {
@@ -20,8 +21,8 @@ pub struct DynOperationGenerator {
 }
 
 impl OperationGenerator for DynOperationGenerator {
-    type O1 = Box<dyn Operation>;
-    type O2 = Box<dyn Operation>;
+    type O1 = BoxedOperation;
+    type O2 = BoxedOperation;
 
     fn generate(&mut self, device: &Device) -> (Self::O1, Self::O2) {
         self.g.dyn_generate(device)
@@ -32,10 +33,11 @@ impl<G: OperationGenerator> DOperationGenerator for G
 where
     G::O1: 'static,
     G::O2: 'static,
+    AUTDDriverError: From<<G::O1 as Operation>::Error> + From<<G::O2 as Operation>::Error>,
 {
-    fn dyn_generate(&mut self, device: &Device) -> (Box<dyn Operation>, Box<dyn Operation>) {
+    fn dyn_generate(&mut self, device: &Device) -> (BoxedOperation, BoxedOperation) {
         let (o1, o2) = self.generate(device);
-        (Box::new(o1), Box::new(o2))
+        (BoxedOperation::new(o1), BoxedOperation::new(o2))
     }
 }
 
@@ -49,7 +51,11 @@ pub trait DDatagram: std::fmt::Debug {
     fn dyn_fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result;
 }
 
-impl<G: DOperationGenerator + 'static, T: Datagram<G = G>> DDatagram for MaybeUninit<T> {
+impl<E, G: DOperationGenerator + 'static, T: Datagram<G = G, Error = E>> DDatagram
+    for MaybeUninit<T>
+where
+    AUTDDriverError: From<E>,
+{
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
@@ -87,7 +93,13 @@ unsafe impl Send for DynDatagram {}
 unsafe impl Sync for DynDatagram {}
 
 impl DynDatagram {
-    pub fn new<G: OperationGenerator + 'static, D: Datagram<G = G> + 'static>(d: D) -> Self {
+    pub fn new<E, G: OperationGenerator + 'static, D: Datagram<G = G, Error = E> + 'static>(
+        d: D,
+    ) -> Self
+    where
+        AUTDDriverError: From<E>,
+        AUTDDriverError: From<<G::O1 as Operation>::Error> + From<<G::O2 as Operation>::Error>,
+    {
         DynDatagram {
             d: Box::new(MaybeUninit::new(d)),
         }
@@ -96,8 +108,9 @@ impl DynDatagram {
 
 impl Datagram for DynDatagram {
     type G = DynOperationGenerator;
+    type Error = AUTDDriverError;
 
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDDriverError> {
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, Self::Error> {
         let Self { mut d } = self;
         Ok(DynOperationGenerator {
             g: d.dyn_operation_generator(geometry)?,

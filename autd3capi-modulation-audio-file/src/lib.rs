@@ -3,7 +3,7 @@
 use std::ffi::c_char;
 
 use autd3::{
-    derive::{LoopBehavior, SamplingConfig},
+    core::modulation::{LoopBehavior, SamplingConfig},
     prelude::Hz,
 };
 use autd3capi_driver::*;

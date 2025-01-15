@@ -1,14 +1,9 @@
-use async_ffi::BorrowingFfiFuture;
-
-use autd3_driver::{
-    error::AUTDDriverError,
-    geometry::Geometry,
-    link::{Link, LinkBuilder},
-};
+use autd3_core::link::{Link, LinkBuilder, LinkError};
+use autd3_driver::geometry::Geometry;
 
 use crate::impl_ptr;
 
-use crate::{impl_ffi_result, ConstPtr};
+use crate::{impl_result, ConstPtr};
 
 #[repr(C)]
 pub struct LinkBuilderPtr(pub *const libc::c_void);
@@ -40,8 +35,7 @@ impl LinkPtr {
 
 pub struct DynamicLinkBuilder {
     #[allow(clippy::type_complexity)]
-    pub gen:
-        Box<dyn FnOnce(&Geometry) -> BorrowingFfiFuture<Result<Box<dyn Link>, AUTDDriverError>>>,
+    pub gen: Box<dyn FnOnce(&Geometry) -> Result<Box<dyn Link>, LinkError>>,
 }
 
 unsafe impl Send for DynamicLinkBuilder {}
@@ -54,14 +48,8 @@ impl DynamicLinkBuilder {
     {
         Self {
             gen: Box::new(move |geometry| {
-                BorrowingFfiFuture::new(async move {
-                    let r: Result<Box<dyn Link>, AUTDDriverError> =
-                        match builder.open(geometry).await {
-                            Ok(v) => Ok(Box::new(v)),
-                            Err(e) => Err(e),
-                        };
-                    r
-                })
+                let link = builder.open(geometry)?;
+                Ok(Box::new(link))
             }),
         }
     }
@@ -76,12 +64,11 @@ where
     }
 }
 
-#[autd3_driver::async_trait]
 impl LinkBuilder for DynamicLinkBuilder {
     type L = Box<dyn Link>;
 
-    async fn open(self, geometry: &Geometry) -> Result<Self::L, AUTDDriverError> {
-        (self.gen)(geometry).await
+    fn open(self, geometry: &Geometry) -> Result<Self::L, LinkError> {
+        (self.gen)(geometry)
     }
 }
 
@@ -92,4 +79,4 @@ pub struct ResultLinkBuilder {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultLinkBuilder, LinkBuilderPtr);
+impl_result!(ResultLinkBuilder, LinkBuilderPtr);

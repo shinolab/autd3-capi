@@ -2,11 +2,11 @@
 
 use autd3capi_driver::{
     autd3::{
-        derive::{LoopBehavior, SamplingConfig},
+        core::modulation::{LoopBehavior, ModulationProperty, SamplingConfig},
         modulation::Sine,
         prelude::rad,
     },
-    driver::{defined::Hz, derive::ModulationProperty},
+    driver::defined::Hz,
     *,
 };
 

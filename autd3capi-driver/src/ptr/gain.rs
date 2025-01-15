@@ -1,6 +1,6 @@
 use autd3_driver::datagram::{BoxedGain, IntoBoxedGain};
 
-use crate::{impl_ffi_result, impl_ptr, ConstPtr};
+use crate::{impl_result, impl_ptr, ConstPtr};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -22,4 +22,4 @@ pub struct ResultGain {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultGain, GainPtr);
+impl_result!(ResultGain, GainPtr);

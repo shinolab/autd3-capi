@@ -1,7 +1,7 @@
-use autd3::derive::Datagram;
-use autd3_driver::firmware::operation::OperationGenerator;
+use autd3_core::datagram::{Datagram, Operation};
+use autd3_driver::{error::AUTDDriverError, firmware::operation::OperationGenerator};
 
-use crate::{impl_ffi_result, impl_ptr, take, ConstPtr, DynDatagram};
+use crate::{impl_ptr, impl_result, take, ConstPtr, DynDatagram};
 
 #[repr(C)]
 pub struct DatagramPtr(pub *const libc::c_void);
@@ -21,10 +21,15 @@ pub struct ResultDatagram {
     pub err: ConstPtr,
 }
 
-impl<G: OperationGenerator + 'static, D: Datagram<G = G> + 'static> From<D> for DatagramPtr {
+impl<E, G: OperationGenerator + 'static, D: Datagram<G = G, Error = E> + 'static> From<D>
+    for DatagramPtr
+where
+    AUTDDriverError: From<E>,
+    AUTDDriverError: From<<G::O1 as Operation>::Error> + From<<G::O2 as Operation>::Error>,
+{
     fn from(d: D) -> Self {
         Self(Box::into_raw(Box::new(DynDatagram::new(d))) as _)
     }
 }
 
-impl_ffi_result!(ResultDatagram, DatagramPtr);
+impl_result!(ResultDatagram, DatagramPtr);

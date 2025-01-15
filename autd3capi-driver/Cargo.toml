@@ -8,14 +8,13 @@ license = { workspace = true }
 repository = { workspace = true }
 
 [dependencies]
-async-ffi = { workspace = true }
 autd3 = { workspace = true }
+autd3-core = { workspace = true }
 autd3-driver = { workspace = true }
 libc = { workspace = true }
-tokio = { workspace = true }
 tracing = { workspace = true }
 
 [features]
 static = []
-unity = ["autd3-driver/left_handed", "autd3-driver/use_meter"]
-dynamic_freq = ["autd3-driver/dynamic_freq", "autd3/dynamic_freq"]
+unity = ["autd3-core/left_handed", "autd3-core/use_meter"]
+dynamic_freq = ["autd3-core/dynamic_freq", "autd3/dynamic_freq"]

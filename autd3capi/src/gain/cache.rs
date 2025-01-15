@@ -32,7 +32,7 @@ pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
 mod tests {
 
     use autd3capi_driver::{
-        autd3::derive::Drive, driver::geometry::Quaternion, AUTDStatus, ConstPtr, GeometryPtr,
+        autd3::core::gain::Drive, driver::geometry::Quaternion, AUTDStatus, ConstPtr, GeometryPtr,
         OptionDuration, Point3,
     };
 
@@ -58,10 +58,6 @@ mod tests {
     #[test]
     fn gain_cache() {
         unsafe {
-            let runtime = AUTDCreateRuntime();
-
-            let handle = AUTDGetRuntimeHandle(runtime);
-
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let builder = controller::builder::AUTDControllerBuilder(
@@ -84,7 +80,6 @@ mod tests {
                 link_builder,
                 OptionDuration::NONE,
             );
-            let cnt = AUTDWaitResultController(handle, cnt);
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
@@ -111,8 +106,7 @@ mod tests {
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));
                 let d = gain::AUTDGainIntoDatagram(gg);
-                let future = controller::AUTDControllerSend(cnt, d);
-                let result = AUTDWaitResultStatus(handle, future);
+                let result = controller::AUTDControllerSend(cnt, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
@@ -122,19 +116,15 @@ mod tests {
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));
                 let d = gain::AUTDGainIntoDatagram(gg);
-                let future = controller::AUTDControllerSend(cnt, d);
-                let result = AUTDWaitResultStatus(handle, future);
+                let result = controller::AUTDControllerSend(cnt, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
             assert_eq!(1, count(gc));
             AUTDGainCacheFree(gc);
 
-            let future = controller::AUTDControllerClose(cnt);
-            let result = AUTDWaitResultStatus(handle, future);
+            let result = controller::AUTDControllerClose(cnt);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
-
-            AUTDDeleteRuntime(runtime);
         }
     }
 }

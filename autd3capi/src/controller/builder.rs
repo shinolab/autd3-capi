@@ -1,14 +1,12 @@
 use autd3capi_driver::{
-    async_ffi::{FfiFuture, FutureExt},
     autd3::{
         controller::{timer::TimerStrategy, ControllerBuilder},
-        derive::Device,
         link::Nop,
         Controller,
     },
     driver::{
         autd3_device::AUTD3,
-        geometry::{Point3, Quaternion, UnitQuaternion},
+        geometry::{Device, Point3, Quaternion, UnitQuaternion},
     },
     take, vec_from_raw, ControllerBuilderPtr, Duration, DynamicLinkBuilder, LinkBuilderPtr,
     OptionDuration, TimerStrategyWrap,
@@ -66,15 +64,12 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     builder: ControllerBuilderPtr,
     link_builder: LinkBuilderPtr,
     timeout: OptionDuration,
-) -> FfiFuture<ResultController> {
+) -> ResultController {
     let builder = take!(builder, ControllerBuilder);
     let link_builder = take!(link_builder, DynamicLinkBuilder);
-    async move {
-        match timeout.into() {
-            None => builder.open(*link_builder).await,
-            Some(timeout) => builder.open_with_timeout(*link_builder, timeout).await,
-        }
-        .into()
+    match timeout.into() {
+        None => builder.open(*link_builder),
+        Some(timeout) => builder.open_with_timeout(*link_builder, timeout),
     }
-    .into_ffi()
+    .into()
 }

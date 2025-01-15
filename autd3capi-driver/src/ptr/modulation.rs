@@ -1,6 +1,6 @@
 use autd3_driver::datagram::IntoBoxedModulation;
 
-use crate::{impl_ffi_result, impl_ptr, ConstPtr};
+use crate::{impl_result, impl_ptr, ConstPtr};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
@@ -21,4 +21,4 @@ pub struct ResultModulation {
     pub err: ConstPtr,
 }
 
-impl_ffi_result!(ResultModulation, ModulationPtr);
+impl_result!(ResultModulation, ModulationPtr);

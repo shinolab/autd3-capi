@@ -1,5 +1,9 @@
 use autd3capi_driver::{
-    autd3::{derive::*, modulation, prelude::Hz},
+    autd3::{
+        core::modulation::{LoopBehavior, SamplingConfig},
+        modulation,
+        prelude::Hz,
+    },
     DynSincInterpolator, ModulationPtr,
 };
 

@@ -5,7 +5,7 @@ use std::num::NonZeroU8;
 use crate::{create_holo, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
-    driver::acoustics::directivity::{Sphere, T4010A1},
+    autd3::core::acoustics::directivity::{Sphere, T4010A1},
     *,
 };
 

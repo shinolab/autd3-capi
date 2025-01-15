@@ -1,9 +1,9 @@
 use std::time::Duration;
 
-use autd3::derive::{Datagram, Geometry};
+use autd3_core::{datagram::Datagram, geometry::Geometry};
 use autd3_driver::{
     error::AUTDDriverError,
-    firmware::operation::{Operation, OperationGenerator},
+    firmware::operation::{BoxedOperation, OperationGenerator},
     geometry::Device,
 };
 
@@ -26,8 +26,8 @@ pub struct DOperationGeneratorTuple {
 }
 
 impl OperationGenerator for DOperationGeneratorTuple {
-    type O1 = Box<dyn Operation>;
-    type O2 = Box<dyn Operation>;
+    type O1 = BoxedOperation;
+    type O2 = BoxedOperation;
 
     fn generate(&mut self, device: &Device) -> (Self::O1, Self::O2) {
         (self.g1.generate(device).0, self.g2.generate(device).0)
@@ -35,7 +35,9 @@ impl OperationGenerator for DOperationGeneratorTuple {
 }
 
 impl Datagram for DynDatagramTuple {
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, AUTDDriverError> {
+    type Error = AUTDDriverError;
+
+    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {
             g1: self.d1.operation_generator(geometry)?,
             g2: self.d2.operation_generator(geometry)?,

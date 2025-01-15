@@ -1,4 +1,4 @@
-use autd3::{derive::LoopBehavior, modulation::IntoFir};
+use autd3::{core::modulation::LoopBehavior, modulation::IntoFir};
 use autd3capi_driver::*;
 use driver::datagram::BoxedModulation;
 

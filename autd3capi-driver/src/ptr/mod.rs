@@ -3,9 +3,7 @@ mod datagram;
 mod gain;
 mod geometry;
 mod link;
-mod link_sync;
 mod modulation;
-mod runtime;
 mod stm;
 
 pub use controller::*;
@@ -13,12 +11,10 @@ pub use datagram::*;
 pub use gain::*;
 pub use geometry::*;
 pub use link::*;
-pub use link_sync::*;
 pub use modulation::*;
-pub use runtime::*;
 pub use stm::*;
 
-pub trait FfiResult {
+pub trait CapiResult {
     const NULL: Self;
 }
 

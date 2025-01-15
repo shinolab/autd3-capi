@@ -1,10 +1,10 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3::{
-    derive::{Drive, LoopBehavior, Segment},
+    core::{datagram::Segment, gain::Drive, modulation::LoopBehavior},
     prelude::SilencerTarget,
 };
-use autd3capi_driver::{autd3::link::Audit, driver::link::Link, *};
+use autd3capi_driver::{autd3::link::Audit, *};
 
 #[no_mangle]
 #[must_use]

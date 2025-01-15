@@ -1,7 +1,7 @@
 use std::num::NonZeroU16;
 
 use autd3capi_driver::{
-    autd3::{derive::SamplingConfig, prelude::SilencerTarget},
+    autd3::{core::modulation::SamplingConfig, prelude::SilencerTarget},
     driver::datagram::{FixedCompletionSteps, FixedUpdateRate, HasSamplingConfig, Silencer},
     DatagramPtr,
 };

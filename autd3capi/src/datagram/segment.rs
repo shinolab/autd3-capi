@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::derive::{Segment, TransitionMode},
+    autd3::core::datagram::{Segment, TransitionMode},
     driver::datagram::SwapSegment,
     DatagramPtr, TransitionModeWrap,
 };
