@@ -1,7 +1,9 @@
 use autd3capi_driver::{
-    autd3::{self, prelude::SilencerTarget},
-    driver::datagram::{FixedCompletionSteps, FixedUpdateRate, Silencer},
-    DatagramPtr,
+    driver::{
+        datagram::{FixedCompletionSteps, FixedUpdateRate, Silencer},
+        firmware::fpga::SilencerTarget,
+    },
+    *,
 };
 
 #[cfg(not(feature = "dynamic_freq"))]
@@ -26,12 +28,14 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionSteps(
 }
 
 #[repr(C)]
+#[cfg(not(feature = "dynamic_freq"))]
 pub struct FixedCompletionTime {
     pub intensity: Duration,
     pub phase: Duration,
     pub strict_mode: bool,
 }
 
+#[cfg(not(feature = "dynamic_freq"))]
 impl From<FixedCompletionTime> for autd3::driver::datagram::FixedCompletionTime {
     fn from(config: FixedCompletionTime) -> Self {
         autd3::driver::datagram::FixedCompletionTime {

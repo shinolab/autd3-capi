@@ -1,5 +1,4 @@
-use autd3::prelude::DcSysTime;
-use autd3_driver::geometry::Device;
+use autd3_core::{ethercat::DcSysTime, geometry::Device};
 
 #[repr(u8)]
 #[derive(Clone, Copy, Default)]

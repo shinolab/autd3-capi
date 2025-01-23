@@ -1,14 +1,10 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_driver::{
-    autd3::{
-        modulation::{Fourier, Sine},
-        prelude::Hz,
-    },
+    autd3::modulation::{Fourier, Sine, SineOption},
+    driver::defined::Hz,
     *,
 };
-
-use super::sine::SineOption;
 
 #[repr(C)]
 pub struct FourierOption {
@@ -21,7 +17,7 @@ pub struct FourierOption {
 impl From<FourierOption> for autd3::modulation::FourierOption {
     fn from(option: FourierOption) -> Self {
         autd3::modulation::FourierOption {
-            scale_factor: option.has_scale_factor.then(|| option.scale_factor),
+            scale_factor: option.has_scale_factor.then_some(option.scale_factor),
             clamp: option.clamp,
             offset: option.offset,
         }
@@ -40,7 +36,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
         components: (0..size as usize)
             .map(|i| Sine {
                 freq: sine_freq.add(i).read() * Hz,
-                option: sine_clamp.add(i).read().into(),
+                option: sine_clamp.add(i).read(),
             })
             .collect(),
         option: option.into(),
@@ -60,7 +56,7 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
         components: (0..size as usize)
             .map(|i| Sine {
                 freq: sine_freq.add(i).read() * Hz,
-                option: sine_clamp.add(i).read().into(),
+                option: sine_clamp.add(i).read(),
             })
             .collect(),
         option: option.into(),
@@ -81,7 +77,7 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
             .map(|i| {
                 Sine {
                     freq: sine_freq.add(i).read() * Hz,
-                    option: sine_clamp.add(i).read().into(),
+                    option: sine_clamp.add(i).read(),
                 }
                 .into_nearest()
             })

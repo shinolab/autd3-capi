@@ -33,7 +33,9 @@ pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::{
-        autd3::controller::SpinSleeper, driver::geometry::Quaternion, AUTDStatus, Point3,
+        autd3::controller::{ParallelMode, SpinSleeper},
+        driver::geometry::Quaternion,
+        AUTDStatus, Point3,
     };
 
     use super::*;
@@ -54,7 +56,7 @@ mod tests {
                     send_interval: std::time::Duration::from_millis(1).into(),
                     receive_interval: std::time::Duration::from_millis(1).into(),
                     timeout: None.into(),
-                    parallel_threshold: -1,
+                    parallel: ParallelMode::Auto,
                     sleeper: autd3capi_driver::SleeperWrap {
                         tag: autd3capi_driver::SleeperTag::Spin,
                         value: SpinSleeper::default().native_accuracy_ns(),

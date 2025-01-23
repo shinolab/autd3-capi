@@ -1,6 +1,9 @@
-use autd3::{gain::BesselOption, prelude::rad};
-use autd3capi_driver::{autd3::gain::Bessel, driver::geometry::Vector3, *};
-use driver::geometry::UnitVector3;
+use autd3capi_driver::{
+    autd3::gain::{Bessel, BesselOption},
+    driver::geometry::Vector3,
+    *,
+};
+use driver::{defined::rad, geometry::UnitVector3};
 
 #[no_mangle]
 #[must_use]

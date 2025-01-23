@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::{driver::geometry::Device, prelude::Phase},
+    autd3::{core::gain::Phase, driver::geometry::Device},
     driver::{datagram::PhaseCorrection, geometry::Transducer},
     ConstPtr, DatagramPtr, GeometryPtr,
 };

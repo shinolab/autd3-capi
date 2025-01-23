@@ -42,11 +42,11 @@ impl Datagram for DynDatagramTuple {
     fn operation_generator(
         self,
         geometry: &Geometry,
-        option: &DatagramOption,
+        parallel: bool,
     ) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {
-            g1: self.d1.operation_generator(geometry, option)?,
-            g2: self.d2.operation_generator(geometry, option)?,
+            g1: self.d1.operation_generator(geometry, parallel)?,
+            g2: self.d2.operation_generator(geometry, parallel)?,
         })
     }
 

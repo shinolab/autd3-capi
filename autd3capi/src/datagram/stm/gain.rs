@@ -1,10 +1,8 @@
 use autd3capi_driver::{
     autd3::core::{datagram::Segment, modulation::SamplingConfig},
-    autd3::prelude::GainSTMMode,
-    driver::datagram::GainSTM,
+    driver::datagram::{BoxedGain, GainSTM, GainSTMOption, WithLoopBehavior, WithSegment},
     *,
 };
-use driver::datagram::BoxedGain;
 
 #[no_mangle]
 #[must_use]
@@ -12,13 +10,15 @@ pub unsafe extern "C" fn AUTDSTMGain(
     config: SamplingConfig,
     gains: *const GainPtr,
     size: u16,
-    mode: GainSTMMode,
-) -> ResultGainSTM {
-    GainSTM::<Vec<BoxedGain>>::new(
+    option: GainSTMOption,
+) -> GainSTMPtr {
+    GainSTM::<Vec<BoxedGain>, SamplingConfig> {
+        gains: (0..size as usize)
+            .map(|i| *take!(gains.add(i).read(), BoxedGain))
+            .collect(),
         config,
-        (0..size as usize).map(|i| *take!(gains.add(i).read(), BoxedGain)),
-    )
-    .map(|stm| stm.with_mode(mode))
+        option,
+    }
     .into()
 }
 
@@ -29,13 +29,33 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     segment: Segment,
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
-    take!(stm, GainSTM<Vec<BoxedGain>>)
-        .with_segment(segment, transition_mode.into())
-        .into()
+    WithSegment {
+        inner: *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>),
+        segment,
+        transition_mode: transition_mode.into(),
+    }
+    .into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithLoopBehavior(
+    stm: GainSTMPtr,
+    segment: Segment,
+    transition_mode: TransitionModeWrap,
+    loop_behavior: LoopBehavior,
+) -> DatagramPtr {
+    WithLoopBehavior {
+        inner: *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>),
+        segment,
+        transition_mode: transition_mode.into(),
+        loop_behavior: loop_behavior.into(),
+    }
+    .into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagram(stm: GainSTMPtr) -> DatagramPtr {
-    (*take!(stm, GainSTM<Vec<BoxedGain>>)).into()
+    (*take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>)).into()
 }

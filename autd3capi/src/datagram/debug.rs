@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::{driver::geometry::Device, prelude::GPIOOut},
+    autd3::{core::datagram::GPIOOut, driver::geometry::Device},
     driver::{datagram::DebugSettings, firmware::fpga::DebugType},
     ConstPtr, DatagramPtr, DebugTypeWrap, GeometryPtr,
 };

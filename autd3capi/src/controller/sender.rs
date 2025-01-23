@@ -1,5 +1,8 @@
 use autd3capi_driver::{
-    autd3::{self, controller::Sleep},
+    autd3::{
+        self,
+        controller::{ParallelMode, Sleep},
+    },
     Duration, OptionDuration, SleeperWrap,
 };
 
@@ -8,7 +11,7 @@ pub struct SenderOption {
     pub send_interval: Duration,
     pub receive_interval: Duration,
     pub timeout: OptionDuration,
-    pub parallel_threshold: i64,
+    pub parallel: ParallelMode,
     pub sleeper: SleeperWrap,
 }
 
@@ -18,7 +21,7 @@ impl From<SenderOption> for autd3::controller::SenderOption<Box<dyn Sleep>> {
             send_interval: value.send_interval.into(),
             receive_interval: value.receive_interval.into(),
             timeout: value.timeout.into(),
-            parallel_threshold: usize::try_from(value.parallel_threshold).ok(),
+            parallel: value.parallel,
             sleeper: value.sleeper.into(),
         }
     }

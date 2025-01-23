@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::prelude::{GPIOIn, TransitionMode},
+    autd3::core::{datagram::GPIOIn, derive::TransitionMode},
     driver::ethercat::DcSysTime,
     TransitionModeWrap,
 };

@@ -1,7 +1,10 @@
-use autd3::prelude::{ControlPoints, SamplingConfig};
-use autd3_driver::datagram::{BoxedGain, FociSTM, GainSTM};
+use autd3_core::derive::SamplingConfig;
+use autd3_driver::{
+    datagram::{BoxedGain, FociSTM, GainSTM},
+    firmware::operation::ControlPoints,
+};
 
-use crate::{impl_ptr, impl_result, ConstPtr};
+use crate::impl_ptr;
 
 #[repr(C)]
 pub struct FociSTMPtr(pub *const libc::c_void);
@@ -24,21 +27,3 @@ impl From<GainSTM<Vec<BoxedGain>, SamplingConfig>> for GainSTMPtr {
         Self(Box::into_raw(Box::new(stm)) as _)
     }
 }
-
-#[repr(C)]
-pub struct ResultFociSTM {
-    pub result: FociSTMPtr,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl_result!(ResultFociSTM, FociSTMPtr);
-
-#[repr(C)]
-pub struct ResultGainSTM {
-    pub result: GainSTMPtr,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl_result!(ResultGainSTM, GainSTMPtr);

@@ -6,7 +6,7 @@ pub mod pulse_width_encoder;
 pub mod reads_fpga_state;
 pub mod segment;
 pub mod silencer;
-// pub mod stm;
+pub mod stm;
 pub mod synchronize;
 
 use autd3capi_driver::{DatagramPtr, DynDatagramTuple};

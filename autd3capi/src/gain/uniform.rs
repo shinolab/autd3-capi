@@ -1,12 +1,8 @@
-use autd3::prelude::{EmitIntensity, Phase};
+use autd3::core::gain::{EmitIntensity, Phase};
 use autd3capi_driver::{autd3::gain::Uniform, *};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainUniform(intensity: u8, phase: u8) -> GainPtr {
-    Uniform {
-        intensity: EmitIntensity(intensity),
-        phase: Phase(phase),
-    }
-    .into()
+pub unsafe extern "C" fn AUTDGainUniform(intensity: EmitIntensity, phase: Phase) -> GainPtr {
+    Uniform { intensity, phase }.into()
 }

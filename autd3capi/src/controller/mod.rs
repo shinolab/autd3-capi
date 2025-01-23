@@ -1,14 +1,12 @@
-// pub mod builder;
 pub mod group;
-// pub mod timer;
 pub mod sender;
 
-use autd3::{
-    core::link::Link,
-    prelude::{Quaternion, UnitQuaternion, AUTD3},
-    Controller,
+use autd3::{core::link::Link, Controller};
+use driver::{
+    autd3_device::AUTD3,
+    firmware::{fpga::FPGAState, version::FirmwareVersion},
+    geometry::{Quaternion, UnitQuaternion},
 };
-use autd3capi_driver::driver::firmware::{fpga::FPGAState, version::FirmwareVersion};
 
 use std::ffi::c_char;
 

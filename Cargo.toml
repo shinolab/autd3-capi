@@ -14,13 +14,13 @@ license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { path = "../autd3-rs/autd3", version = "29.0.0-rc.17", default-features = false }
-autd3-core = { path = "../autd3-rs/autd3-core", version = "29.0.0-rc.17", default-features = false }
-autd3-driver = { path = "../autd3-rs/autd3-driver", version = "29.0.0-rc.17", default-features = false }
-autd3-gain-holo = { path = "../autd3-rs/autd3-gain-holo", version = "29.0.0-rc.17", default-features = false }
-autd3-link-simulator = { path = "../autd3-rs/autd3-link-simulator", version = "29.0.0-rc.17", default-features = false }
-autd3-link-twincat = { path = "../autd3-rs/autd3-link-twincat", version = "29.0.0-rc.17", default-features = false }
-autd3-modulation-audio-file = { path = "../autd3-rs/autd3-modulation-audio-file", version = "29.0.0-rc.17", default-features = false }
+autd3 = { version = "29.0.0-rc.17", default-features = false }
+autd3-core = { version = "29.0.0-rc.17", default-features = false }
+autd3-driver = { version = "29.0.0-rc.17", default-features = false }
+autd3-gain-holo = { version = "29.0.0-rc.17", default-features = false }
+autd3-link-simulator = { version = "29.0.0-rc.17", default-features = false }
+autd3-link-twincat = { version = "29.0.0-rc.17", default-features = false }
+autd3-modulation-audio-file = { version = "29.0.0-rc.17", default-features = false }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }

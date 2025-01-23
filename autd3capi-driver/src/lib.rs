@@ -5,7 +5,6 @@ mod datagram;
 mod duration;
 mod firmware;
 mod ptr;
-mod resampler;
 mod result;
 mod sender;
 
@@ -14,7 +13,6 @@ pub use datagram::*;
 pub use duration::*;
 pub use firmware::*;
 pub use ptr::*;
-pub use resampler::*;
 pub use result::*;
 pub use sender::*;
 

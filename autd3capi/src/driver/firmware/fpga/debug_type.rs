@@ -1,6 +1,6 @@
 use autd3capi_driver::{
-    autd3::{driver::firmware::fpga::DebugType, prelude::DcSysTime},
-    DebugTypeWrap, TransducerPtr,
+    autd3::driver::firmware::fpga::DebugType, driver::ethercat::DcSysTime, DebugTypeWrap,
+    TransducerPtr,
 };
 
 #[no_mangle]

@@ -32,7 +32,10 @@ pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
 mod tests {
 
     use autd3capi_driver::{
-        autd3::{controller::SpinSleeper, core::gain::Drive},
+        autd3::{
+            controller::{ParallelMode, SpinSleeper},
+            core::gain::Drive,
+        },
         driver::geometry::Quaternion,
         AUTDStatus, ConstPtr, GeometryPtr, Point3,
     };
@@ -70,7 +73,7 @@ mod tests {
                     send_interval: std::time::Duration::from_millis(1).into(),
                     receive_interval: std::time::Duration::from_millis(1).into(),
                     timeout: None.into(),
-                    parallel_threshold: -1,
+                    parallel: ParallelMode::Auto,
                     sleeper: autd3capi_driver::SleeperWrap {
                         tag: autd3capi_driver::SleeperTag::Spin,
                         value: SpinSleeper::default().native_accuracy_ns(),

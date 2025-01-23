@@ -48,7 +48,7 @@ pub trait DDatagram: std::fmt::Debug {
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
-        option: &DatagramOption,
+        parallel: bool,
     ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError>;
     fn dyn_option(&self) -> DatagramOption;
     fn dyn_fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result;
@@ -62,12 +62,12 @@ where
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
-        option: &DatagramOption,
+        parallel: bool,
     ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError> {
         let mut tmp = MaybeUninit::<T>::uninit();
         std::mem::swap(&mut tmp, self);
         let d = unsafe { tmp.assume_init() };
-        Ok(Box::new(d.operation_generator(geometry, option)?))
+        Ok(Box::new(d.operation_generator(geometry, parallel)?))
     }
 
     fn dyn_option(&self) -> DatagramOption {
@@ -113,11 +113,11 @@ impl Datagram for DynDatagram {
     fn operation_generator(
         self,
         geometry: &Geometry,
-        option: &DatagramOption,
+        parallel: bool,
     ) -> Result<Self::G, Self::Error> {
         let Self { mut d } = self;
         Ok(DynOperationGenerator {
-            g: d.dyn_operation_generator(geometry, option)?,
+            g: d.dyn_operation_generator(geometry, parallel)?,
         })
     }
 

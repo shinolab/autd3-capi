@@ -15,13 +15,6 @@ use constraint::EmissionConstraintWrap;
 #[repr(C)]
 pub struct BackendPtr(pub *const libc::c_void);
 
-#[repr(C)]
-pub struct ResultBackend {
-    pub result: BackendPtr,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f32) -> f32 {
@@ -36,25 +29,28 @@ pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f32) -> f32 {
 
 #[macro_export]
 macro_rules! create_holo {
-    ($type:tt, $backend_type:tt, $direcivity:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {
-        $type::<$direcivity, $backend_type<$direcivity>>::new(
-            ($backend.0 as *const std::sync::Arc<$backend_type<$direcivity>>)
-                .as_ref()
-                .unwrap()
-                .clone(),
-            (0..$size as usize).map(|i| {
-                let p = $points.add(i).read();
-                let amp = $amps.add(i).read() * Pa;
-                (p, amp)
-            }),
-        )
-    };
+    ($backend_type:tt, $direcivity:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {{
+        let points = vec_from_raw!($points, Point3, $size);
+        let amps = vec_from_raw!($amps, f32, $size);
+        let foci = points
+            .into_iter()
+            .zip(amps.into_iter())
+            .map(|(p, a)| (p, a * Pa))
+            .collect();
+        let backend = ($backend.0 as *const std::sync::Arc<$backend_type<$direcivity>>)
+            .as_ref()
+            .unwrap()
+            .clone();
+        (foci, backend)
+    }};
 
-    ($type:tt, $direcivity:tt, $points:expr, $amps:expr, $size:expr) => {
-        $type::<$direcivity>::new((0..$size as usize).map(|i| {
-            let p = $points.add(i).read();
-            let amp = $amps.add(i).read() * Pa;
-            (p, amp)
-        }))
-    };
+    ($direcivity:tt, $points:expr, $amps:expr, $size:expr) => {{
+        let points = vec_from_raw!($points, Point3, $size);
+        let amps = vec_from_raw!($amps, f32, $size);
+        points
+            .into_iter()
+            .zip(amps.into_iter())
+            .map(|(p, a)| (p, a * Pa))
+            .collect()
+    }};
 }

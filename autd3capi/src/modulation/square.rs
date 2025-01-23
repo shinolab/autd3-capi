@@ -1,7 +1,10 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::prelude::SquareOption;
-use autd3capi_driver::{autd3::modulation::Square, driver::defined::Hz, *};
+use autd3capi_driver::{
+    autd3::modulation::{Square, SquareOption},
+    driver::defined::Hz,
+    *,
+};
 
 #[no_mangle]
 #[must_use]

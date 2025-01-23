@@ -1,6 +1,6 @@
 use autd3_driver::datagram::{BoxedGain, IntoBoxedGain};
 
-use crate::{impl_result, impl_ptr, ConstPtr};
+use crate::{impl_ptr, impl_result, ConstPtr};
 
 #[derive(Clone, Copy)]
 #[repr(C)]

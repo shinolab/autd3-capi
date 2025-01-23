@@ -1,4 +1,5 @@
-use autd3::prelude::*;
+use autd3_core::derive::SamplingConfig;
+use autd3_driver::error::AUTDDriverError;
 
 use crate::{CapiResult, ConstPtr};
 
@@ -91,7 +92,7 @@ pub struct ResultSamplingConfig {
 }
 
 impl CapiResult for SamplingConfig {
-    const NULL: Self = SamplingConfig::FREQ_40K;
+    const NULL: Self = SamplingConfig::FREQ_MAX;
 }
 
 impl_result!(ResultSamplingConfig, SamplingConfig);

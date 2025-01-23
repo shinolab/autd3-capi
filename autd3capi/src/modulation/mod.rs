@@ -1,7 +1,4 @@
-use autd3::{
-    core::{datagram::Segment, modulation::Modulation},
-    prelude::LoopBehavior,
-};
+use autd3::core::{datagram::Segment, modulation::Modulation};
 use autd3capi_driver::*;
 use driver::datagram::{BoxedModulation, WithLoopBehavior, WithSegment};
 
@@ -51,7 +48,7 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagramWithLoopBehavior(
         inner: (*take!(m, BoxedModulation)),
         segment,
         transition_mode: transition_mode.into(),
-        loop_behavior,
+        loop_behavior: loop_behavior.into(),
     }
     .into()
 }
