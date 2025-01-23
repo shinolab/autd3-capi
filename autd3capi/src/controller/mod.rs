@@ -1,13 +1,20 @@
-pub mod builder;
+// pub mod builder;
 pub mod group;
-pub mod timer;
+// pub mod timer;
+pub mod sender;
 
-use autd3::{core::link::Link, Controller};
+use autd3::{
+    core::link::Link,
+    prelude::{Quaternion, UnitQuaternion, AUTD3},
+    Controller,
+};
 use autd3capi_driver::driver::firmware::{fpga::FPGAState, version::FirmwareVersion};
 
 use std::ffi::c_char;
 
 use autd3capi_driver::*;
+
+use sender::SenderOption;
 
 #[repr(C)]
 pub struct ResultController {
@@ -17,6 +24,29 @@ pub struct ResultController {
 }
 
 impl_result!(ResultController, ControllerPtr);
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDControllerOpen(
+    pos: *const Point3,
+    rot: *const Quaternion,
+    len: u16,
+    link_builder: LinkBuilderPtr,
+    option: SenderOption,
+) -> ResultController {
+    let pos = vec_from_raw!(pos, Point3, len);
+    let rot = vec_from_raw!(rot, Quaternion, len);
+    let link_builder = take!(link_builder, DynamicLinkBuilder);
+    Controller::open_with_option(
+        pos.into_iter().zip(rot).map(|(pos, rot)| AUTD3 {
+            pos,
+            rot: UnitQuaternion::from_quaternion(rot),
+        }),
+        *link_builder,
+        option.into(),
+    )
+    .into()
+}
 
 #[no_mangle]
 #[must_use]
@@ -105,5 +135,5 @@ pub unsafe extern "C" fn AUTDControllerSend(
     mut cnt: ControllerPtr,
     d: DatagramPtr,
 ) -> ResultStatus {
-     cnt.send(*Box::<DynDatagram>::from(d)).into() 
+    cnt.send(*Box::<DynDatagram>::from(d)).into()
 }

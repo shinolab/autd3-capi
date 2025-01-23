@@ -7,7 +7,7 @@ mod firmware;
 mod ptr;
 mod resampler;
 mod result;
-mod timer;
+mod sender;
 
 pub use autd3_device::*;
 pub use datagram::*;
@@ -16,7 +16,7 @@ pub use firmware::*;
 pub use ptr::*;
 pub use resampler::*;
 pub use result::*;
-pub use timer::*;
+pub use sender::*;
 
 pub use autd3;
 pub use autd3_driver as driver;

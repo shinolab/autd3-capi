@@ -1,4 +1,4 @@
-use autd3capi_driver::autd3::gain::{GainCache, IntoGainCache};
+use autd3capi_driver::autd3::gain::GainCache;
 use autd3capi_driver::{take, GainPtr};
 
 use autd3capi_driver::driver::datagram::BoxedGain;
@@ -10,7 +10,7 @@ pub struct GainCachePtr(pub *const libc::c_void);
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainCachePtr {
-    GainCachePtr(Box::into_raw(Box::new((*take!(g, BoxedGain)).with_cache())) as _)
+    GainCachePtr(Box::into_raw(Box::new(GainCache::new(*take!(g, BoxedGain)))) as _)
 }
 
 #[no_mangle]
@@ -32,8 +32,9 @@ pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
 mod tests {
 
     use autd3capi_driver::{
-        autd3::core::gain::Drive, driver::geometry::Quaternion, AUTDStatus, ConstPtr, GeometryPtr,
-        OptionDuration, Point3,
+        autd3::{controller::SpinSleeper, core::gain::Drive},
+        driver::geometry::Quaternion,
+        AUTDStatus, ConstPtr, GeometryPtr, Point3,
     };
 
     use super::*;
@@ -60,25 +61,22 @@ mod tests {
         unsafe {
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
-            let builder = controller::builder::AUTDControllerBuilder(
+            let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
                 rot.as_ptr(),
                 1,
-                4,
-                std::time::Duration::from_millis(20).into(),
-                std::time::Duration::from_millis(1).into(),
-                std::time::Duration::from_millis(1).into(),
-                controller::timer::AUTDTimerStrategySpin(
-                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
-                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
-                ),
-            );
-
-            let link_builder = link::nop::AUTDLinkNop();
-            let cnt = controller::builder::AUTDControllerOpen(
-                builder,
-                link_builder,
-                OptionDuration::NONE,
+                link::nop::AUTDLinkNop(),
+                controller::sender::SenderOption {
+                    send_interval: std::time::Duration::from_millis(1).into(),
+                    receive_interval: std::time::Duration::from_millis(1).into(),
+                    timeout: None.into(),
+                    parallel_threshold: -1,
+                    sleeper: autd3capi_driver::SleeperWrap {
+                        tag: autd3capi_driver::SleeperTag::Spin,
+                        value: SpinSleeper::default().native_accuracy_ns(),
+                        spin_strategy: SpinSleeper::default().spin_strategy().into(),
+                    },
+                },
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;

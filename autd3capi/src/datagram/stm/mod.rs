@@ -2,10 +2,7 @@
 use autd3capi_driver::Duration;
 use autd3capi_driver::{
     autd3::core::modulation::SamplingConfig,
-    driver::{
-        datagram::{IntoSamplingConfigSTM, STMConfig, STMConfigNearest},
-        defined::Hz,
-    },
+    driver::{datagram::STMConfig, defined::Hz},
     ResultSamplingConfig,
 };
 

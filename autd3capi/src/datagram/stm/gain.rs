@@ -1,13 +1,10 @@
 use autd3capi_driver::{
-    autd3::core::{
-        datagram::Segment,
-        modulation::{LoopBehavior, SamplingConfig},
-    },
+    autd3::core::{datagram::Segment, modulation::SamplingConfig},
     autd3::prelude::GainSTMMode,
     driver::datagram::GainSTM,
     *,
 };
-use driver::datagram::{BoxedGain, IntoDatagramWithSegment};
+use driver::datagram::BoxedGain;
 
 #[no_mangle]
 #[must_use]
@@ -16,13 +13,11 @@ pub unsafe extern "C" fn AUTDSTMGain(
     gains: *const GainPtr,
     size: u16,
     mode: GainSTMMode,
-    loop_behavior: LoopBehavior,
 ) -> ResultGainSTM {
     GainSTM::<Vec<BoxedGain>>::new(
         config,
         (0..size as usize).map(|i| *take!(gains.add(i).read(), BoxedGain)),
     )
-    .map(|stm| stm.with_loop_behavior(loop_behavior))
     .map(|stm| stm.with_mode(mode))
     .into()
 }

@@ -1,10 +1,6 @@
 use autd3capi_driver::{
-    autd3::{
-        core::modulation::LoopBehavior, datagram::modulation::ModulationCache,
-        prelude::IntoModulationCache,
-    },
-    driver::datagram::BoxedModulation,
-    take, ModulationPtr,
+    autd3::datagram::modulation::ModulationCache, driver::datagram::BoxedModulation, take,
+    ModulationPtr,
 };
 
 #[derive(Clone, Copy)]
@@ -14,20 +10,18 @@ pub struct ModulationCachePtr(pub *const libc::c_void);
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationCachePtr {
-    ModulationCachePtr(Box::into_raw(Box::new((*take!(m, BoxedModulation)).with_cache())) as _)
+    ModulationCachePtr(
+        Box::into_raw(Box::new(ModulationCache::new(*take!(m, BoxedModulation)))) as _,
+    )
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationCacheClone(
-    m: ModulationCachePtr,
-    loop_behavior: LoopBehavior,
-) -> ModulationPtr {
+pub unsafe extern "C" fn AUTDModulationCacheClone(m: ModulationCachePtr) -> ModulationPtr {
     (m.0 as *mut ModulationCache<BoxedModulation>)
         .as_ref()
         .unwrap()
         .clone()
-        .with_loop_behavior(loop_behavior)
         .into()
 }
 
@@ -38,7 +32,9 @@ pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
 
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{driver::geometry::Quaternion, AUTDStatus, OptionDuration, Point3};
+    use autd3capi_driver::{
+        autd3::controller::SpinSleeper, driver::geometry::Quaternion, AUTDStatus, Point3,
+    };
 
     use super::*;
 
@@ -49,24 +45,22 @@ mod tests {
         unsafe {
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
-            let builder = controller::builder::AUTDControllerBuilder(
+            let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
                 rot.as_ptr(),
                 1,
-                4,
-                std::time::Duration::from_millis(20).into(),
-                std::time::Duration::from_millis(1).into(),
-                std::time::Duration::from_millis(1).into(),
-                controller::timer::AUTDTimerStrategySpin(
-                    controller::timer::AUTDTimerStrategySpinDefaultAccuracy(),
-                    autd3capi_driver::SpinStrategyTag::SpinLoopHint,
-                ),
-            );
-            let link_builder = link::nop::AUTDLinkNop();
-            let cnt = controller::builder::AUTDControllerOpen(
-                builder,
-                link_builder,
-                OptionDuration::NONE,
+                link::nop::AUTDLinkNop(),
+                controller::sender::SenderOption {
+                    send_interval: std::time::Duration::from_millis(1).into(),
+                    receive_interval: std::time::Duration::from_millis(1).into(),
+                    timeout: None.into(),
+                    parallel_threshold: -1,
+                    sleeper: autd3capi_driver::SleeperWrap {
+                        tag: autd3capi_driver::SleeperTag::Spin,
+                        value: SpinSleeper::default().native_accuracy_ns(),
+                        spin_strategy: SpinSleeper::default().spin_strategy().into(),
+                    },
+                },
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
@@ -78,18 +72,12 @@ mod tests {
                     .count()
             };
 
-            let m = modulation::r#static::AUTDModulationStatic(
-                0xFF,
-                autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite(),
-            );
+            let m = modulation::r#static::AUTDModulationStatic(0xFF);
             let mc = AUTDModulationCache(m);
             assert_eq!(1, count(mc));
 
             {
-                let mm = AUTDModulationCacheClone(
-                    mc,
-                    autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite(),
-                );
+                let mm = AUTDModulationCacheClone(mc);
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
                 let result = controller::AUTDControllerSend(cnt, d);
@@ -98,10 +86,7 @@ mod tests {
             assert_eq!(1, count(mc));
 
             {
-                let mm = AUTDModulationCacheClone(
-                    mc,
-                    autd3capi_driver::autd3::driver::firmware::fpga::LoopBehavior::infinite(),
-                );
+                let mm = AUTDModulationCacheClone(mc);
                 assert_eq!(2, count(mc));
                 let d = modulation::AUTDModulationIntoDatagram(mm);
                 let result = controller::AUTDControllerSend(cnt, d);

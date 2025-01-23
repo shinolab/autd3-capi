@@ -1,12 +1,9 @@
 use autd3capi_driver::{
-    autd3::core::{
-        datagram::Segment,
-        modulation::{LoopBehavior, SamplingConfig},
-    },
+    autd3::core::{datagram::Segment, modulation::SamplingConfig},
     driver::datagram::FociSTM,
     *,
 };
-use driver::{datagram::IntoDatagramWithSegment, firmware::operation::ControlPoints};
+use driver::firmware::operation::ControlPoints;
 
 #[no_mangle]
 #[must_use]
@@ -15,7 +12,6 @@ pub unsafe extern "C" fn AUTDSTMFoci(
     points: ConstPtr,
     size: u16,
     n: u8,
-    loop_behavior: LoopBehavior,
 ) -> ResultFociSTM {
     seq_macro::seq!(N in 1..=8 {
         match n {
@@ -25,7 +21,6 @@ pub unsafe extern "C" fn AUTDSTMFoci(
                         config,
                         (0..size as usize).map(|i| (points.add(i).read())),
                     )
-                    .map(|stm| stm.with_loop_behavior(loop_behavior))
                     .into()
                 },)*
             _ => unreachable!(),

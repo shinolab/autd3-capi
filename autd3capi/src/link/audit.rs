@@ -1,15 +1,15 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3::{
-    core::{datagram::Segment, gain::Drive, modulation::LoopBehavior},
-    prelude::SilencerTarget,
+    core::{datagram::Segment, gain::Drive},
+    prelude::{LoopBehavior, SilencerTarget},
 };
 use autd3capi_driver::{autd3::link::Audit, *};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAudit() -> LinkBuilderPtr {
-    Audit::builder().into()
+    Audit::builder(autd3::link::AuditOption::default()).into()
 }
 
 #[no_mangle]
