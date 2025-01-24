@@ -1,13 +1,16 @@
 use autd3capi_driver::{
-    autd3::driver::geometry::Device, ConstPtr, DatagramPtr, DynDatagram, GeometryPtr, ResultStatus,
+    autd3::{
+        controller::{Sender, Sleep},
+        core::link::Link,
+        driver::geometry::Device,
+    },
+    ConstPtr, DatagramPtr, DynDatagram, GeometryPtr, ResultStatus, SenderPtr,
 };
-
-use super::ControllerPtr;
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerGroup(
-    mut cnt: ControllerPtr,
+    sender: SenderPtr,
     f: ConstPtr,
     context: ConstPtr,
     geometry: GeometryPtr,
@@ -17,21 +20,23 @@ pub unsafe extern "C" fn AUTDControllerGroup(
 ) -> ResultStatus {
     let f =
         std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ConstPtr, GeometryPtr, u16) -> i32>(f);
-    match (0..n).try_fold(
-        cnt.group(Box::new(
-            move |dev: &Device| match f(context, geometry, dev.idx() as _) {
-                k if k >= 0 => Some(k),
-                _ => None,
+    (0..n)
+        .try_fold(
+            (sender.0 as *mut Sender<'static, Box<dyn Link>, Box<dyn Sleep>>)
+                .as_mut()
+                .unwrap()
+                .group(Box::new(
+                    move |dev: &Device| match f(context, geometry, dev.idx() as _) {
+                        k if k >= 0 => Some(k),
+                        _ => None,
+                    },
+                ) as Box<_>),
+            |acc, i| {
+                let k = keys.add(i as _).read();
+                let d = d.add(i as _).read();
+                acc.set(k, *Box::<DynDatagram>::from(d))
             },
-        ) as Box<_>),
-        |acc, i| {
-            let k = keys.add(i as _).read();
-            let d = d.add(i as _).read();
-            acc.set(k, *Box::<DynDatagram>::from(d))
-        },
-    ) {
-        Ok(g) => g.send(),
-        Err(e) => Err(e),
-    }
-    .into()
+        )
+        .and_then(|g| g.send())
+        .into()
 }
