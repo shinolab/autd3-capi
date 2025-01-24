@@ -9,5 +9,5 @@ pub unsafe extern "C" fn AUTDPhaseFromRad(value: f32) -> u8 {
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDPhaseToRad(value: Phase) -> f32 {
-    Phase(value).radian()
+    value.radian()
 }
