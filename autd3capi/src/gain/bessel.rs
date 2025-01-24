@@ -1,25 +1,29 @@
-use autd3::prelude::{rad, Phase};
-use autd3capi_driver::{autd3::gain::Bessel, driver::geometry::Vector3, *};
-use driver::geometry::UnitVector3;
+use autd3capi_driver::{
+    autd3::gain::{Bessel, BesselOption},
+    driver::geometry::Vector3,
+    *,
+};
+use driver::{defined::rad, geometry::UnitVector3};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
-    p: Point3,
-    n: Vector3,
-    theta_z: f32,
-    intensity: u8,
-    phase_offset: u8,
+    pos: Point3,
+    dir: Vector3,
+    theta: f32,
+    option: BesselOption,
 ) -> GainPtr {
-    Bessel::new(p, UnitVector3::new_normalize(n), theta_z * rad)
-        .with_intensity(intensity)
-        .with_phase_offset(Phase::new(phase_offset))
-        .into()
+    Bessel {
+        pos,
+        dir: UnitVector3::new_normalize(dir),
+        theta: theta * rad,
+        option,
+    }
+    .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainBesselIsDefault(intensity: u8, phase_offset: u8) -> bool {
-    let default = Bessel::new(Point3::origin(), Vector3::x_axis(), 0.0 * rad);
-    intensity == default.intensity().value() && phase_offset == default.phase_offset().value()
+pub unsafe extern "C" fn AUTDGainBesselIsDefault(option: BesselOption) -> bool {
+    option == Default::default()
 }

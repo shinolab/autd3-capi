@@ -1,10 +1,10 @@
 use std::num::NonZeroU32;
 
-use autd3::controller::timer::*;
+use autd3::controller::*;
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
-pub enum TimerStrategyTag {
+pub enum SleeperTag {
     Std = 0,
     Spin = 1,
     Waitable = 3,
@@ -37,28 +37,28 @@ impl From<SpinStrategy> for SpinStrategyTag {
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy)]
-pub struct TimerStrategyWrap {
-    pub tag: TimerStrategyTag,
+pub struct SleeperWrap {
+    pub tag: SleeperTag,
     pub value: u32,
     pub spin_strategy: SpinStrategyTag,
 }
 
-impl From<TimerStrategyWrap> for TimerStrategy {
-    fn from(value: TimerStrategyWrap) -> Self {
+impl From<SleeperWrap> for Box<dyn Sleep> {
+    fn from(value: SleeperWrap) -> Self {
         match value.tag {
-            TimerStrategyTag::Std => TimerStrategy::Std(StdSleeper {
+            SleeperTag::Std => Box::new(StdSleeper {
                 timer_resolution: NonZeroU32::new(value.value),
             }),
-            TimerStrategyTag::Spin => TimerStrategy::Spin(
+            SleeperTag::Spin => Box::new(
                 SpinSleeper::new(value.value).with_spin_strategy(value.spin_strategy.into()),
             ),
             #[cfg(target_os = "windows")]
-            TimerStrategyTag::Waitable => TimerStrategy::Waitable(
-                autd3::controller::timer::WaitableSleeper::new()
+            SleeperTag::Waitable => Box::new(
+                autd3::controller::WaitableSleeper::new()
                     .expect("Failed to create WaitableSleeper"),
             ),
             #[cfg(not(target_os = "windows"))]
-            TimerStrategyTag::Waitable => unimplemented!(),
+            SleeperTag::Waitable => unimplemented!(),
         }
     }
 }

@@ -1,6 +1,7 @@
-use std::time::Duration;
-
-use autd3_core::{datagram::Datagram, geometry::Geometry};
+use autd3_core::{
+    datagram::{Datagram, DatagramOption},
+    geometry::Geometry,
+};
 use autd3_driver::{
     error::AUTDDriverError,
     firmware::operation::{BoxedOperation, OperationGenerator},
@@ -35,26 +36,28 @@ impl OperationGenerator for DOperationGeneratorTuple {
 }
 
 impl Datagram for DynDatagramTuple {
+    type G = DOperationGeneratorTuple;
     type Error = AUTDDriverError;
 
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, Self::Error> {
+    fn operation_generator(
+        self,
+        geometry: &Geometry,
+        parallel: bool,
+    ) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {
-            g1: self.d1.operation_generator(geometry)?,
-            g2: self.d2.operation_generator(geometry)?,
+            g1: self.d1.operation_generator(geometry, parallel)?,
+            g2: self.d2.operation_generator(geometry, parallel)?,
         })
     }
 
-    fn timeout(&self) -> Option<Duration> {
-        self.d1.timeout().into_iter().chain(self.d2.timeout()).max()
+    fn option(&self) -> autd3_core::datagram::DatagramOption {
+        DatagramOption {
+            timeout: self.d1.option().timeout.max(self.d2.option().timeout),
+            parallel_threshold: self
+                .d1
+                .option()
+                .parallel_threshold
+                .min(self.d2.option().parallel_threshold),
+        }
     }
-
-    fn parallel_threshold(&self) -> Option<usize> {
-        self.d1
-            .parallel_threshold()
-            .into_iter()
-            .chain(self.d2.parallel_threshold())
-            .min()
-    }
-
-    type G = DOperationGeneratorTuple;
 }

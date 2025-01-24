@@ -2,9 +2,12 @@ mod tuple;
 
 pub use tuple::DynDatagramTuple;
 
-use std::{mem::MaybeUninit, time::Duration};
+use std::mem::MaybeUninit;
 
-use autd3_core::{datagram::Operation, geometry::Geometry};
+use autd3_core::{
+    datagram::{DatagramOption, Operation},
+    geometry::Geometry,
+};
 use autd3_driver::{
     datagram::Datagram,
     error::AUTDDriverError,
@@ -45,9 +48,9 @@ pub trait DDatagram: std::fmt::Debug {
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
+        parallel: bool,
     ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError>;
-    fn dyn_timeout(&self) -> Option<Duration>;
-    fn dyn_parallel_threshold(&self) -> Option<usize>;
+    fn dyn_option(&self) -> DatagramOption;
     fn dyn_fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result;
 }
 
@@ -59,19 +62,16 @@ where
     fn dyn_operation_generator(
         &mut self,
         geometry: &Geometry,
+        parallel: bool,
     ) -> Result<Box<dyn DOperationGenerator>, AUTDDriverError> {
         let mut tmp = MaybeUninit::<T>::uninit();
         std::mem::swap(&mut tmp, self);
         let d = unsafe { tmp.assume_init() };
-        Ok(Box::new(d.operation_generator(geometry)?))
+        Ok(Box::new(d.operation_generator(geometry, parallel)?))
     }
 
-    fn dyn_timeout(&self) -> Option<Duration> {
-        unsafe { self.assume_init_ref() }.timeout()
-    }
-
-    fn dyn_parallel_threshold(&self) -> Option<usize> {
-        unsafe { self.assume_init_ref() }.parallel_threshold()
+    fn dyn_option(&self) -> DatagramOption {
+        unsafe { self.assume_init_ref() }.option()
     }
 
     fn dyn_fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -110,18 +110,18 @@ impl Datagram for DynDatagram {
     type G = DynOperationGenerator;
     type Error = AUTDDriverError;
 
-    fn operation_generator(self, geometry: &Geometry) -> Result<Self::G, Self::Error> {
+    fn operation_generator(
+        self,
+        geometry: &Geometry,
+        parallel: bool,
+    ) -> Result<Self::G, Self::Error> {
         let Self { mut d } = self;
         Ok(DynOperationGenerator {
-            g: d.dyn_operation_generator(geometry)?,
+            g: d.dyn_operation_generator(geometry, parallel)?,
         })
     }
 
-    fn timeout(&self) -> Option<Duration> {
-        self.d.dyn_timeout()
-    }
-
-    fn parallel_threshold(&self) -> Option<usize> {
-        self.d.dyn_parallel_threshold()
+    fn option(&self) -> DatagramOption {
+        self.d.dyn_option()
     }
 }

@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::{driver::geometry::Device, prelude::Phase},
+    autd3::{core::gain::Phase, driver::geometry::Device},
     driver::{datagram::PhaseCorrection, geometry::Transducer},
     ConstPtr, DatagramPtr, GeometryPtr,
 };
@@ -19,7 +19,7 @@ pub unsafe extern "C" fn AUTDDatagramPhaseCorr(
         let dev_idx = dev.idx() as _;
         Box::new(move |tr: &Transducer| {
             let tr_idx = tr.idx() as _;
-            Phase::new(f(context, geometry, dev_idx, tr_idx))
+            Phase(f(context, geometry, dev_idx, tr_idx))
         }) as Box<dyn Fn(&Transducer) -> Phase + Send + Sync>
     })
         as Box<dyn Fn(&Device) -> Box<dyn Fn(&Transducer) -> Phase + Send + Sync>>)

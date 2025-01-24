@@ -48,18 +48,24 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCAT(
         ""
     } else {
         validate_cstr!(server_ip, LinkBuilderPtr, ResultLinkBuilder)
-    };
+    }
+    .to_owned();
     let client_ams_net_id = if client_ams_net_id.is_null() {
         ""
     } else {
         validate_cstr!(client_ams_net_id, LinkBuilderPtr, ResultLinkBuilder)
-    };
+    }
+    .to_owned();
     CStr::from_ptr(server_ams_net_id)
         .to_str()
         .map(|path| {
-            RemoteTwinCAT::builder(path)
-                .with_server_ip(server_ip)
-                .with_client_ams_net_id(client_ams_net_id)
+            RemoteTwinCAT::builder(
+                path,
+                RemoteTwinCATOption {
+                    server_ip,
+                    client_ams_net_id,
+                },
+            )
         })
         .into()
 }

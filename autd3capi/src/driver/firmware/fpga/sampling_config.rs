@@ -45,7 +45,7 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> Sam
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfig) -> u16 {
-    c.division()
+    c.division.get()
 }
 
 #[no_mangle]

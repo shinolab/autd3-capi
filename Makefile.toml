@@ -1,0 +1,102 @@
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[tasks.format]
+command = "cargo"
+args = ["fmt"]
+
+[tasks.clean]
+command = "cargo"
+args = ["clean"]
+
+[tasks.check]
+dependencies = ["format", "build", "test", "lint"]
+
+[tasks.build]
+command = "cargo"
+args = ["build", "--workspace", "${@}"]
+
+[tasks.lint]
+command = "cargo"
+args = ["clippy", "--tests", "--workspace", "${@}", "--", "-D", "warnings"]
+
+[tasks.test]
+command = "cargo"
+args = ["nextest", "run", "--workspace", "${@}"]
+
+[tasks.publish]
+run_task = [{ name = "publish-debug", condition = { profiles = ["debug"] } }, { name = "publish-release" }]
+
+[tasks.publish-debug]
+dependencies = ["build-debug", "gather-artifacts-debug"]
+
+[tasks.publish-release]
+dependencies = ["build-release", "gather-artifacts-release"]
+
+[tasks.build-debug]
+command = "cargo"
+args = ["build", "--workspace", "${@}"]
+
+[tasks.build-release]
+command = "cargo"
+args = ["build", "--workspace", "${@}", "--release"]
+
+[tasks.gather-artifacts-debug]
+ignore_errors = true
+script_runner = "@shell"
+script = '''
+rm -rf bin
+mkdir -p bin
+cp target/debug/*.dll bin
+cp target/debug/*.dylib bin
+cp target/debug/*.so bin
+rm -rf lib
+mkdir -p lib
+cp target/debug/*.lib lib
+cp target/debug/*.pdb lib
+rm lib/*.dll.lib
+cp target/debug/*.a lib
+'''
+
+[tasks.gather-artifacts-release]
+ignore_errors = true
+script_runner = "@shell"
+script = '''
+rm -rf bin
+mkdir -p bin
+cp target/release/*.dll bin
+cp target/release/*.dylib bin
+cp target/release/*.so bin
+rm -rf lib
+mkdir -p lib
+cp target/release/*.lib lib
+rm lib/*.dll.lib
+cp target/release/*.a lib
+'''
+
+[tasks.update]
+command = "cargo"
+args = ["update"]
+
+[tasks.license]
+cwd = "./tools/license-checker"
+command = "cargo"
+args = ["run"]
+dependencies = ["update"]
+
+[tasks.update-version]
+script_runner = "python"
+script_extension = "py"
+script = '''
+import sys
+import re
+from pathlib import Path
+
+version = sys.argv[1]
+file = Path("Cargo.toml")
+content = file.read_text(encoding="utf-8")
+content = re.sub(r'^version = "(.*?)"', f'version = "{version}"', content, flags=re.MULTILINE)
+content = re.sub(r'^autd3(.*)version = "(.*?)"', f'autd3\\1version = "{version}"', content, flags=re.MULTILINE)
+file.write_text(content, encoding="utf-8")
+'''

@@ -5,9 +5,34 @@ use std::num::NonZeroUsize;
 use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
-    autd3::core::acoustics::directivity::{Sphere, T4010A1},
+    autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
     *,
 };
+
+#[repr(C)]
+pub struct LMOption {
+    pub constraint: EmissionConstraintWrap,
+    pub eps_1: f32,
+    pub eps_2: f32,
+    pub tau: f32,
+    pub k_max: u32,
+    pub initial: *const f32,
+    pub initial_len: u32,
+}
+
+impl<T: Directivity> From<LMOption> for autd3_gain_holo::LMOption<T> {
+    fn from(option: LMOption) -> Self {
+        autd3_gain_holo::LMOption {
+            constraint: option.constraint.into(),
+            eps_1: option.eps_1,
+            eps_2: option.eps_2,
+            tau: option.tau,
+            k_max: NonZeroUsize::new(option.k_max as _).unwrap(),
+            initial: unsafe { vec_from_raw!(option.initial, f32, option.initial_len) },
+            __phantom: std::marker::PhantomData,
+        }
+    }
+}
 
 #[no_mangle]
 #[must_use]
@@ -16,22 +41,15 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     points: *const Point3,
     amps: *const f32,
     size: u32,
-    eps_1: f32,
-    eps_2: f32,
-    tau: f32,
-    k_max_nonzero: u32,
-    initial_ptr: *const f32,
-    initial_len: u32,
-    constraint: EmissionConstraintWrap,
+    option: LMOption,
 ) -> GainPtr {
-    create_holo!(LM, NalgebraBackend, Sphere, backend, points, amps, size)
-        .with_eps_1(eps_1)
-        .with_eps_2(eps_2)
-        .with_tau(tau)
-        .with_k_max(NonZeroUsize::new_unchecked(k_max_nonzero as _))
-        .with_initial(vec_from_raw!(initial_ptr, f32, initial_len))
-        .with_constraint(constraint.into())
-        .into()
+    let (foci, backend) = create_holo!(NalgebraBackend, Sphere, backend, points, amps, size);
+    LM {
+        foci,
+        backend,
+        option: option.into(),
+    }
+    .into()
 }
 
 #[no_mangle]
@@ -41,41 +59,19 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     points: *const Point3,
     amps: *const f32,
     size: u32,
-    eps_1: f32,
-    eps_2: f32,
-    tau: f32,
-    k_max_nonzero: u32,
-    initial_ptr: *const f32,
-    initial_len: u32,
-    constraint: EmissionConstraintWrap,
+    option: LMOption,
 ) -> GainPtr {
-    create_holo!(LM, NalgebraBackend, T4010A1, backend, points, amps, size)
-        .with_eps_1(eps_1)
-        .with_eps_2(eps_2)
-        .with_tau(tau)
-        .with_k_max(NonZeroUsize::new_unchecked(k_max_nonzero as _))
-        .with_initial(vec_from_raw!(initial_ptr, f32, initial_len))
-        .with_constraint(constraint.into())
-        .into()
+    let (foci, backend) = create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size);
+    LM {
+        foci,
+        backend,
+        option: option.into(),
+    }
+    .into()
 }
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDGainLMIsDefault(
-    constraint: EmissionConstraintWrap,
-    eps_1: f32,
-    eps_2: f32,
-    tau: f32,
-    k_max: u32,
-    initial_ptr: *const f32,
-    initial_len: u32,
-) -> bool {
-    let default = LM::new(std::sync::Arc::new(NalgebraBackend::default()), []);
-    let constraint: EmissionConstraint = constraint.into();
-    constraint == default.constraint()
-        && eps_1 == default.eps_1()
-        && eps_2 == default.eps_2()
-        && tau == default.tau()
-        && k_max as usize == default.k_max().get()
-        && vec_from_raw!(initial_ptr, f32, initial_len) == default.initial()
+pub unsafe extern "C" fn AUTDGainLMIsDefault(option: LMOption) -> bool {
+    autd3_gain_holo::LMOption::<Sphere>::default() == option.into()
 }

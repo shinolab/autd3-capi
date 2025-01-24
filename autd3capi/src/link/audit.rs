@@ -1,15 +1,13 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::{
-    core::{datagram::Segment, gain::Drive, modulation::LoopBehavior},
-    prelude::SilencerTarget,
-};
+use autd3::core::{datagram::Segment, gain::Drive};
 use autd3capi_driver::{autd3::link::Audit, *};
+use driver::{autd3_device::AUTD3, firmware::fpga::SilencerTarget};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAudit() -> LinkBuilderPtr {
-    Audit::builder().into()
+    Audit::builder(autd3::link::AuditOption::default()).into()
 }
 
 #[no_mangle]
@@ -36,22 +34,6 @@ pub unsafe extern "C" fn AUTDLinkAuditBreakDown(mut audit: LinkPtr) {
 #[no_mangle]
 pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().repair()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastTimeout(audit: LinkPtr) -> OptionDuration {
-    audit.cast::<Audit>().last_timeout().into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditLastParallelThreshold(audit: LinkPtr) -> i64 {
-    audit
-        .cast::<Audit>()
-        .last_parallel_threshold()
-        .map(|t| t as i64)
-        .unwrap_or(-1)
 }
 
 #[no_mangle]
@@ -241,6 +223,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .stm_loop_behavior(segment)
+        .into()
 }
 
 #[no_mangle]
@@ -291,6 +274,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .modulation_loop_behavior(segment)
+        .into()
 }
 
 #[no_mangle]
@@ -301,7 +285,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     stm_idx: u16,
     drive: *mut Drive,
 ) {
-    let dst = std::slice::from_raw_parts_mut(drive, autd3::prelude::AUTD3::NUM_TRANS_IN_UNIT);
+    let dst = std::slice::from_raw_parts_mut(drive, AUTD3::NUM_TRANS_IN_UNIT);
     audit.cast::<Audit>()[idx as usize]
         .fpga()
         .drives_at_inplace(segment, stm_idx as _, dst);

@@ -1,6 +1,6 @@
-use autd3capi_driver::{
-    autd3::prelude::rad,
-    driver::geometry::{EulerAngle, Quaternion, UnitQuaternion},
+use autd3capi_driver::driver::{
+    defined::rad,
+    geometry::{EulerAngle, Quaternion, UnitQuaternion},
 };
 
 #[no_mangle]
