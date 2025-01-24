@@ -126,12 +126,3 @@ pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
     let info_str = std::ffi::CString::new(FirmwareVersion::latest()).unwrap();
     libc::strcpy(latest, info_str.as_ptr());
 }
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDControllerSend(
-    mut cnt: ControllerPtr,
-    d: DatagramPtr,
-) -> ResultStatus {
-    cnt.send(*Box::<DynDatagram>::from(d)).into()
-}

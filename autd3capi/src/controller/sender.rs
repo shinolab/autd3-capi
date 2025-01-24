@@ -3,9 +3,11 @@ use autd3capi_driver::{
         self,
         controller::{ParallelMode, Sleep},
     },
-    Duration, OptionDuration, SleeperWrap,
+    ControllerPtr, DatagramPtr, Duration, DynDatagram, OptionDuration, ResultStatus, SenderPtr,
+    SleeperWrap,
 };
 
+#[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SenderOption {
     pub send_interval: Duration,
@@ -25,4 +27,16 @@ impl From<SenderOption> for autd3::controller::SenderOption<Box<dyn Sleep>> {
             sleeper: value.sleeper.into(),
         }
     }
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption) -> SenderPtr {
+    SenderPtr(Box::into_raw(Box::new(cnt.sender(option.into()))) as *const _ as _)
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSenderSend(mut sender: SenderPtr, d: DatagramPtr) -> ResultStatus {
+    sender.send(*Box::<DynDatagram>::from(d)).into()
 }

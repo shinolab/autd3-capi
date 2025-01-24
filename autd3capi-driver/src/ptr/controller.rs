@@ -1,4 +1,7 @@
-use autd3::Controller;
+use autd3::{
+    controller::{Sender, Sleep},
+    Controller,
+};
 use autd3_core::link::Link;
 
 use crate::impl_ptr;
@@ -8,3 +11,9 @@ use crate::impl_ptr;
 pub struct ControllerPtr(pub *const libc::c_void);
 
 impl_ptr!(ControllerPtr, Controller<Box<dyn Link>>);
+
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct SenderPtr(pub *const libc::c_void);
+
+impl_ptr!(SenderPtr, Sender<'static, Box<dyn Link>, Box<dyn Sleep>>);

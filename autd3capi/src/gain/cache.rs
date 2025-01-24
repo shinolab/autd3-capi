@@ -64,22 +64,23 @@ mod tests {
         unsafe {
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
+            let option = controller::sender::SenderOption {
+                send_interval: std::time::Duration::from_millis(1).into(),
+                receive_interval: std::time::Duration::from_millis(1).into(),
+                timeout: None.into(),
+                parallel: ParallelMode::Auto,
+                sleeper: autd3capi_driver::SleeperWrap {
+                    tag: autd3capi_driver::SleeperTag::Spin,
+                    value: SpinSleeper::default().native_accuracy_ns(),
+                    spin_strategy: SpinSleeper::default().spin_strategy().into(),
+                },
+            };
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
                 rot.as_ptr(),
                 1,
                 link::nop::AUTDLinkNop(),
-                controller::sender::SenderOption {
-                    send_interval: std::time::Duration::from_millis(1).into(),
-                    receive_interval: std::time::Duration::from_millis(1).into(),
-                    timeout: None.into(),
-                    parallel: ParallelMode::Auto,
-                    sleeper: autd3capi_driver::SleeperWrap {
-                        tag: autd3capi_driver::SleeperTag::Spin,
-                        value: SpinSleeper::default().native_accuracy_ns(),
-                        spin_strategy: SpinSleeper::default().spin_strategy().into(),
-                    },
-                },
+                option,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
@@ -103,11 +104,12 @@ mod tests {
             let gc = AUTDGainCache(g);
             assert_eq!(1, count(gc));
 
+            let sender = controller::sender::AUTDSender(cnt, option);
             {
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));
                 let d = gain::AUTDGainIntoDatagram(gg);
-                let result = controller::AUTDControllerSend(cnt, d);
+                let result = controller::sender::AUTDSenderSend(sender, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
@@ -117,7 +119,7 @@ mod tests {
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));
                 let d = gain::AUTDGainIntoDatagram(gg);
-                let result = controller::AUTDControllerSend(cnt, d);
+                let result = controller::sender::AUTDSenderSend(sender, d);
                 assert_eq!(AUTDStatus::AUTDTrue, result.result);
                 assert_eq!(1, i);
             }
