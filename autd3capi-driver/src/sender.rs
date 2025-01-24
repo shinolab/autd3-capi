@@ -58,7 +58,7 @@ impl From<SleeperWrap> for Box<dyn Sleep> {
                     .expect("Failed to create WaitableSleeper"),
             ),
             #[cfg(not(target_os = "windows"))]
-            TimerStrategyTag::Waitable => unimplemented!(),
+            SleeperTag::Waitable => unimplemented!(),
         }
     }
 }
