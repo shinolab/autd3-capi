@@ -59,6 +59,7 @@ jobs:
             name: linux
             arch: x64
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
       - id: get_version
         uses: actions/github-script@v7

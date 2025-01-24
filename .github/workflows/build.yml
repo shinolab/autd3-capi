@@ -43,6 +43,7 @@ jobs:
           - os: ubuntu-latest
             features: "unity dynamic_freq"
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-build
       - run: cargo make check --features "${{ matrix.features }}"
         shell: bash
