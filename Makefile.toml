@@ -48,15 +48,15 @@ script_runner = "@shell"
 script = '''
 rm -rf bin
 mkdir -p bin
-cp target/debug/*.dll bin
-cp target/debug/*.dylib bin
-cp target/debug/*.so bin
+cp target/debug/*.dll bin || true
+cp target/debug/*.dylib bin ||| true
+cp target/debug/*.so bin ||| true
 rm -rf lib
 mkdir -p lib
-cp target/debug/*.lib lib
-cp target/debug/*.pdb lib
-rm lib/*.dll.lib
-cp target/debug/*.a lib
+cp target/debug/*.lib lib || true
+cp target/debug/*.pdb lib || true
+rm lib/*.dll.lib || true
+cp target/debug/*.a lib || true
 '''
 
 [tasks.gather-artifacts-release]
@@ -65,14 +65,14 @@ script_runner = "@shell"
 script = '''
 rm -rf bin
 mkdir -p bin
-cp target/release/*.dll bin
-cp target/release/*.dylib bin
-cp target/release/*.so bin
+cp target/release/*.dll bin || true
+cp target/release/*.dylib bin || true
+cp target/release/*.so bin || true
 rm -rf lib
 mkdir -p lib
-cp target/release/*.lib lib
-rm lib/*.dll.lib
-cp target/release/*.a lib
+cp target/release/*.lib lib || true
+rm lib/*.dll.lib || true
+cp target/release/*.a lib || true
 '''
 
 [tasks.update]
