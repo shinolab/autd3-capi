@@ -1,7 +1,7 @@
 use autd3capi_driver::{
     autd3::{
         self,
-        controller::{ParallelMode, Sleep},
+        controller::{ParallelMode, Sleep, SpinSleeper},
     },
     ControllerPtr, DatagramPtr, Duration, DynDatagram, OptionDuration, ResultStatus, SenderPtr,
     SleeperWrap,
@@ -39,4 +39,10 @@ pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption
 #[must_use]
 pub unsafe extern "C" fn AUTDSenderSend(mut sender: SenderPtr, d: DatagramPtr) -> ResultStatus {
     sender.send(*Box::<DynDatagram>::from(d)).into()
+}
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSpinSleepDefaultAccuracy() -> u32 {
+    SpinSleeper::default().native_accuracy_ns()
 }
