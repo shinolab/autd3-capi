@@ -2,7 +2,7 @@ use autd3_core::{ethercat::DcSysTime, geometry::Device};
 
 #[repr(u8)]
 #[derive(Clone, Copy, Default)]
-enum DebugTypeTag {
+pub enum DebugTypeTag {
     #[default]
     None = 0,
     BaseSignal = 1,
