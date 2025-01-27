@@ -4,7 +4,7 @@ use autd3_gain_holo::*;
 use autd3capi_driver::autd3::core::gain::EmitIntensity;
 
 #[repr(u8)]
-enum EmissionConstraintTag {
+pub enum EmissionConstraintTag {
     Normalize = 1,
     Uniform = 2,
     Multiply = 3,
@@ -12,7 +12,7 @@ enum EmissionConstraintTag {
 }
 
 #[repr(C)]
-union EmissionConstraintValue {
+pub union EmissionConstraintValue {
     null: EmitIntensity,
     uniform: EmitIntensity,
     multiply: f32,
