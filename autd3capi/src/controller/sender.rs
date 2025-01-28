@@ -46,3 +46,30 @@ pub unsafe extern "C" fn AUTDSenderSend(mut sender: SenderPtr, d: DatagramPtr) -
 pub unsafe extern "C" fn AUTDSpinSleepDefaultAccuracy() -> u32 {
     SpinSleeper::default().native_accuracy_ns()
 }
+
+#[no_mangle]
+#[must_use]
+pub unsafe extern "C" fn AUTDSenderOptionIsDefault(option: SenderOption) -> bool {
+    let autd3::controller::SenderOption::<SpinSleeper> {
+        send_interval: default_send_interval,
+        receive_interval: default_receive_interval,
+        timeout: default_timeout,
+        parallel: default_parallel,
+        sleeper: _,
+    } = autd3::controller::SenderOption::default();
+    let autd3::controller::SenderOption::<Box<dyn Sleep>> {
+        send_interval,
+        receive_interval,
+        timeout,
+        parallel,
+        sleeper: _,
+    } = option.into();
+    default_send_interval == send_interval
+        && default_receive_interval == receive_interval
+        && default_timeout == timeout
+        && default_parallel == parallel
+        && option.sleeper.tag == autd3capi_driver::SleeperTag::Spin
+        && option.sleeper.value == 0
+        && option.sleeper.spin_strategy
+            == autd3capi_driver::SpinStrategyTag::from(SpinSleeper::default().spin_strategy())
+}
