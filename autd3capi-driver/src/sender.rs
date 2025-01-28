@@ -3,7 +3,7 @@ use std::num::NonZeroU32;
 use autd3::controller::*;
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SleeperTag {
     Std = 0,
     Spin = 1,
@@ -11,7 +11,7 @@ pub enum SleeperTag {
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SpinStrategyTag {
     YieldThread = 0,
     SpinLoopHint = 1,
