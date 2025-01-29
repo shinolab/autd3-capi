@@ -6,14 +6,15 @@ use driver::{autd3_device::AUTD3, firmware::fpga::SilencerTarget};
 
 #[no_mangle]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAudit() -> LinkBuilderPtr {
-    Audit::builder(autd3::link::AuditOption::default()).into()
+pub unsafe extern "C" fn AUTDLinkAudit() -> LinkPtr {
+    Audit::new(autd3::link::AuditOption::default()).into()
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIsOpen(audit: LinkPtr) -> bool {
-    audit.is_open()
+    use autd3::core::link::Link;
+    audit.cast::<Audit>().is_open()
 }
 
 #[no_mangle]
