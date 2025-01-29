@@ -32,7 +32,6 @@ pub unsafe extern "C" fn AUTDSTMConfigFromFreqNearest(f: f32, n: u16) -> Samplin
     STMConfig::FreqNearest(f * Hz)
         .into_sampling_config(n as usize)
         .unwrap()
-        .into()
 }
 
 #[cfg(not(feature = "dynamic_freq"))]
@@ -42,5 +41,4 @@ pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(p: Duration, n: u16) -> 
     STMConfig::PeriodNearest(p.into())
         .into_sampling_config(n as usize)
         .unwrap()
-        .into()
 }

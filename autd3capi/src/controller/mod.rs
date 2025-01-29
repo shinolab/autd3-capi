@@ -29,18 +29,18 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     pos: *const Point3,
     rot: *const Quaternion,
     len: u16,
-    link_builder: LinkBuilderPtr,
+    link: LinkPtr,
     option: SenderOption,
 ) -> ResultController {
     let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
-    let link_builder = take!(link_builder, DynamicLinkBuilder);
+    let link = take!(link, Box<dyn Link>);
     Controller::open_with_option(
         pos.into_iter().zip(rot).map(|(pos, rot)| AUTD3 {
             pos,
             rot: UnitQuaternion::from_quaternion(rot),
         }),
-        *link_builder,
+        *link,
         option.into(),
     )
     .into()
