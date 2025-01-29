@@ -69,7 +69,7 @@ pub unsafe extern "C" fn AUTDSenderOptionIsDefault(option: SenderOption) -> bool
         && default_timeout == timeout
         && default_parallel == parallel
         && option.sleeper.tag == autd3capi_driver::SleeperTag::Spin
-        && option.sleeper.value == 0
+        && option.sleeper.value == SpinSleeper::default().native_accuracy_ns()
         && option.sleeper.spin_strategy
             == autd3capi_driver::SpinStrategyTag::from(SpinSleeper::default().spin_strategy())
 }
