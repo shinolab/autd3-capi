@@ -4,7 +4,8 @@ use autd3capi_driver::{
         core::link::Link,
         driver::geometry::Device,
     },
-    ConstPtr, DatagramPtr, DynDatagram, GeometryPtr, ResultStatus, SenderPtr,
+    driver::datagram::BoxedDatagram,
+    ConstPtr, DatagramPtr, GeometryPtr, ResultStatus, SenderPtr,
 };
 
 #[no_mangle]
@@ -18,25 +19,24 @@ pub unsafe extern "C" fn AUTDControllerGroup(
     d: *const DatagramPtr,
     n: u16,
 ) -> ResultStatus {
+    let map = (0..n)
+        .map(|i| {
+            let k = keys.add(i as _).read();
+            let d = d.add(i as _).read();
+            (k, *Box::<BoxedDatagram>::from(d))
+        })
+        .collect();
     let f =
         std::mem::transmute::<ConstPtr, unsafe extern "C" fn(ConstPtr, GeometryPtr, u16) -> i32>(f);
-    (0..n)
-        .try_fold(
-            (sender.0 as *mut Sender<'static, Box<dyn Link>, Box<dyn Sleep>>)
-                .as_mut()
-                .unwrap()
-                .group(Box::new(
-                    move |dev: &Device| match f(context, geometry, dev.idx() as _) {
-                        k if k >= 0 => Some(k),
-                        _ => None,
-                    },
-                ) as Box<_>),
-            |acc, i| {
-                let k = keys.add(i as _).read();
-                let d = d.add(i as _).read();
-                acc.set(k, *Box::<DynDatagram>::from(d))
+    (sender.0 as *mut Sender<'static, Box<dyn Link>, Box<dyn Sleep>>)
+        .as_mut()
+        .unwrap()
+        .group_send(
+            move |dev: &Device| match f(context, geometry, dev.idx() as _) {
+                k if k >= 0 => Some(k),
+                _ => None,
             },
+            map,
         )
-        .and_then(|g| g.send())
         .into()
 }

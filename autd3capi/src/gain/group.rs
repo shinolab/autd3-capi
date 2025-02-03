@@ -58,26 +58,31 @@ pub unsafe extern "C" fn AUTDGainGroup(
     keys_ptr: *const i32,
     values_ptr: *const GainPtr,
     kv_len: u32,
-) -> ResultGain {
-    let map: HashMap<_, _> = take!(map, M)
-        .into_iter()
-        .map(|(k, v)| (k, Arc::new(v)))
-        .collect();
-    let f = move |dev: &Device| {
-        let map = map[&dev.idx()].clone();
-        move |tr: &Transducer| {
-            let key = map[tr.idx()];
-            if key < 0 {
-                None
-            } else {
-                Some(key)
+) -> GainPtr {
+    let key_map = {
+        let map: HashMap<_, _> = take!(map, M)
+            .into_iter()
+            .map(|(k, v)| (k, Arc::new(v)))
+            .collect();
+        move |dev: &Device| {
+            let map = map[&dev.idx()].clone();
+            move |tr: &Transducer| {
+                let key = map[tr.idx()];
+                if key < 0 {
+                    None
+                } else {
+                    Some(key)
+                }
             }
         }
     };
-    (0..kv_len as usize)
-        .map(|i| (keys_ptr.add(i).read(), values_ptr.add(i).read()))
-        .try_fold(Group::new(f), |acc, (k, v)| {
-            acc.set(k, *take!(v, BoxedGain))
+    let gain_map = (0..kv_len as usize)
+        .map(|i| {
+            (
+                keys_ptr.add(i).read(),
+                *take!(values_ptr.add(i).read(), BoxedGain),
+            )
         })
-        .into()
+        .collect();
+    Group { key_map, gain_map }.into()
 }

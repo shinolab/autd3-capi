@@ -3,16 +3,15 @@ use autd3_core::{
     geometry::Geometry,
 };
 use autd3_driver::{
+    datagram::BoxedDatagram,
     error::AUTDDriverError,
     firmware::operation::{BoxedOperation, OperationGenerator},
     geometry::Device,
 };
 
-use super::{DynDatagram, DynOperationGenerator};
-
 pub struct DynDatagramTuple {
-    pub d1: Box<DynDatagram>,
-    pub d2: Box<DynDatagram>,
+    pub d1: BoxedDatagram,
+    pub d2: BoxedDatagram,
 }
 
 impl std::fmt::Debug for DynDatagramTuple {
@@ -22,8 +21,8 @@ impl std::fmt::Debug for DynDatagramTuple {
 }
 
 pub struct DOperationGeneratorTuple {
-    pub g1: DynOperationGenerator,
-    pub g2: DynOperationGenerator,
+    pub g1: <BoxedDatagram as Datagram>::G,
+    pub g2: <BoxedDatagram as Datagram>::G,
 }
 
 impl OperationGenerator for DOperationGeneratorTuple {

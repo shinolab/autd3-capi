@@ -9,14 +9,14 @@ pub mod silencer;
 pub mod stm;
 pub mod synchronize;
 
-use autd3capi_driver::{DatagramPtr, DynDatagramTuple};
+use autd3capi_driver::{driver::datagram::BoxedDatagram, DatagramPtr, DynDatagramTuple};
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramTuple(d1: DatagramPtr, d2: DatagramPtr) -> DatagramPtr {
     DynDatagramTuple {
-        d1: d1.into(),
-        d2: d2.into(),
+        d1: *Box::<BoxedDatagram>::from(d1),
+        d2: *Box::<BoxedDatagram>::from(d2),
     }
     .into()
 }

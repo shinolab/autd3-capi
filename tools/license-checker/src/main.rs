@@ -11,7 +11,7 @@ fn main() -> anyhow::Result<()> {
         Path::new(env!("CARGO_MANIFEST_DIR")).join("../../Cargo.toml"),
         "ThirdPartyNotice",
         &license_file_map,
-        &[("ADS", "ADS 0.0.25-1 (MIT)\nhttps://github.com/Beckhoff/ADS")],
+        &[("ADS", "ADS 28.1 (MIT)\nhttps://github.com/Beckhoff/ADS")],
     )?;
 
     if changed {
