@@ -3,8 +3,8 @@ use autd3capi_driver::{
         self,
         controller::{ParallelMode, Sleep, SpinSleeper},
     },
-    ControllerPtr, DatagramPtr, Duration, DynDatagram, OptionDuration, ResultStatus, SenderPtr,
-    SleeperWrap,
+    driver::datagram::BoxedDatagram,
+    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr, SleeperWrap,
 };
 
 #[derive(Clone, Copy)]
@@ -38,7 +38,7 @@ pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDSenderSend(mut sender: SenderPtr, d: DatagramPtr) -> ResultStatus {
-    sender.send(*Box::<DynDatagram>::from(d)).into()
+    sender.send(*Box::<BoxedDatagram>::from(d)).into()
 }
 
 #[no_mangle]
