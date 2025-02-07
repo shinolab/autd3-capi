@@ -1,4 +1,4 @@
-use autd3capi_driver::autd3::gain::GainCache;
+use autd3capi_driver::autd3::gain::Cache;
 use autd3capi_driver::{take, GainPtr};
 
 use autd3capi_driver::driver::datagram::BoxedGain;
@@ -10,13 +10,13 @@ pub struct GainCachePtr(pub *const libc::c_void);
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainCachePtr {
-    GainCachePtr(Box::into_raw(Box::new(GainCache::new(*take!(g, BoxedGain)))) as _)
+    GainCachePtr(Box::into_raw(Box::new(Cache::new(*take!(g, BoxedGain)))) as _)
 }
 
 #[no_mangle]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCacheClone(g: GainCachePtr) -> GainPtr {
-    (g.0 as *mut GainCache<BoxedGain>)
+    (g.0 as *mut Cache<BoxedGain>)
         .as_ref()
         .unwrap()
         .clone()
@@ -25,7 +25,7 @@ pub unsafe extern "C" fn AUTDGainCacheClone(g: GainCachePtr) -> GainPtr {
 
 #[no_mangle]
 pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
-    let _ = take!(g, GainCache<BoxedGain>);
+    let _ = take!(g, Cache<BoxedGain>);
 }
 
 #[cfg(test)]
@@ -85,12 +85,8 @@ mod tests {
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
 
-            let count = |gc: GainCachePtr| {
-                (gc.0 as *mut GainCache<BoxedGain>)
-                    .as_ref()
-                    .unwrap()
-                    .count()
-            };
+            let count =
+                |gc: GainCachePtr| (gc.0 as *mut Cache<BoxedGain>).as_ref().unwrap().count();
 
             let mut i: i32 = 0;
             let g = gain::custom::AUTDGainCustom(
