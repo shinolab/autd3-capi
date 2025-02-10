@@ -1,6 +1,7 @@
 use autd3capi_driver::{
-    autd3::driver::geometry::Device, driver::datagram::PulseWidthEncoder, ConstPtr, DatagramPtr,
-    GeometryPtr,
+    autd3::{core::gain::EmitIntensity, driver::geometry::Device},
+    driver::datagram::PulseWidthEncoder,
+    ConstPtr, DatagramPtr, GeometryPtr,
 };
 
 #[no_mangle]
@@ -15,11 +16,11 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder(
         unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u8) -> u8,
     >(f);
     PulseWidthEncoder::<
-        Box<dyn Fn(u8) -> u8 + Send + Sync>,
-        Box<dyn Fn(&Device) -> Box<dyn Fn(u8) -> u8 + Send + Sync>>,
+        Box<dyn Fn(EmitIntensity) -> u8 + Send + Sync>,
+        Box<dyn Fn(&Device) -> Box<dyn Fn(EmitIntensity) -> u8 + Send + Sync>>,
     >::new(Box::new(move |dev: &Device| {
         let dev_idx = dev.idx() as _;
-        Box::new(move |i| f(context, geometry, dev_idx, i))
+        Box::new(move |i| f(context, geometry, dev_idx, i.0))
     }))
     .into()
 }

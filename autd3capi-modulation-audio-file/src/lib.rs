@@ -49,13 +49,13 @@ pub unsafe extern "C" fn AUTDModulationAudioFileWav(path: *const c_char) -> Resu
 pub unsafe extern "C" fn AUTDModulationAudioFileCsv(
     path: *const c_char,
     sampling_config: SamplingConfig,
-    deliminator: u8,
+    delimiter: u8,
 ) -> ResultModulation {
     let path = validate_cstr!(path, ModulationPtr, ResultModulation);
     Result::<_, Infallible>::Ok(Csv {
         path: path.to_owned(),
         sampling_config,
-        option: CsvOption { deliminator },
+        option: CsvOption { delimiter },
     })
     .into()
 }
