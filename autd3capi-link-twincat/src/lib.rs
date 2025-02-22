@@ -1,19 +1,19 @@
 #![allow(clippy::missing_safety_doc)]
 
-use std::ffi::{c_char, CStr};
+use std::ffi::{CStr, c_char};
 
 use autd3capi_driver::*;
 
 use autd3_link_twincat::{local::*, remote::*};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkTwinCATTracingInit() {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkTwinCATTracingInitWithFile(path: *const c_char) -> ResultStatus {
     let path = validate_cstr!(path, AUTDStatus, ResultStatus);
     std::fs::File::options()
@@ -31,13 +31,13 @@ pub unsafe extern "C" fn AUTDLinkTwinCATTracingInitWithFile(path: *const c_char)
         .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkTwinCAT() -> ResultLink {
     TwinCAT::new().into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkRemoteTwinCAT(
     server_ams_net_id: *const c_char,
@@ -56,16 +56,18 @@ pub unsafe extern "C" fn AUTDLinkRemoteTwinCAT(
         validate_cstr!(client_ams_net_id, LinkPtr, ResultLink)
     }
     .to_owned();
-    CStr::from_ptr(server_ams_net_id)
-        .to_str()
-        .map(|path| {
-            RemoteTwinCAT::new(
-                path,
-                RemoteTwinCATOption {
-                    server_ip,
-                    client_ams_net_id,
-                },
-            )
-        })
-        .into()
+    unsafe {
+        CStr::from_ptr(server_ams_net_id)
+            .to_str()
+            .map(|path| {
+                RemoteTwinCAT::new(
+                    path,
+                    RemoteTwinCATOption {
+                        server_ip,
+                        client_ams_net_id,
+                    },
+                )
+            })
+            .into()
+    }
 }

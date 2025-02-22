@@ -1,28 +1,28 @@
 use autd3capi_driver::{
-    autd3::core::{datagram::Segment, modulation::SamplingConfig},
+    autd3::core::{datagram::Segment, sampling_config::SamplingConfig},
     driver::datagram::{BoxedGain, GainSTM, GainSTMOption, WithLoopBehavior, WithSegment},
     *,
 };
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGain(
-    config: SamplingConfig,
+    config: SamplingConfigWrap,
     gains: *const GainPtr,
     size: u16,
     option: GainSTMOption,
 ) -> GainSTMPtr {
     GainSTM::<Vec<BoxedGain>, SamplingConfig> {
         gains: (0..size as usize)
-            .map(|i| *take!(gains.add(i).read(), BoxedGain))
+            .map(|i| unsafe { *take!(gains.add(i).read(), BoxedGain) })
             .collect(),
-        config,
+        config: config.into(),
         option,
     }
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     stm: GainSTMPtr,
@@ -30,14 +30,14 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     transition_mode: TransitionModeWrap,
 ) -> DatagramPtr {
     WithSegment {
-        inner: *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>),
+        inner: unsafe { *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>) },
         segment,
         transition_mode: transition_mode.into(),
     }
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithLoopBehavior(
     stm: GainSTMPtr,
@@ -46,7 +46,7 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithLoopBehavior(
     loop_behavior: LoopBehavior,
 ) -> DatagramPtr {
     WithLoopBehavior {
-        inner: *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>),
+        inner: unsafe { *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>) },
         segment,
         transition_mode: transition_mode.into(),
         loop_behavior: loop_behavior.into(),
@@ -54,8 +54,8 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithLoopBehavior(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMGainIntoDatagram(stm: GainSTMPtr) -> DatagramPtr {
-    (*take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>)).into()
+    unsafe { *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>) }.into()
 }

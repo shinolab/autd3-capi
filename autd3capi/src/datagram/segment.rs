@@ -1,10 +1,10 @@
 use autd3capi_driver::{
+    DatagramPtr, TransitionModeWrap,
     autd3::core::datagram::{Segment, TransitionMode},
     driver::datagram::SwapSegment,
-    DatagramPtr, TransitionModeWrap,
 };
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSwapSegmentModulation(
     segment: Segment,
@@ -17,7 +17,7 @@ pub unsafe extern "C" fn AUTDDatagramSwapSegmentModulation(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSwapSegmentFociSTM(
     segment: Segment,
@@ -30,7 +30,7 @@ pub unsafe extern "C" fn AUTDDatagramSwapSegmentFociSTM(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSwapSegmentGainSTM(
     segment: Segment,
@@ -43,7 +43,7 @@ pub unsafe extern "C" fn AUTDDatagramSwapSegmentGainSTM(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSwapSegmentGain(
     segment: Segment,

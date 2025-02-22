@@ -2,13 +2,13 @@
 
 use autd3capi_driver::{autd3::modulation::Static, *};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationStatic(intensity: u8) -> ModulationPtr {
     Static { intensity }.into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationStaticIsDefault(intensity: u8) -> bool {
     let default = Static::default();

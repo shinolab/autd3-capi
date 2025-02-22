@@ -1,62 +1,65 @@
+use std::num::NonZeroU16;
+
 #[cfg(not(feature = "dynamic_freq"))]
-use autd3capi_driver::Duration;
+use autd3capi_driver::{Duration, ResultDuration};
 use autd3capi_driver::{
-    autd3::core::modulation::SamplingConfig, driver::defined::Hz, ResultSamplingConfig,
+    ResultF32, ResultSamplingConfig, ResultU16, SamplingConfigWrap,
+    autd3::core::{derive::SamplingConfigError, sampling_config::SamplingConfig},
+    driver::defined::Hz,
 };
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u16) -> ResultSamplingConfig {
-    SamplingConfig::new(div).into()
+    match NonZeroU16::new(div) {
+        Some(div) => Result::<_, SamplingConfigError>::Ok(SamplingConfig::new(div)).into(),
+        None => Result::<SamplingConfig, _>::Err(SamplingConfigError::DivisionInvalid).into(),
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: u32) -> ResultSamplingConfig {
+pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: f32) -> SamplingConfigWrap {
     SamplingConfig::new(f * Hz).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFreqF(f: f32) -> ResultSamplingConfig {
-    SamplingConfig::new(f * Hz).into()
-}
-
-#[no_mangle]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingConfig {
-    SamplingConfig::new_nearest(f * Hz)
+pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingConfigWrap {
+    SamplingConfig::new(f * Hz).into_nearest().into()
 }
 
 #[cfg(not(feature = "dynamic_freq"))]
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> ResultSamplingConfig {
-    std::time::Duration::from(p).try_into().into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> SamplingConfigWrap {
+    SamplingConfig::new(std::time::Duration::from(p)).into()
 }
 
 #[cfg(not(feature = "dynamic_freq"))]
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> SamplingConfig {
-    SamplingConfig::new_nearest(std::time::Duration::from(p))
+pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> SamplingConfigWrap {
+    SamplingConfig::new(std::time::Duration::from(p))
+        .into_nearest()
+        .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfig) -> u16 {
-    c.division.get()
+pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfigWrap) -> ResultU16 {
+    SamplingConfig::from(c).division().into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfig) -> f32 {
-    c.freq().hz()
+pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfigWrap) -> ResultF32 {
+    SamplingConfig::from(c).freq().map(|f| f.hz()).into()
 }
 
 #[cfg(not(feature = "dynamic_freq"))]
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfig) -> Duration {
-    c.period().into()
+pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfigWrap) -> ResultDuration {
+    SamplingConfig::from(c).period().into()
 }

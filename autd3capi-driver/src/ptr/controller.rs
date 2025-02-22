@@ -1,6 +1,6 @@
 use autd3::{
-    controller::{Sender, Sleep},
     Controller,
+    controller::{Sender, Sleep},
 };
 use autd3_core::link::Link;
 

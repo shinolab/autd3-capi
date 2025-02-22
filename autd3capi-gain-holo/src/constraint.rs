@@ -63,18 +63,17 @@ impl From<EmissionConstraint> for EmissionConstraintWrap {
                 tag: EmissionConstraintTag::Clamp,
                 value: EmissionConstraintValue { clamp: [min, max] },
             },
-            _ => unimplemented!(),
         }
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraintWrap {
     autd3_gain_holo::EmissionConstraint::Normalize.into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(
     intensity: EmitIntensity,
@@ -82,13 +81,13 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(
     autd3_gain_holo::EmissionConstraint::Uniform(intensity).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f32) -> EmissionConstraintWrap {
     autd3_gain_holo::EmissionConstraint::Multiply(v).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
     min_v: EmitIntensity,

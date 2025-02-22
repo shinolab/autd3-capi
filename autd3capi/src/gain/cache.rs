@@ -1,5 +1,5 @@
 use autd3capi_driver::autd3::gain::Cache;
-use autd3capi_driver::{take, GainPtr};
+use autd3capi_driver::{GainPtr, take};
 
 use autd3capi_driver::driver::datagram::BoxedGain;
 
@@ -7,23 +7,25 @@ use autd3capi_driver::driver::datagram::BoxedGain;
 #[repr(C)]
 pub struct GainCachePtr(pub *const libc::c_void);
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainCachePtr {
     GainCachePtr(Box::into_raw(Box::new(Cache::new(*take!(g, BoxedGain)))) as _)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCacheClone(g: GainCachePtr) -> GainPtr {
-    (g.0 as *mut Cache<BoxedGain>)
-        .as_ref()
-        .unwrap()
-        .clone()
-        .into()
+    unsafe {
+        (g.0 as *mut Cache<BoxedGain>)
+            .as_ref()
+            .unwrap()
+            .clone()
+            .into()
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
     let _ = take!(g, Cache<BoxedGain>);
 }
@@ -32,12 +34,12 @@ pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
 mod tests {
 
     use autd3capi_driver::{
+        AUTDStatus, ConstPtr, GeometryPtr, Point3,
         autd3::{
             controller::{ParallelMode, SpinSleeper},
             core::gain::Drive,
         },
         driver::geometry::Quaternion,
-        AUTDStatus, ConstPtr, GeometryPtr, Point3,
     };
 
     use super::*;

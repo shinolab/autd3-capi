@@ -1,6 +1,6 @@
-use autd3capi_driver::{autd3::gain::Null, GainPtr};
+use autd3capi_driver::{GainPtr, autd3::gain::Null};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainNull() -> GainPtr {
     Null.into()

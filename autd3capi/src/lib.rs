@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_driver::{validate_cstr, AUTDStatus, ConstPtr, ResultStatus};
+use autd3capi_driver::{AUTDStatus, ConstPtr, ResultStatus, validate_cstr};
 use libc::c_char;
 
 pub mod controller;
@@ -12,14 +12,14 @@ pub mod link;
 pub mod modulation;
 pub mod result;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDTracingInit() {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultStatus {
     let path = validate_cstr!(path, AUTDStatus, ResultStatus);
     std::fs::File::options()
@@ -40,9 +40,9 @@ pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultS
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::{
+        AUTDStatus, Point3,
         autd3::controller::{ParallelMode, SpinSleeper},
         driver::geometry::Quaternion,
-        AUTDStatus, Point3,
     };
 
     use super::*;

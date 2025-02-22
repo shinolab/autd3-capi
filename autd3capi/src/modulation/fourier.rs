@@ -24,7 +24,7 @@ impl From<FourierOption> for autd3::modulation::FourierOption {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationFourierExact(
     sine_freq: *const u32,
@@ -32,19 +32,21 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
     size: u32,
     option: FourierOption,
 ) -> ModulationPtr {
-    Fourier {
-        components: (0..size as usize)
-            .map(|i| Sine {
-                freq: sine_freq.add(i).read() * Hz,
-                option: sine_clamp.add(i).read(),
-            })
-            .collect(),
-        option: option.into(),
+    unsafe {
+        Fourier {
+            components: (0..size as usize)
+                .map(|i| Sine {
+                    freq: sine_freq.add(i).read() * Hz,
+                    option: sine_clamp.add(i).read(),
+                })
+                .collect(),
+            option: option.into(),
+        }
+        .into()
     }
-    .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
     sine_freq: *const f32,
@@ -52,19 +54,21 @@ pub unsafe extern "C" fn AUTDModulationFourierExactFloat(
     size: u32,
     option: FourierOption,
 ) -> ModulationPtr {
-    Fourier {
-        components: (0..size as usize)
-            .map(|i| Sine {
-                freq: sine_freq.add(i).read() * Hz,
-                option: sine_clamp.add(i).read(),
-            })
-            .collect(),
-        option: option.into(),
+    unsafe {
+        Fourier {
+            components: (0..size as usize)
+                .map(|i| Sine {
+                    freq: sine_freq.add(i).read() * Hz,
+                    option: sine_clamp.add(i).read(),
+                })
+                .collect(),
+            option: option.into(),
+        }
+        .into()
     }
-    .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationFourierNearest(
     sine_freq: *const f32,
@@ -72,17 +76,19 @@ pub unsafe extern "C" fn AUTDModulationFourierNearest(
     size: u32,
     option: FourierOption,
 ) -> ModulationPtr {
-    Fourier {
-        components: (0..size as usize)
-            .map(|i| {
-                Sine {
-                    freq: sine_freq.add(i).read() * Hz,
-                    option: sine_clamp.add(i).read(),
-                }
-                .into_nearest()
-            })
-            .collect(),
-        option: option.into(),
+    unsafe {
+        Fourier {
+            components: (0..size as usize)
+                .map(|i| {
+                    Sine {
+                        freq: sine_freq.add(i).read() * Hz,
+                        option: sine_clamp.add(i).read(),
+                    }
+                    .into_nearest()
+                })
+                .collect(),
+            option: option.into(),
+        }
+        .into()
     }
-    .into()
 }

@@ -2,7 +2,7 @@
 
 use std::num::NonZeroU8;
 
-use crate::{create_holo, EmissionConstraintWrap};
+use crate::{EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
@@ -25,7 +25,7 @@ impl<T: Directivity> From<GreedyOption> for autd3_gain_holo::GreedyOption<T> {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
     points: *const Point3,
@@ -41,7 +41,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
     points: *const Point3,
@@ -57,7 +57,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGreedyIsDefault(option: GreedyOption) -> bool {
     autd3_gain_holo::GreedyOption::<Sphere>::default() == option.into()

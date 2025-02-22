@@ -72,7 +72,6 @@ impl From<autd3_driver::firmware::fpga::TransitionMode> for TransitionModeWrap {
                 tag: TransitionModeTag::Immediate,
                 value: TransitionModeValue { null: 0 },
             },
-            _ => unreachable!(),
         }
     }
 }

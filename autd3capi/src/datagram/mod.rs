@@ -9,9 +9,9 @@ pub mod silencer;
 pub mod stm;
 pub mod synchronize;
 
-use autd3capi_driver::{driver::datagram::BoxedDatagram, DatagramPtr, DynDatagramTuple};
+use autd3capi_driver::{DatagramPtr, DynDatagramTuple, driver::datagram::BoxedDatagram};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramTuple(d1: DatagramPtr, d2: DatagramPtr) -> DatagramPtr {
     DynDatagramTuple {

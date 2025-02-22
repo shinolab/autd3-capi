@@ -15,13 +15,13 @@ use constraint::EmissionConstraintWrap;
 #[repr(C)]
 pub struct BackendPtr(pub *const libc::c_void);
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloSPLToPascal(value: f32) -> f32 {
     (value * dB).pascal()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f32) -> f32 {
     (value * Pa).spl()

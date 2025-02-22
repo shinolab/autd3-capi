@@ -9,7 +9,7 @@ use autd3capi_driver::{
 #[cfg(not(feature = "dynamic_freq"))]
 use autd3capi_driver::Duration;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
     config: FixedUpdateRate,
@@ -18,7 +18,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromUpdateRate(
     Silencer { config, target }.into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionSteps(
     config: FixedCompletionSteps,
@@ -46,7 +46,7 @@ impl From<FixedCompletionTime> for autd3::driver::datagram::FixedCompletionTime 
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 #[cfg(not(feature = "dynamic_freq"))]
 pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
@@ -60,7 +60,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionTime(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramSilencerFixedCompletionStepsIsDefault(
     config: FixedCompletionSteps,
