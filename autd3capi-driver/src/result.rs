@@ -1,7 +1,8 @@
-use autd3_core::derive::SamplingConfig;
 use autd3_driver::error::AUTDDriverError;
 
-use crate::{CapiResult, ConstPtr};
+use crate::{
+    CapiResult, ConstPtr, Duration, SamplingConfigTag, SamplingConfigValue, SamplingConfigWrap,
+};
 
 #[macro_export]
 macro_rules! impl_result {
@@ -36,7 +37,7 @@ macro_rules! impl_result {
 #[macro_export]
 macro_rules! validate_cstr {
     ($path:expr, $type:tt, $retty:tt) => {
-        match std::ffi::CStr::from_ptr($path).to_str() {
+        match unsafe { std::ffi::CStr::from_ptr($path).to_str() } {
             Ok(v) => v,
             Err(e) => {
                 tracing::error!("{}", e);
@@ -86,13 +87,55 @@ impl_result!(ResultStatus, AUTDStatus);
 
 #[repr(C)]
 pub struct ResultSamplingConfig {
-    pub result: SamplingConfig,
+    pub result: SamplingConfigWrap,
     pub err_len: u32,
     pub err: ConstPtr,
 }
 
-impl CapiResult for SamplingConfig {
-    const NULL: Self = SamplingConfig::FREQ_MAX;
+impl CapiResult for SamplingConfigWrap {
+    const NULL: Self = SamplingConfigWrap {
+        tag: SamplingConfigTag::Division,
+        value: SamplingConfigValue { division: 0 },
+    };
 }
 
-impl_result!(ResultSamplingConfig, SamplingConfig);
+impl_result!(ResultSamplingConfig, SamplingConfigWrap);
+
+#[repr(C)]
+pub struct ResultU16 {
+    pub result: u16,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl CapiResult for u16 {
+    const NULL: Self = 0;
+}
+
+impl_result!(ResultU16, u16);
+
+#[repr(C)]
+pub struct ResultF32 {
+    pub result: f32,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl CapiResult for f32 {
+    const NULL: Self = 0.;
+}
+
+impl_result!(ResultF32, f32);
+
+#[repr(C)]
+pub struct ResultDuration {
+    pub result: Duration,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl CapiResult for Duration {
+    const NULL: Self = Duration { nanos: 0 };
+}
+
+impl_result!(ResultDuration, Duration);

@@ -10,7 +10,7 @@ pub mod null;
 pub mod plane;
 pub mod uniform;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     gain: GainPtr,
@@ -25,7 +25,7 @@ pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainIntoDatagram(gain: GainPtr) -> DatagramPtr {
     (*take!(gain, BoxedGain)).into()

@@ -1,28 +1,30 @@
 use autd3capi_driver::{
-    autd3::datagram::modulation::Cache, driver::datagram::BoxedModulation, take, ModulationPtr,
+    ModulationPtr, autd3::datagram::modulation::Cache, driver::datagram::BoxedModulation, take,
 };
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct ModulationCachePtr(pub *const libc::c_void);
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationCachePtr {
     ModulationCachePtr(Box::into_raw(Box::new(Cache::new(*take!(m, BoxedModulation)))) as _)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCacheClone(m: ModulationCachePtr) -> ModulationPtr {
-    (m.0 as *mut Cache<BoxedModulation>)
-        .as_ref()
-        .unwrap()
-        .clone()
-        .into()
+    unsafe {
+        (m.0 as *mut Cache<BoxedModulation>)
+            .as_ref()
+            .unwrap()
+            .clone()
+            .into()
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
     let _ = take!(m, Cache<BoxedModulation>);
 }
@@ -30,9 +32,9 @@ pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
 #[cfg(test)]
 mod tests {
     use autd3capi_driver::{
+        AUTDStatus, Point3,
         autd3::controller::{ParallelMode, SpinSleeper},
         driver::geometry::Quaternion,
-        AUTDStatus, Point3,
     };
 
     use super::*;

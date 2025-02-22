@@ -1,10 +1,10 @@
 use autd3capi_driver::{
+    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr, SleeperWrap,
     autd3::{
         self,
         controller::{ParallelMode, Sleep, SpinSleeper},
     },
     driver::datagram::BoxedDatagram,
-    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr, SleeperWrap,
 };
 
 #[derive(Clone, Copy)]
@@ -29,25 +29,25 @@ impl From<SenderOption> for autd3::controller::SenderOption<Box<dyn Sleep>> {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption) -> SenderPtr {
     SenderPtr(Box::into_raw(Box::new(cnt.sender(option.into()))) as *const _ as _)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSenderSend(mut sender: SenderPtr, d: DatagramPtr) -> ResultStatus {
     sender.send(*Box::<BoxedDatagram>::from(d)).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSpinSleepDefaultAccuracy() -> u32 {
     SpinSleeper::default().native_accuracy_ns()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSenderOptionIsDefault(option: SenderOption) -> bool {
     let autd3::controller::SenderOption::<SpinSleeper> {

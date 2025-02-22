@@ -1,6 +1,6 @@
 use autd3_core::link::Link;
 
-use crate::{impl_result, ConstPtr};
+use crate::{ConstPtr, impl_result};
 
 #[repr(C)]
 pub struct LinkPtr(pub *const libc::c_void);

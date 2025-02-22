@@ -2,19 +2,18 @@
 
 use std::{convert::Infallible, ffi::c_char};
 
-use autd3::core::modulation::SamplingConfig;
 use autd3capi_driver::*;
 
 use autd3_modulation_audio_file::{Csv, CsvOption, Wav};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDModulationAudioFileTracingInit() {
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDModulationAudioFileTracingInitWithFile(
     path: *const c_char,
 ) -> ResultStatus {
@@ -34,21 +33,18 @@ pub unsafe extern "C" fn AUTDModulationAudioFileTracingInitWithFile(
         .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationAudioFileWav(path: *const c_char) -> ResultModulation {
     let path = validate_cstr!(path, ModulationPtr, ResultModulation);
-    Result::<_, Infallible>::Ok(Wav {
-        path: path.to_owned(),
-    })
-    .into()
+    Wav::new(path).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationAudioFileCsv(
     path: *const c_char,
-    sampling_config: SamplingConfig,
+    sampling_config: SamplingConfigWrap,
     delimiter: u8,
 ) -> ResultModulation {
     let path = validate_cstr!(path, ModulationPtr, ResultModulation);

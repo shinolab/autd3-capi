@@ -1,6 +1,6 @@
 use std::num::NonZeroUsize;
 
-use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
+use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
@@ -23,7 +23,7 @@ impl<T: Directivity> From<GSPATOption> for autd3_gain_holo::GSPATOption<T> {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGSPATSphere(
     backend: BackendPtr,
@@ -32,7 +32,8 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATSphere(
     size: u32,
     option: GSPATOption,
 ) -> GainPtr {
-    let (foci, backend) = create_holo!(NalgebraBackend, Sphere, backend, points, amps, size);
+    let (foci, backend) =
+        unsafe { create_holo!(NalgebraBackend, Sphere, backend, points, amps, size) };
     GSPAT {
         foci,
         backend,
@@ -41,7 +42,7 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATSphere(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
     backend: BackendPtr,
@@ -50,7 +51,8 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
     size: u32,
     option: GSPATOption,
 ) -> GainPtr {
-    let (foci, backend) = create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size);
+    let (foci, backend) =
+        unsafe { create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size) };
     GSPAT {
         foci,
         backend,
@@ -59,7 +61,7 @@ pub unsafe extern "C" fn AUTDGainHoloGSPATT4010A1(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGSPATIsDefault(option: GSPATOption) -> bool {
     autd3_gain_holo::GSPATOption::<Sphere>::default() == option.into()

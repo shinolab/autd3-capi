@@ -7,7 +7,7 @@ use autd3capi_driver::{
     *,
 };
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
     pos: Point3,
@@ -24,7 +24,7 @@ pub unsafe extern "C" fn AUTDGainBessel(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBesselIsDefault(option: BesselOption) -> bool {
     option == Default::default()

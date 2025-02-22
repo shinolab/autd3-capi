@@ -12,25 +12,27 @@ type M = HashMap<usize, Vec<i32>>;
 #[repr(C)]
 pub struct GroupGainMapPtr(pub *const libc::c_void);
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainGroupCreateMap(
     device_indices_ptr: *const u16,
     num_devices: u16,
 ) -> GroupGainMapPtr {
-    GroupGainMapPtr(Box::into_raw(Box::new(
-        (0..num_devices as usize)
-            .map(|i| {
-                let mut v = Vec::with_capacity(AUTD3::NUM_TRANS_IN_UNIT);
-                v.set_len(AUTD3::NUM_TRANS_IN_UNIT);
-                (device_indices_ptr.add(i).read() as _, v)
-            })
-            .collect::<M>(),
-    )) as _)
+    unsafe {
+        GroupGainMapPtr(Box::into_raw(Box::new(
+            (0..num_devices as usize)
+                .map(|i| {
+                    let mut v = Vec::with_capacity(AUTD3::NUM_TRANS_IN_UNIT);
+                    v.set_len(AUTD3::NUM_TRANS_IN_UNIT);
+                    (device_indices_ptr.add(i).read() as _, v)
+                })
+                .collect::<M>(),
+        )) as _)
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGroupMapSet(
     map: GroupGainMapPtr,
@@ -38,7 +40,7 @@ pub unsafe extern "C" fn AUTDGainGroupMapSet(
     map_data: *const i32,
 ) -> GroupGainMapPtr {
     let dev_idx = dev_idx as usize;
-    let map = {
+    let map = unsafe {
         let mut map = take!(map, M);
         std::ptr::copy_nonoverlapping(
             map_data,
@@ -50,7 +52,7 @@ pub unsafe extern "C" fn AUTDGainGroupMapSet(
     GroupGainMapPtr(Box::into_raw(map) as _)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 #[allow(clippy::uninit_vec)]
 pub unsafe extern "C" fn AUTDGainGroup(
@@ -59,7 +61,7 @@ pub unsafe extern "C" fn AUTDGainGroup(
     values_ptr: *const GainPtr,
     kv_len: u32,
 ) -> GainPtr {
-    let key_map = {
+    let key_map = unsafe {
         let map: HashMap<_, _> = take!(map, M)
             .into_iter()
             .map(|(k, v)| (k, Arc::new(v)))
@@ -68,16 +70,12 @@ pub unsafe extern "C" fn AUTDGainGroup(
             let map = map[&dev.idx()].clone();
             move |tr: &Transducer| {
                 let key = map[tr.idx()];
-                if key < 0 {
-                    None
-                } else {
-                    Some(key)
-                }
+                if key < 0 { None } else { Some(key) }
             }
         }
     };
     let gain_map = (0..kv_len as usize)
-        .map(|i| {
+        .map(|i| unsafe {
             (
                 keys_ptr.add(i).read(),
                 *take!(values_ptr.add(i).read(), BoxedGain),

@@ -2,7 +2,7 @@
 
 use std::num::NonZeroUsize;
 
-use crate::{create_holo, BackendPtr, EmissionConstraintWrap};
+use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
@@ -34,7 +34,7 @@ impl<T: Directivity> From<LMOption> for autd3_gain_holo::LMOption<T> {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     backend: BackendPtr,
@@ -43,7 +43,8 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     size: u32,
     option: LMOption,
 ) -> GainPtr {
-    let (foci, backend) = create_holo!(NalgebraBackend, Sphere, backend, points, amps, size);
+    let (foci, backend) =
+        unsafe { create_holo!(NalgebraBackend, Sphere, backend, points, amps, size) };
     LM {
         foci,
         backend,
@@ -52,7 +53,7 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     backend: BackendPtr,
@@ -61,7 +62,8 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     size: u32,
     option: LMOption,
 ) -> GainPtr {
-    let (foci, backend) = create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size);
+    let (foci, backend) =
+        unsafe { create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size) };
     LM {
         foci,
         backend,
@@ -70,7 +72,7 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainLMIsDefault(option: LMOption) -> bool {
     autd3_gain_holo::LMOption::<Sphere>::default() == option.into()

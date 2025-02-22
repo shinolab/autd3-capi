@@ -4,66 +4,56 @@ use autd3::core::{datagram::Segment, gain::Drive};
 use autd3capi_driver::{autd3::link::Audit, *};
 use driver::{autd3_device::AUTD3, firmware::fpga::SilencerTarget};
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAudit() -> LinkPtr {
     Audit::new(autd3::link::AuditOption::default()).into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditIsOpen(audit: LinkPtr) -> bool {
     use autd3::core::link::Link;
     audit.cast::<Audit>().is_open()
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditDown(mut audit: LinkPtr) {
-    audit.cast_mut::<Audit>().down()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn AUTDLinkAuditUp(mut audit: LinkPtr) {
-    audit.cast_mut::<Audit>().up()
-}
-
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditBreakDown(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().break_down()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditRepair(mut audit: LinkPtr) {
     audit.cast_mut::<Audit>().repair()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditCpuNumTransducers(audit: LinkPtr, idx: u16) -> u32 {
     audit.cast::<Audit>()[idx as usize].num_transducers() as _
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaAssertThermalSensor(mut audit: LinkPtr, idx: u16) {
     audit.cast_mut::<Audit>()[idx as usize]
         .fpga_mut()
         .assert_thermal_sensor()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaDeassertThermalSensor(mut audit: LinkPtr, idx: u16) {
     audit.cast_mut::<Audit>()[idx as usize]
         .fpga_mut()
         .deassert_thermal_sensor()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaIsForceFan(audit: LinkPtr, idx: u16) -> bool {
     audit.cast::<Audit>()[idx as usize].fpga().is_force_fan()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentStmSegment(audit: LinkPtr, idx: u16) -> Segment {
     audit.cast::<Audit>()[idx as usize]
@@ -71,7 +61,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentStmSegment(audit: LinkPtr, idx:
         .current_stm_segment()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentModSegment(audit: LinkPtr, idx: u16) -> Segment {
     audit.cast::<Audit>()[idx as usize]
@@ -79,7 +69,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaCurrentModSegment(audit: LinkPtr, idx:
         .current_mod_segment()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(
     audit: LinkPtr,
@@ -91,13 +81,13 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaIsStmGainMode(
         .is_stm_gain_mode(segment)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditCpuSilencerStrictMode(audit: LinkPtr, idx: u16) -> bool {
     audit.cast::<Audit>()[idx as usize].silencer_strict_mode()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
     audit: LinkPtr,
@@ -110,7 +100,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRateIntensity(
         .get()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr, idx: u16) -> u16 {
     audit.cast::<Audit>()[idx as usize]
@@ -120,7 +110,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerUpdateRatePhase(audit: LinkPtr
         .get()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
     audit: LinkPtr,
@@ -133,7 +123,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsIntensity(
         .get()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
     audit: LinkPtr,
@@ -146,7 +136,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerCompletionStepsPhase(
         .get()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(
     audit: LinkPtr,
@@ -157,7 +147,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(
         .silencer_fixed_completion_steps_mode()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerTarget(
     audit: LinkPtr,
@@ -166,19 +156,23 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerTarget(
     audit.cast::<Audit>()[idx as usize].fpga().silencer_target()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugTypes(audit: LinkPtr, idx: u16, ty: *mut u8) {
-    let src = audit.cast::<Audit>()[idx as usize].fpga().debug_types();
-    std::ptr::copy_nonoverlapping(src.as_ptr(), ty, src.len())
+    unsafe {
+        let src = audit.cast::<Audit>()[idx as usize].fpga().debug_types();
+        std::ptr::copy_nonoverlapping(src.as_ptr(), ty, src.len())
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u16, value: *mut u64) {
-    let src = audit.cast::<Audit>()[idx as usize].fpga().debug_values();
-    std::ptr::copy_nonoverlapping(src.as_ptr(), value, src.len())
+    unsafe {
+        let src = audit.cast::<Audit>()[idx as usize].fpga().debug_values();
+        std::ptr::copy_nonoverlapping(src.as_ptr(), value, src.len())
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivision(
     audit: LinkPtr,
@@ -190,7 +184,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivision(
         .stm_freq_division(segment)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaStmCycle(
     audit: LinkPtr,
@@ -202,7 +196,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmCycle(
         .stm_cycle(segment) as _
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaSoundSpeed(
     audit: LinkPtr,
@@ -214,7 +208,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSoundSpeed(
         .sound_speed(segment)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
     audit: LinkPtr,
@@ -227,7 +221,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
         .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivision(
     audit: LinkPtr,
@@ -239,7 +233,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivision(
         .modulation_freq_division(segment)
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationCycle(
     audit: LinkPtr,
@@ -251,7 +245,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationCycle(
         .modulation_cycle(segment) as _
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationBuffer(
     audit: LinkPtr,
     segment: Segment,
@@ -259,13 +253,15 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationBuffer(
     data: *mut u8,
     size: u32,
 ) {
-    let dst = std::slice::from_raw_parts_mut(data, size as _);
-    audit.cast::<Audit>()[idx as usize]
-        .fpga()
-        .modulation_buffer_inplace(segment, dst);
+    unsafe {
+        let dst = std::slice::from_raw_parts_mut(data, size as _);
+        audit.cast::<Audit>()[idx as usize]
+            .fpga()
+            .modulation_buffer_inplace(segment, dst);
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
     audit: LinkPtr,
@@ -278,7 +274,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
         .into()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     audit: LinkPtr,
     segment: Segment,
@@ -286,19 +282,23 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     stm_idx: u16,
     drive: *mut Drive,
 ) {
-    let dst = std::slice::from_raw_parts_mut(drive, AUTD3::NUM_TRANS_IN_UNIT);
-    audit.cast::<Audit>()[idx as usize]
-        .fpga()
-        .drives_at_inplace(segment, stm_idx as _, dst);
+    unsafe {
+        let dst = std::slice::from_raw_parts_mut(drive, AUTD3::NUM_TRANS_IN_UNIT);
+        audit.cast::<Audit>()[idx as usize]
+            .fpga()
+            .drives_at_inplace(segment, stm_idx as _, dst);
+    }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     audit: LinkPtr,
     idx: u16,
     dst: *mut u8,
 ) {
-    let dst = std::slice::from_raw_parts_mut(dst, autd3::driver::firmware::fpga::PWE_BUF_SIZE);
-    let fpga = audit.cast::<Audit>()[idx as usize].fpga();
-    fpga.pulse_width_encoder_table_inplace(dst);
+    unsafe {
+        let dst = std::slice::from_raw_parts_mut(dst, autd3::driver::firmware::fpga::PWE_BUF_SIZE);
+        let fpga = audit.cast::<Audit>()[idx as usize].fpga();
+        fpga.pulse_width_encoder_table_inplace(dst);
+    }
 }
