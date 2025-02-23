@@ -23,12 +23,6 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: f32) -> SamplingConfigWra
     SamplingConfig::new(f * Hz).into()
 }
 
-#[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromFreqNearest(f: f32) -> SamplingConfigWrap {
-    SamplingConfig::new(f * Hz).into_nearest().into()
-}
-
 #[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
@@ -36,13 +30,12 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> SamplingCo
     SamplingConfig::new(std::time::Duration::from(p)).into()
 }
 
-#[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromPeriodNearest(p: Duration) -> SamplingConfigWrap {
-    SamplingConfig::new(std::time::Duration::from(p))
-        .into_nearest()
-        .into()
+pub unsafe extern "C" fn AUTDSamplingConfigIntoNearest(
+    config: SamplingConfigWrap,
+) -> SamplingConfigWrap {
+    SamplingConfig::from(config).into_nearest().into()
 }
 
 #[unsafe(no_mangle)]
