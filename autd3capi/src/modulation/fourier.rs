@@ -41,10 +41,6 @@ pub unsafe extern "C" fn AUTDModulationFourierExact(
                     freq: sine_freq.add(i).read() * Hz,
                     option: sine_option.add(i).read().into(),
                 })
-                .inspect(|s| {
-                    dbg!(s.freq);
-                    dbg!(s.option);
-                })
                 .collect(),
             option: option.into(),
         }
