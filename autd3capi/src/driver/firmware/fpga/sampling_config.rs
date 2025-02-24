@@ -56,3 +56,12 @@ pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfigWrap) -> Result
 pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfigWrap) -> ResultDuration {
     SamplingConfig::from(c).period().into()
 }
+
+#[unsafe(no_mangle)]
+#[must_use]
+pub unsafe extern "C" fn AUTDSamplingConfigEq(
+    a: SamplingConfigWrap,
+    b: SamplingConfigWrap,
+) -> bool {
+    SamplingConfig::from(a) == SamplingConfig::from(b)
+}
