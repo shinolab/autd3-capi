@@ -1,6 +1,12 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3capi_driver::{autd3::modulation::Square, driver::defined::Hz, *};
+use std::num::NonZeroU16;
+
+use autd3capi_driver::{
+    autd3::{modulation::Square, prelude::SamplingConfig},
+    driver::defined::Hz,
+    *,
+};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(C)]
@@ -8,7 +14,7 @@ pub struct SquareOption {
     pub low: u8,
     pub high: u8,
     pub duty: f32,
-    pub sampling_config: SamplingConfigWrap,
+    pub sampling_config_div: u16,
 }
 
 impl From<SquareOption> for autd3::modulation::SquareOption {
@@ -17,7 +23,9 @@ impl From<SquareOption> for autd3::modulation::SquareOption {
             low: option.low,
             high: option.high,
             duty: option.duty,
-            sampling_config: option.sampling_config.into(),
+            sampling_config: SamplingConfig::new(unsafe {
+                NonZeroU16::new_unchecked(option.sampling_config_div)
+            }),
         }
     }
 }

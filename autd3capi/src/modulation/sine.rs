@@ -1,7 +1,9 @@
 #![allow(clippy::missing_safety_doc)]
 
+use std::num::NonZeroU16;
+
 use autd3capi_driver::{
-    autd3::modulation::Sine,
+    autd3::{modulation::Sine, prelude::SamplingConfig},
     driver::defined::{Angle, Hz},
     *,
 };
@@ -13,7 +15,7 @@ pub struct SineOption {
     pub offset: u8,
     pub phase: Angle,
     pub clamp: bool,
-    pub sampling_config: SamplingConfigWrap,
+    pub sampling_config_div: u16,
 }
 
 impl From<SineOption> for autd3::modulation::SineOption {
@@ -23,7 +25,9 @@ impl From<SineOption> for autd3::modulation::SineOption {
             offset: option.offset,
             phase: option.phase,
             clamp: option.clamp,
-            sampling_config: option.sampling_config.into(),
+            sampling_config: SamplingConfig::new(unsafe {
+                NonZeroU16::new_unchecked(option.sampling_config_div)
+            }),
         }
     }
 }
