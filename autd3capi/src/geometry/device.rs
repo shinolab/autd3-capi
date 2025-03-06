@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3capi_driver::{
-    driver::geometry::{Quaternion, UnitQuaternion, Vector3},
+    driver::geometry::{Quaternion, Vector3},
     *,
 };
 
@@ -43,26 +43,6 @@ pub unsafe extern "C" fn AUTDDeviceSetSoundSpeedFromTemp(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
     *dev.center()
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceTranslate(mut geo: GeometryPtr, dev_idx: u16, t: Vector3) {
-    geo[dev_idx as usize].translate(t);
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceRotate(mut geo: GeometryPtr, dev_idx: u16, r: Quaternion) {
-    geo[dev_idx as usize].rotate(UnitQuaternion::from_quaternion(r));
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceAffine(
-    mut geo: GeometryPtr,
-    dev_idx: u16,
-    t: Vector3,
-    r: Quaternion,
-) {
-    geo[dev_idx as usize].affine(t, UnitQuaternion::from_quaternion(r));
 }
 
 #[unsafe(no_mangle)]
