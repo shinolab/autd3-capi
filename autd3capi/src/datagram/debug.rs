@@ -1,7 +1,7 @@
 use autd3capi_driver::{
-    ConstPtr, DatagramPtr, DebugTypeWrap, GeometryPtr,
+    ConstPtr, DatagramPtr, GPIOOutputTypeWrap, GeometryPtr,
     autd3::{core::datagram::GPIOOut, driver::geometry::Device},
-    driver::{datagram::GPIOOutputs, firmware::fpga::DebugType},
+    driver::{datagram::GPIOOutputs, firmware::fpga::GPIOOutputType},
 };
 
 #[unsafe(no_mangle)]
@@ -14,11 +14,17 @@ pub unsafe extern "C" fn AUTDDatagramGPIOOutputs(
     unsafe {
         let f = std::mem::transmute::<
             ConstPtr,
-            unsafe extern "C" fn(ConstPtr, geometry: GeometryPtr, u16, GPIOOut, *mut DebugTypeWrap),
+            unsafe extern "C" fn(
+                ConstPtr,
+                geometry: GeometryPtr,
+                u16,
+                GPIOOut,
+                *mut GPIOOutputTypeWrap,
+            ),
         >(f);
-        GPIOOutputs::<Box<dyn Fn(&Device, GPIOOut) -> DebugType + Send + Sync>>::new(Box::new(
+        GPIOOutputs::<Box<dyn Fn(&Device, GPIOOut) -> GPIOOutputType + Send + Sync>>::new(Box::new(
             move |dev: &Device, gpio: GPIOOut| {
-                let mut debug_type = DebugTypeWrap::default();
+                let mut debug_type = GPIOOutputTypeWrap::default();
                 f(
                     context,
                     geometry,

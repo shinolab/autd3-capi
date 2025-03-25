@@ -2,7 +2,7 @@
 
 use autd3::core::{datagram::Segment, gain::Drive};
 use autd3capi_driver::{autd3::link::Audit, *};
-use driver::{autd3_device::AUTD3, firmware::fpga::SilencerTarget};
+use driver::autd3_device::AUTD3;
 
 #[unsafe(no_mangle)]
 #[must_use]
@@ -148,16 +148,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerFixedCompletionStepsMode(
 }
 
 #[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaSilencerTarget(
-    audit: LinkPtr,
-    idx: u16,
-) -> SilencerTarget {
-    audit.cast::<Audit>()[idx as usize].fpga().silencer_target()
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugTypes(audit: LinkPtr, idx: u16, ty: *mut u8) {
+pub unsafe extern "C" fn AUTDLinkAuditFpgaGPIOOutputTypes(audit: LinkPtr, idx: u16, ty: *mut u8) {
     unsafe {
         let src = audit.cast::<Audit>()[idx as usize].fpga().debug_types();
         std::ptr::copy_nonoverlapping(src.as_ptr(), ty, src.len())
@@ -290,15 +281,31 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     }
 }
 
+#[allow(clippy::unnecessary_operation)]
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     audit: LinkPtr,
     idx: u16,
-    dst: *mut u8,
+    dst: *mut u16,
 ) {
+    use autd3::driver::firmware::fpga::PulseWidth;
     unsafe {
-        let dst = std::slice::from_raw_parts_mut(dst, autd3::driver::firmware::fpga::PWE_BUF_SIZE);
+        let dst = std::slice::from_raw_parts_mut(
+            dst as *mut PulseWidth<u16, 9>,
+            autd3::driver::firmware::fpga::PWE_BUF_SIZE,
+        );
         let fpga = audit.cast::<Audit>()[idx as usize].fpga();
         fpga.pulse_width_encoder_table_inplace(dst);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use autd3::driver::firmware::fpga::PulseWidth;
+
+    #[test]
+    fn test_pulse_width_size() {
+        assert_eq!(size_of::<u16>(), size_of::<PulseWidth<u16, 9>>());
     }
 }

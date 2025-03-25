@@ -1,6 +1,5 @@
 use std::num::NonZeroU16;
 
-#[cfg(not(feature = "dynamic_freq"))]
 use autd3capi_driver::{Duration, ResultDuration};
 use autd3capi_driver::{
     ResultF32, ResultSamplingConfig, ResultU16, SamplingConfigWrap,
@@ -23,7 +22,6 @@ pub unsafe extern "C" fn AUTDSamplingConfigFromFreq(f: f32) -> SamplingConfigWra
     SamplingConfig::new(f * Hz).into()
 }
 
-#[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromPeriod(p: Duration) -> SamplingConfigWrap {
@@ -50,7 +48,6 @@ pub unsafe extern "C" fn AUTDSamplingConfigFreq(c: SamplingConfigWrap) -> Result
     SamplingConfig::from(c).freq().map(|f| f.hz()).into()
 }
 
-#[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigPeriod(c: SamplingConfigWrap) -> ResultDuration {
