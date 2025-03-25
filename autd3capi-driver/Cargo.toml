@@ -16,4 +16,3 @@ tracing = { workspace = true }
 
 [features]
 unity = ["autd3-core/left_handed", "autd3-core/use_meter"]
-dynamic_freq = ["autd3-core/dynamic_freq", "autd3/dynamic_freq"]

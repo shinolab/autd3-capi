@@ -1,7 +1,5 @@
-#[cfg(not(feature = "dynamic_freq"))]
-use autd3capi_driver::Duration;
 use autd3capi_driver::{
-    ResultSamplingConfig, SamplingConfigWrap,
+    Duration, ResultSamplingConfig, SamplingConfigWrap,
     driver::{datagram::STMConfig, defined::Hz},
 };
 
@@ -16,7 +14,6 @@ pub unsafe extern "C" fn AUTDSTMConfigFromFreq(f: f32, n: u16) -> ResultSampling
         .into()
 }
 
-#[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMConfigFromPeriod(p: Duration, n: u16) -> ResultSamplingConfig {
@@ -34,7 +31,6 @@ pub unsafe extern "C" fn AUTDSTMConfigFromFreqNearest(f: f32, n: u16) -> Samplin
         .into()
 }
 
-#[cfg(not(feature = "dynamic_freq"))]
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSTMConfigFromPeriodNearest(p: Duration, n: u16) -> SamplingConfigWrap {

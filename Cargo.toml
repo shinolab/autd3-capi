@@ -7,24 +7,24 @@ exclude = ["tools"]
 resolver = "2"
 
 [workspace.package]
-version = "31.0.1"
+version = "32.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "31.0.1", default-features = false }
-autd3-core = { version = "31.0.1", default-features = false }
-autd3-driver = { version = "31.0.1", default-features = false }
-autd3-gain-holo = { version = "31.0.1", default-features = false }
-autd3-link-simulator = { version = "31.0.1", default-features = false }
-autd3-link-twincat = { version = "31.0.1", default-features = false }
-autd3-modulation-audio-file = { version = "31.0.1", default-features = false }
+autd3 = { version = "=32.0.0", default-features = false }
+autd3-core = { version = "=32.0.0", default-features = false }
+autd3-driver = { version = "=32.0.0", default-features = false }
+autd3-gain-holo = { version = "=32.0.0", default-features = false }
+autd3-link-simulator = { version = "=32.0.0", default-features = false }
+autd3-link-twincat = { version = "=32.0.0", default-features = false }
+autd3-modulation-audio-file = { version = "=32.0.0", default-features = false }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }
-libc = { version = "=0.2.170", default-features = false }
+libc = { version = "=0.2.171", default-features = false }
 tracing-subscriber = { version = "=0.3.19", features = ["ansi", "env-filter"], default-features = false }
 seq-macro = { version = "=0.3.6", default-features = false }
 tracing = { version = "=0.1.41", default-features = false }

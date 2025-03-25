@@ -74,7 +74,6 @@ impl From<SamplingConfig> for SamplingConfigWrap {
                 tag: SamplingConfigTag::Frequency,
                 value: SamplingConfigValue { freq: freq.hz() },
             },
-            #[cfg(not(feature = "dynamic_freq"))]
             SamplingConfig::Period(period) => SamplingConfigWrap {
                 tag: SamplingConfigTag::Period,
                 value: SamplingConfigValue {
@@ -85,7 +84,6 @@ impl From<SamplingConfig> for SamplingConfigWrap {
                 tag: SamplingConfigTag::FrequencyNearest,
                 value: SamplingConfigValue { freq: freq.0.hz() },
             },
-            #[cfg(not(feature = "dynamic_freq"))]
             SamplingConfig::PeriodNearest(period) => SamplingConfigWrap {
                 tag: SamplingConfigTag::PeriodNearest,
                 value: SamplingConfigValue {
@@ -104,25 +102,15 @@ impl From<SamplingConfigWrap> for SamplingConfig {
                     SamplingConfig::new(NonZeroU16::new_unchecked(value.value.division))
                 }
                 SamplingConfigTag::Frequency => SamplingConfig::new(value.value.freq * Hz),
-                #[cfg(not(feature = "dynamic_freq"))]
                 SamplingConfigTag::Period => {
                     SamplingConfig::new(std::time::Duration::from_nanos(value.value.period_ns))
-                }
-                #[cfg(feature = "dynamic_freq")]
-                SamplingConfigTag::Period => {
-                    unimplemented!()
                 }
                 SamplingConfigTag::FrequencyNearest => {
                     SamplingConfig::new(value.value.freq * Hz).into_nearest()
                 }
-                #[cfg(not(feature = "dynamic_freq"))]
                 SamplingConfigTag::PeriodNearest => {
                     SamplingConfig::new(std::time::Duration::from_nanos(value.value.period_ns))
                         .into_nearest()
-                }
-                #[cfg(feature = "dynamic_freq")]
-                SamplingConfigTag::PeriodNearest => {
-                    unimplemented!()
                 }
             }
         }
