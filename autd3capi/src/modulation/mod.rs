@@ -14,11 +14,15 @@ pub mod r#static;
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfigWrap {
+    unsafe { take!(m, BoxedModulation).sampling_config().into() }
+}
+
+#[unsafe(no_mangle)]
+#[must_use]
+pub unsafe extern "C" fn AUTDModulationExpectedRadiationPressure(m: ModulationPtr) -> ResultF32 {
     unsafe {
-        (m.0 as *const BoxedModulation)
-            .as_ref()
-            .unwrap()
-            .sampling_config()
+        take!(m, BoxedModulation)
+            .expected_radiation_pressure()
             .into()
     }
 }
