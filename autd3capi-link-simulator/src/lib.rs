@@ -39,5 +39,6 @@ pub unsafe extern "C" fn AUTDLinkSimulator(addr: *const c_char) -> ResultLink {
     } else {
         validate_cstr!(addr, LinkPtr, ResultLink)
     };
+    tracing::trace!("Creating simulator link with addr: {}", addr);
     addr.parse::<SocketAddr>().map(Simulator::new).into()
 }
