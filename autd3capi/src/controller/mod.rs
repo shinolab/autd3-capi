@@ -1,4 +1,3 @@
-// pub mod group;
 pub mod sender;
 
 use autd3::{Controller, core::link::Link};
