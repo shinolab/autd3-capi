@@ -1,4 +1,4 @@
-pub mod group;
+// pub mod group;
 pub mod sender;
 
 use autd3::{Controller, core::link::Link};
@@ -31,10 +31,11 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     len: u16,
     link: LinkPtr,
     option: SenderOption,
+    sleeper: SleeperWrap,
 ) -> ResultController {
     let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
-    let link = take!(link, Box<dyn Link>);
+    let link = unsafe { take!(link, Box<dyn Link>) };
     Controller::open_with_option(
         pos.into_iter().zip(rot).map(|(pos, rot)| AUTD3 {
             pos,
@@ -42,6 +43,7 @@ pub unsafe extern "C" fn AUTDControllerOpen(
         }),
         *link,
         option.into(),
+        Box::<dyn autd3::controller::Sleep>::from(sleeper),
     )
     .into()
 }
@@ -49,7 +51,9 @@ pub unsafe extern "C" fn AUTDControllerOpen(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> ResultStatus {
-    take!(cnt, Controller<Box<dyn Link>>).close().into()
+    unsafe { take!(cnt, Controller<Box<dyn Link>>) }
+        .close()
+        .into()
 }
 
 #[repr(C)]
@@ -79,7 +83,7 @@ pub unsafe extern "C" fn AUTDControllerFPGAStateGet(p: FPGAStateListPtr, idx: u3
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDControllerFPGAStateDelete(p: FPGAStateListPtr) {
-    let _ = take!(p, Vec<Option<FPGAState>>);
+    let _ = unsafe { take!(p, Vec<Option<FPGAState>>) };
 }
 
 #[repr(C)]
@@ -120,7 +124,7 @@ pub unsafe extern "C" fn AUTDControllerFirmwareVersionGet(
 pub unsafe extern "C" fn AUTDControllerFirmwareVersionListPointerDelete(
     p_info_list: FirmwareVersionListPtr,
 ) {
-    let _ = take!(p_info_list, Vec<FirmwareVersion>);
+    let _ = unsafe { take!(p_info_list, Vec<FirmwareVersion>) };
 }
 
 #[unsafe(no_mangle)]

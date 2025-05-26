@@ -43,98 +43,106 @@ impl Default for GPIOOutputTypeWrap {
 }
 
 impl GPIOOutputTypeWrap {
-    pub fn convert(self, dev: &Device) -> autd3_driver::firmware::fpga::GPIOOutputType {
+    pub fn convert(self, dev: &Device) -> Option<autd3_driver::firmware::fpga::GPIOOutputType> {
         match self.ty {
-            GPIOOutputTypeTag::None => autd3_driver::firmware::fpga::GPIOOutputType::None,
+            GPIOOutputTypeTag::None => None,
             GPIOOutputTypeTag::BaseSignal => {
-                autd3_driver::firmware::fpga::GPIOOutputType::BaseSignal
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::BaseSignal)
             }
-            GPIOOutputTypeTag::Thermo => autd3_driver::firmware::fpga::GPIOOutputType::Thermo,
-            GPIOOutputTypeTag::ForceFan => autd3_driver::firmware::fpga::GPIOOutputType::ForceFan,
-            GPIOOutputTypeTag::Sync => autd3_driver::firmware::fpga::GPIOOutputType::Sync,
+            GPIOOutputTypeTag::Thermo => Some(autd3_driver::firmware::fpga::GPIOOutputType::Thermo),
+            GPIOOutputTypeTag::ForceFan => {
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::ForceFan)
+            }
+            GPIOOutputTypeTag::Sync => Some(autd3_driver::firmware::fpga::GPIOOutputType::Sync),
             GPIOOutputTypeTag::ModSegment => {
-                autd3_driver::firmware::fpga::GPIOOutputType::ModSegment
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::ModSegment)
             }
-            GPIOOutputTypeTag::ModIdx => {
-                autd3_driver::firmware::fpga::GPIOOutputType::ModIdx(unsafe { self.value.idx })
-            }
-            GPIOOutputTypeTag::StmSegment => {
-                autd3_driver::firmware::fpga::GPIOOutputType::StmSegment
-            }
-            GPIOOutputTypeTag::StmIdx => {
-                autd3_driver::firmware::fpga::GPIOOutputType::StmIdx(unsafe { self.value.idx })
-            }
-            GPIOOutputTypeTag::IsStmMode => autd3_driver::firmware::fpga::GPIOOutputType::IsStmMode,
-            GPIOOutputTypeTag::PwmOut => autd3_driver::firmware::fpga::GPIOOutputType::PwmOut(
-                &dev[unsafe { self.value.idx } as usize],
+            GPIOOutputTypeTag::ModIdx => Some(
+                autd3_driver::firmware::fpga::GPIOOutputType::ModIdx(unsafe { self.value.idx }),
             ),
-            GPIOOutputTypeTag::Direct => {
-                autd3_driver::firmware::fpga::GPIOOutputType::Direct(unsafe { self.value.direct })
+            GPIOOutputTypeTag::StmSegment => {
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::StmSegment)
             }
+            GPIOOutputTypeTag::StmIdx => Some(
+                autd3_driver::firmware::fpga::GPIOOutputType::StmIdx(unsafe { self.value.idx }),
+            ),
+            GPIOOutputTypeTag::IsStmMode => {
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::IsStmMode)
+            }
+            GPIOOutputTypeTag::PwmOut => {
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::PwmOut(
+                    &dev[unsafe { self.value.idx } as usize],
+                ))
+            }
+            GPIOOutputTypeTag::Direct => Some(
+                autd3_driver::firmware::fpga::GPIOOutputType::Direct(unsafe { self.value.direct }),
+            ),
             GPIOOutputTypeTag::SysTimeEq => {
-                autd3_driver::firmware::fpga::GPIOOutputType::SysTimeEq(unsafe {
-                    self.value.sys_time
-                })
+                Some(autd3_driver::firmware::fpga::GPIOOutputType::SysTimeEq(
+                    unsafe { self.value.sys_time },
+                ))
             }
         }
     }
 }
 
-impl From<autd3_driver::firmware::fpga::GPIOOutputType<'_>> for GPIOOutputTypeWrap {
-    fn from(value: autd3_driver::firmware::fpga::GPIOOutputType) -> Self {
+impl From<Option<autd3_driver::firmware::fpga::GPIOOutputType<'_>>> for GPIOOutputTypeWrap {
+    fn from(value: Option<autd3_driver::firmware::fpga::GPIOOutputType>) -> Self {
         match value {
-            autd3_driver::firmware::fpga::GPIOOutputType::None => GPIOOutputTypeWrap {
+            None => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::None,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::BaseSignal => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::BaseSignal) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::BaseSignal,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::Thermo => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::Thermo) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::Thermo,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::ForceFan => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::ForceFan) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::ForceFan,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::Sync => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::Sync) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::Sync,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::ModSegment => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::ModSegment) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::ModSegment,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::ModIdx(v) => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::ModIdx(v)) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::ModIdx,
                 value: GPIOOutputTypeValue { idx: v },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::StmSegment => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::StmSegment) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::StmSegment,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::StmIdx(v) => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::StmIdx(v)) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::StmIdx,
                 value: GPIOOutputTypeValue { idx: v },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::IsStmMode => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::IsStmMode) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::IsStmMode,
                 value: GPIOOutputTypeValue { null: 0 },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::PwmOut(v) => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::PwmOut(v)) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::PwmOut,
                 value: GPIOOutputTypeValue { idx: v.idx() as _ },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::Direct(v) => GPIOOutputTypeWrap {
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::Direct(v)) => GPIOOutputTypeWrap {
                 ty: GPIOOutputTypeTag::Direct,
                 value: GPIOOutputTypeValue { direct: v },
             },
-            autd3_driver::firmware::fpga::GPIOOutputType::SysTimeEq(v) => GPIOOutputTypeWrap {
-                ty: GPIOOutputTypeTag::SysTimeEq,
-                value: GPIOOutputTypeValue { sys_time: v },
-            },
+            Some(autd3_driver::firmware::fpga::GPIOOutputType::SysTimeEq(v)) => {
+                GPIOOutputTypeWrap {
+                    ty: GPIOOutputTypeTag::SysTimeEq,
+                    value: GPIOOutputTypeValue { sys_time: v },
+                }
+            }
             _ => unreachable!(),
         }
     }

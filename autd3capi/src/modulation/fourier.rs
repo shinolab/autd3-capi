@@ -2,7 +2,7 @@
 
 use autd3capi_driver::{
     autd3::modulation::{Fourier, Sine},
-    driver::defined::Hz,
+    driver::common::Hz,
     *,
 };
 

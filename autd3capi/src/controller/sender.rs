@@ -14,25 +14,34 @@ pub struct SenderOption {
     pub receive_interval: Duration,
     pub timeout: OptionDuration,
     pub parallel: ParallelMode,
-    pub sleeper: SleeperWrap,
 }
 
-impl From<SenderOption> for autd3::controller::SenderOption<Box<dyn Sleep>> {
+impl From<SenderOption> for autd3::controller::SenderOption {
     fn from(value: SenderOption) -> Self {
         autd3::controller::SenderOption {
             send_interval: value.send_interval.into(),
             receive_interval: value.receive_interval.into(),
             timeout: value.timeout.into(),
             parallel: value.parallel,
-            sleeper: value.sleeper.into(),
         }
     }
 }
 
 #[unsafe(no_mangle)]
+pub unsafe extern "C" fn AUTDSetDefaultSenderOption(mut cnt: ControllerPtr, option: SenderOption) {
+    cnt.default_sender_option = option.into();
+}
+
+#[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption) -> SenderPtr {
-    SenderPtr(Box::into_raw(Box::new(cnt.sender(option.into()))) as *const _ as _)
+pub unsafe extern "C" fn AUTDSender(
+    mut cnt: ControllerPtr,
+    option: SenderOption,
+    sleeper: SleeperWrap,
+) -> SenderPtr {
+    SenderPtr(Box::into_raw(Box::new(
+        cnt.sender(option.into(), Box::<dyn Sleep>::from(sleeper)),
+    )) as *const _ as _)
 }
 
 #[unsafe(no_mangle)]
@@ -50,26 +59,5 @@ pub unsafe extern "C" fn AUTDSpinSleepDefaultAccuracy() -> u32 {
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSenderOptionIsDefault(option: SenderOption) -> bool {
-    let autd3::controller::SenderOption::<SpinSleeper> {
-        send_interval: default_send_interval,
-        receive_interval: default_receive_interval,
-        timeout: default_timeout,
-        parallel: default_parallel,
-        sleeper: _,
-    } = autd3::controller::SenderOption::default();
-    let autd3::controller::SenderOption::<Box<dyn Sleep>> {
-        send_interval,
-        receive_interval,
-        timeout,
-        parallel,
-        sleeper: _,
-    } = option.into();
-    default_send_interval == send_interval
-        && default_receive_interval == receive_interval
-        && default_timeout == timeout
-        && default_parallel == parallel
-        && option.sleeper.tag == autd3capi_driver::SleeperTag::Spin
-        && option.sleeper.value == SpinSleeper::default().native_accuracy_ns()
-        && option.sleeper.spin_strategy
-            == autd3capi_driver::SpinStrategyTag::from(SpinSleeper::default().spin_strategy())
+    autd3::controller::SenderOption::from(option) == Default::default()
 }

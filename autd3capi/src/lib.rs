@@ -57,11 +57,11 @@ mod tests {
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
                 parallel: ParallelMode::Auto,
-                sleeper: autd3capi_driver::SleeperWrap {
-                    tag: autd3capi_driver::SleeperTag::Spin,
-                    value: SpinSleeper::default().native_accuracy_ns(),
-                    spin_strategy: SpinSleeper::default().spin_strategy().into(),
-                },
+            };
+            let sleeper = autd3capi_driver::SleeperWrap {
+                tag: autd3capi_driver::SleeperTag::Spin,
+                value: SpinSleeper::default().native_accuracy_ns(),
+                spin_strategy: SpinSleeper::default().spin_strategy().into(),
             };
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
@@ -69,17 +69,18 @@ mod tests {
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
+                sleeper,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
-            let sender = controller::sender::AUTDSender(cnt, option);
+            let sender = controller::sender::AUTDSender(cnt, option, sleeper);
 
             let g = gain::focus::AUTDGainFocus(Point3::new(0., 0., 150.), Default::default());
             let m = modulation::r#static::AUTDModulationStatic(0xFF);
 
             let d1 = gain::AUTDGainIntoDatagram(g);
             let d2 = modulation::AUTDModulationIntoDatagram(m);
-            let d = datagram::AUTDDatagramTuple(d1, d2);
+            let d = datagram::tuple::AUTDDatagramTuple(d1, d2);
             let result = controller::sender::AUTDSenderSend(sender, d);
             assert_eq!(AUTDStatus::AUTDTrue, result.result);
 

@@ -1,7 +1,7 @@
 use autd3capi_driver::{
     autd3::gain::{Bessel, BesselOption},
     driver::{
-        defined::Angle,
+        common::Angle,
         geometry::{UnitVector3, Vector3},
     },
     *,

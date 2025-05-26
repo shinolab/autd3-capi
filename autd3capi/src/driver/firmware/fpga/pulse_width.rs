@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     ResultU16,
-    driver::{defined::ULTRASOUND_PERIOD_COUNT_BITS, firmware::fpga::PulseWidth},
+    driver::{common::ULTRASOUND_PERIOD_COUNT_BITS, firmware::fpga::PulseWidth},
 };
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]

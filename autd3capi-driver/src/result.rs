@@ -94,8 +94,8 @@ pub struct ResultSamplingConfig {
 
 impl CapiResult for SamplingConfigWrap {
     const NULL: Self = SamplingConfigWrap {
-        tag: SamplingConfigTag::Division,
-        value: SamplingConfigValue { division: 0 },
+        tag: SamplingConfigTag::Divide,
+        value: SamplingConfigValue { divide: 0 },
     };
 }
 

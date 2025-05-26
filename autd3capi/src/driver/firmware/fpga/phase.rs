@@ -1,4 +1,4 @@
-use autd3capi_driver::driver::{defined::rad, firmware::fpga::Phase};
+use autd3capi_driver::driver::{common::rad, firmware::fpga::Phase};
 
 #[unsafe(no_mangle)]
 #[must_use]

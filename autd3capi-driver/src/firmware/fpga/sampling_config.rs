@@ -1,11 +1,11 @@
 use std::num::NonZeroU16;
 
-use autd3_core::{defined::Hz, sampling_config::SamplingConfig};
+use autd3_core::{common::Hz, sampling_config::SamplingConfig};
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]
 pub enum SamplingConfigTag {
-    Division = 0,
+    Divide = 0,
     Frequency = 1,
     Period = 2,
     FrequencyNearest = 3,
@@ -15,7 +15,7 @@ pub enum SamplingConfigTag {
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub union SamplingConfigValue {
-    pub division: u16,
+    pub divide: u16,
     pub freq: f32,
     pub period_ns: u64,
 }
@@ -37,8 +37,8 @@ impl std::fmt::Debug for SamplingConfigWrap {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         unsafe {
             match self.tag {
-                SamplingConfigTag::Division => {
-                    write!(f, "{:?}", NonZeroU16::new_unchecked(self.value.division))
+                SamplingConfigTag::Divide => {
+                    write!(f, "{:?}", NonZeroU16::new_unchecked(self.value.divide))
                 }
                 SamplingConfigTag::Frequency => write!(f, "{:?}", self.value.freq * Hz),
                 SamplingConfigTag::Period => write!(
@@ -64,11 +64,9 @@ impl std::fmt::Debug for SamplingConfigWrap {
 impl From<SamplingConfig> for SamplingConfigWrap {
     fn from(value: SamplingConfig) -> Self {
         match value {
-            SamplingConfig::Division(div) => SamplingConfigWrap {
-                tag: SamplingConfigTag::Division,
-                value: SamplingConfigValue {
-                    division: div.get(),
-                },
+            SamplingConfig::Divide(div) => SamplingConfigWrap {
+                tag: SamplingConfigTag::Divide,
+                value: SamplingConfigValue { divide: div.get() },
             },
             SamplingConfig::Freq(freq) => SamplingConfigWrap {
                 tag: SamplingConfigTag::Frequency,
@@ -98,8 +96,8 @@ impl From<SamplingConfigWrap> for SamplingConfig {
     fn from(value: SamplingConfigWrap) -> Self {
         unsafe {
             match value.tag {
-                SamplingConfigTag::Division => {
-                    SamplingConfig::new(NonZeroU16::new_unchecked(value.value.division))
+                SamplingConfigTag::Divide => {
+                    SamplingConfig::new(NonZeroU16::new_unchecked(value.value.divide))
                 }
                 SamplingConfigTag::Frequency => SamplingConfig::new(value.value.freq * Hz),
                 SamplingConfigTag::Period => {

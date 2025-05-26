@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     Duration, ResultSamplingConfig, SamplingConfigWrap,
-    driver::{datagram::STMConfig, defined::Hz},
+    driver::{common::Hz, datagram::STMConfig},
 };
 
 pub mod foci;

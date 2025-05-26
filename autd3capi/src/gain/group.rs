@@ -61,8 +61,8 @@ pub unsafe extern "C" fn AUTDGainGroup(
     values_ptr: *const GainPtr,
     kv_len: u32,
 ) -> GainPtr {
-    let key_map = unsafe {
-        let map: HashMap<_, _> = take!(map, M)
+    let key_map = {
+        let map: HashMap<_, _> = unsafe { take!(map, M) }
             .into_iter()
             .map(|(k, v)| (k, Arc::new(v)))
             .collect();
