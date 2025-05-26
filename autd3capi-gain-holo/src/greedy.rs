@@ -12,14 +12,15 @@ use autd3capi_driver::{
 #[repr(C)]
 pub struct GreedyOption {
     pub constraint: EmissionConstraintWrap,
-    pub phase_div: u8,
+    pub phase_quantization_levels: u8,
 }
 
-impl<T: Directivity> From<GreedyOption> for autd3_gain_holo::GreedyOption<T> {
+impl<T: Directivity> From<GreedyOption> for autd3_gain_holo::GreedyOption<T, AbsGreedyObjectiveFn> {
     fn from(option: GreedyOption) -> Self {
         autd3_gain_holo::GreedyOption {
             constraint: option.constraint.into(),
-            phase_div: NonZeroU8::new(option.phase_div).unwrap(),
+            phase_quantization_levels: NonZeroU8::new(option.phase_quantization_levels).unwrap(),
+            objective_func: AbsGreedyObjectiveFn,
             __phantom: std::marker::PhantomData,
         }
     }
@@ -34,7 +35,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedySphere(
     option: GreedyOption,
 ) -> GainPtr {
     let foci = create_holo!(Sphere, points, amps, size);
-    Greedy::<Sphere> {
+    Greedy::<Sphere, AbsGreedyObjectiveFn> {
         foci,
         option: option.into(),
     }
@@ -50,7 +51,7 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
     option: GreedyOption,
 ) -> GainPtr {
     let foci = create_holo!(T4010A1, points, amps, size);
-    Greedy::<T4010A1> {
+    Greedy::<T4010A1, AbsGreedyObjectiveFn> {
         foci,
         option: option.into(),
     }
@@ -60,5 +61,5 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGreedyIsDefault(option: GreedyOption) -> bool {
-    autd3_gain_holo::GreedyOption::<Sphere>::default() == option.into()
+    autd3_gain_holo::GreedyOption::<Sphere, AbsGreedyObjectiveFn>::default() == option.into()
 }

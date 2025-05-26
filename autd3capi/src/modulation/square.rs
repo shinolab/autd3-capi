@@ -4,7 +4,7 @@ use std::num::NonZeroU16;
 
 use autd3capi_driver::{
     autd3::{modulation::Square, prelude::SamplingConfig},
-    driver::defined::Hz,
+    driver::common::Hz,
     *,
 };
 

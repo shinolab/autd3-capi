@@ -4,15 +4,15 @@ use autd3capi_driver::{Duration, ResultDuration};
 use autd3capi_driver::{
     ResultF32, ResultSamplingConfig, ResultU16, SamplingConfigWrap,
     autd3::core::{derive::SamplingConfigError, sampling_config::SamplingConfig},
-    driver::defined::Hz,
+    driver::common::Hz,
 };
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromDivision(div: u16) -> ResultSamplingConfig {
+pub unsafe extern "C" fn AUTDSamplingConfigFromDivide(div: u16) -> ResultSamplingConfig {
     match NonZeroU16::new(div) {
         Some(div) => Result::<_, SamplingConfigError>::Ok(SamplingConfig::new(div)).into(),
-        None => Result::<SamplingConfig, _>::Err(SamplingConfigError::DivisionInvalid).into(),
+        None => Result::<SamplingConfig, _>::Err(SamplingConfigError::DivideInvalid).into(),
     }
 }
 
@@ -38,8 +38,8 @@ pub unsafe extern "C" fn AUTDSamplingConfigIntoNearest(
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigDivision(c: SamplingConfigWrap) -> ResultU16 {
-    SamplingConfig::from(c).division().into()
+pub unsafe extern "C" fn AUTDSamplingConfigDivide(c: SamplingConfigWrap) -> ResultU16 {
+    SamplingConfig::from(c).divide().into()
 }
 
 #[unsafe(no_mangle)]

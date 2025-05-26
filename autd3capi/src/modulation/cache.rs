@@ -9,7 +9,9 @@ pub struct ModulationCachePtr(pub *const libc::c_void);
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDModulationCache(m: ModulationPtr) -> ModulationCachePtr {
-    ModulationCachePtr(Box::into_raw(Box::new(Cache::new(*take!(m, BoxedModulation)))) as _)
+    ModulationCachePtr(
+        Box::into_raw(Box::new(Cache::new(unsafe { *take!(m, BoxedModulation) }))) as _,
+    )
 }
 
 #[unsafe(no_mangle)]
@@ -26,7 +28,7 @@ pub unsafe extern "C" fn AUTDModulationCacheClone(m: ModulationCachePtr) -> Modu
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDModulationCacheFree(m: ModulationCachePtr) {
-    let _ = take!(m, Cache<BoxedModulation>);
+    let _ = unsafe { take!(m, Cache<BoxedModulation>) };
 }
 
 #[cfg(test)]
@@ -51,11 +53,11 @@ mod tests {
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
                 parallel: ParallelMode::Auto,
-                sleeper: autd3capi_driver::SleeperWrap {
-                    tag: autd3capi_driver::SleeperTag::Spin,
-                    value: SpinSleeper::default().native_accuracy_ns(),
-                    spin_strategy: SpinSleeper::default().spin_strategy().into(),
-                },
+            };
+            let sleeper = autd3capi_driver::SleeperWrap {
+                tag: autd3capi_driver::SleeperTag::Spin,
+                value: SpinSleeper::default().native_accuracy_ns(),
+                spin_strategy: SpinSleeper::default().spin_strategy().into(),
             };
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
@@ -63,6 +65,7 @@ mod tests {
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
+                sleeper,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
@@ -78,7 +81,7 @@ mod tests {
             let mc = AUTDModulationCache(m);
             assert_eq!(1, count(mc));
 
-            let sender = controller::sender::AUTDSender(cnt, option);
+            let sender = controller::sender::AUTDSender(cnt, option, sleeper);
             {
                 let mm = AUTDModulationCacheClone(mc);
                 assert_eq!(2, count(mc));

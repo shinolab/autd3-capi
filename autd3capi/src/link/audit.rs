@@ -165,14 +165,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDebugValues(audit: LinkPtr, idx: u16, 
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivision(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmFreqDivide(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
 ) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .stm_freq_division(segment)
+        .stm_freq_divide(segment)
 }
 
 #[unsafe(no_mangle)]
@@ -214,14 +214,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivision(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationFreqDivide(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
 ) -> u16 {
     audit.cast::<Audit>()[idx as usize]
         .fpga()
-        .modulation_freq_division(segment)
+        .modulation_freq_divide(segment)
 }
 
 #[unsafe(no_mangle)]

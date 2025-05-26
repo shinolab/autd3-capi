@@ -10,7 +10,7 @@ pub struct GainCachePtr(pub *const libc::c_void);
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainCache(g: GainPtr) -> GainCachePtr {
-    GainCachePtr(Box::into_raw(Box::new(Cache::new(*take!(g, BoxedGain)))) as _)
+    GainCachePtr(Box::into_raw(Box::new(Cache::new(unsafe { *take!(g, BoxedGain) }))) as _)
 }
 
 #[unsafe(no_mangle)]
@@ -27,7 +27,7 @@ pub unsafe extern "C" fn AUTDGainCacheClone(g: GainCachePtr) -> GainPtr {
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDGainCacheFree(g: GainCachePtr) {
-    let _ = take!(g, Cache<BoxedGain>);
+    let _ = unsafe { take!(g, Cache<BoxedGain>) };
 }
 
 #[cfg(test)]
@@ -71,11 +71,11 @@ mod tests {
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
                 parallel: ParallelMode::Auto,
-                sleeper: autd3capi_driver::SleeperWrap {
-                    tag: autd3capi_driver::SleeperTag::Spin,
-                    value: SpinSleeper::default().native_accuracy_ns(),
-                    spin_strategy: SpinSleeper::default().spin_strategy().into(),
-                },
+            };
+            let sleeper = autd3capi_driver::SleeperWrap {
+                tag: autd3capi_driver::SleeperTag::Spin,
+                value: SpinSleeper::default().native_accuracy_ns(),
+                spin_strategy: SpinSleeper::default().spin_strategy().into(),
             };
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
@@ -83,6 +83,7 @@ mod tests {
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
+                sleeper,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
@@ -102,7 +103,7 @@ mod tests {
             let gc = AUTDGainCache(g);
             assert_eq!(1, count(gc));
 
-            let sender = controller::sender::AUTDSender(cnt, option);
+            let sender = controller::sender::AUTDSender(cnt, option, sleeper);
             {
                 let gg = AUTDGainCacheClone(gc);
                 assert_eq!(2, count(gc));

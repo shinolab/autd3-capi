@@ -41,7 +41,7 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
     seq_macro::seq!(N in 1..=8 {
         match n {
                 #(N => WithSegment {
-                    inner: unsafe { *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>)},
+                    inner: unsafe { *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>) },
                     segment,
                     transition_mode: transition_mode.into(),
                 }
@@ -79,7 +79,7 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithLoopBehavior(
 pub unsafe extern "C" fn AUTDSTMFociIntoDatagram(stm: FociSTMPtr, n: u8) -> DatagramPtr {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => unsafe{ *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>) }.into(),)*
+                #(N => unsafe { *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>) }.into(),)*
             _ => unreachable!(),
         }
     })
