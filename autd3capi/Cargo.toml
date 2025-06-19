@@ -11,7 +11,5 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-tracing-subscriber = { workspace = true }
 libc = { workspace = true }
 seq-macro = { workspace = true }
-tracing = { workspace = true }

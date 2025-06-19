@@ -20,7 +20,6 @@ macro_rules! impl_result {
                         err: ConstPtr(std::ptr::null_mut()),
                     },
                     Err(e) => {
-                        tracing::error!("{}", e);
                         let err = e.to_string();
                         Self {
                             result: $inner::NULL,
@@ -40,7 +39,6 @@ macro_rules! validate_cstr {
         match unsafe { std::ffi::CStr::from_ptr($path).to_str() } {
             Ok(v) => v,
             Err(e) => {
-                tracing::error!("{}", e);
                 let err = e.to_string();
                 return $retty {
                     result: $type::NULL,
