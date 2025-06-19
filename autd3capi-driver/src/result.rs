@@ -1,4 +1,4 @@
-use autd3_driver::error::AUTDDriverError;
+use autd3::driver::error::AUTDDriverError;
 
 use crate::{
     CapiResult, ConstPtr, Duration, SamplingConfigTag, SamplingConfigValue, SamplingConfigWrap,
@@ -100,6 +100,19 @@ impl CapiResult for SamplingConfigWrap {
 }
 
 impl_result!(ResultSamplingConfig, SamplingConfigWrap);
+
+#[repr(C)]
+pub struct ResultU8 {
+    pub result: u8,
+    pub err_len: u32,
+    pub err: ConstPtr,
+}
+
+impl CapiResult for u8 {
+    const NULL: Self = 0;
+}
+
+impl_result!(ResultU8, u8);
 
 #[repr(C)]
 pub struct ResultU16 {

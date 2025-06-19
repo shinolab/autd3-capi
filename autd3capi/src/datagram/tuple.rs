@@ -1,4 +1,4 @@
-use autd3capi_driver::{DatagramPtr, DynDatagramTuple, driver::datagram::BoxedDatagram};
+use autd3capi_driver::{DatagramPtr, DynDatagramTuple, driver::firmware::driver::BoxedDatagram};
 
 #[unsafe(no_mangle)]
 #[must_use]

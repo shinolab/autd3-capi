@@ -4,15 +4,15 @@ use crate::impl_ptr;
 #[derive(Clone, Copy)]
 pub struct GeometryPtr(pub *const libc::c_void);
 
-impl_ptr!(GeometryPtr, autd3_driver::geometry::Geometry);
+impl_ptr!(GeometryPtr, autd3::driver::geometry::Geometry);
 
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct DevicePtr(pub *const libc::c_void);
 
-impl_ptr!(DevicePtr, autd3_driver::geometry::Device);
+impl_ptr!(DevicePtr, autd3::driver::geometry::Device);
 
 #[repr(C)]
 pub struct TransducerPtr(pub *const libc::c_void);
 
-impl_ptr!(TransducerPtr, autd3_driver::geometry::Transducer);
+impl_ptr!(TransducerPtr, autd3::driver::geometry::Transducer);

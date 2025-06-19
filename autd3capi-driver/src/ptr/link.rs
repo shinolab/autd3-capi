@@ -1,4 +1,4 @@
-use autd3_core::link::Link;
+use autd3::core::link::Link;
 
 use crate::{ConstPtr, impl_result};
 

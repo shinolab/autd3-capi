@@ -1,7 +1,7 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GPIOOutputTypeWrap, GeometryPtr,
     autd3::{core::datagram::GPIOOut, driver::geometry::Device},
-    driver::{datagram::GPIOOutputs, firmware::fpga::GPIOOutputType},
+    driver::{datagram::GPIOOutputType, datagram::GPIOOutputs},
 };
 
 #[unsafe(no_mangle)]

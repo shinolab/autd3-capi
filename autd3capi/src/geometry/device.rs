@@ -46,17 +46,6 @@ pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceEnableSet(mut geo: GeometryPtr, dev_idx: u16, value: bool) {
-    geo[dev_idx as usize].enable = value;
-}
-
-#[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDDeviceEnableGet(dev: DevicePtr) -> bool {
-    dev.enable
-}
-
-#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDeviceWavelength(dev: DevicePtr) -> f32 {
     dev.wavelength()

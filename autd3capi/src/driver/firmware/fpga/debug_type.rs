@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    GPIOOutputTypeWrap, TransducerPtr, autd3::driver::firmware::fpga::GPIOOutputType,
+    GPIOOutputTypeWrap, TransducerPtr, driver::datagram::GPIOOutputType,
     driver::ethercat::DcSysTime,
 };
 
@@ -79,4 +79,10 @@ pub unsafe extern "C" fn AUTDGPIOOutputTypeDirect(value: bool) -> GPIOOutputType
 #[must_use]
 pub unsafe extern "C" fn AUTDGPIOOutputTypeSysTimeEq(sys_time: DcSysTime) -> GPIOOutputTypeWrap {
     Some(GPIOOutputType::SysTimeEq(sys_time)).into()
+}
+
+#[unsafe(no_mangle)]
+#[must_use]
+pub unsafe extern "C" fn AUTDGPIOOutputTypeSyncDiff() -> GPIOOutputTypeWrap {
+    Some(GPIOOutputType::SyncDiff).into()
 }

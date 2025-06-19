@@ -5,19 +5,17 @@ pub struct LoopBehavior {
     pub rep: u16,
 }
 
-impl From<autd3::driver::firmware::fpga::LoopBehavior> for LoopBehavior {
-    fn from(value: autd3::driver::firmware::fpga::LoopBehavior) -> Self {
+impl From<autd3::core::datagram::LoopBehavior> for LoopBehavior {
+    fn from(value: autd3::core::datagram::LoopBehavior) -> Self {
         LoopBehavior { rep: value.rep() }
     }
 }
 
-impl From<LoopBehavior> for autd3::driver::firmware::fpga::LoopBehavior {
+impl From<LoopBehavior> for autd3::core::datagram::LoopBehavior {
     fn from(value: LoopBehavior) -> Self {
         match value.rep {
-            0xFFFF => autd3::driver::firmware::fpga::LoopBehavior::Infinite,
-            v => {
-                autd3::driver::firmware::fpga::LoopBehavior::Finite(NonZeroU16::new(v + 1).unwrap())
-            }
+            0xFFFF => autd3::core::datagram::LoopBehavior::Infinite,
+            v => autd3::core::datagram::LoopBehavior::Finite(NonZeroU16::new(v + 1).unwrap()),
         }
     }
 }

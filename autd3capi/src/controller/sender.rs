@@ -1,10 +1,9 @@
 use autd3capi_driver::{
-    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr, SleeperWrap,
-    autd3::{
-        self,
-        controller::{ParallelMode, Sleep, SpinSleeper},
-    },
-    driver::datagram::BoxedDatagram,
+    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr,
+    TimerStrategyWrap,
+    autd3::{self, controller::ParallelMode},
+    core::sleep::{Sleep, SpinSleeper},
+    driver::firmware::driver::{BoxedDatagram, TimerStrategy},
 };
 
 #[derive(Clone, Copy)]
@@ -14,6 +13,7 @@ pub struct SenderOption {
     pub receive_interval: Duration,
     pub timeout: OptionDuration,
     pub parallel: ParallelMode,
+    pub strict: bool,
 }
 
 impl From<SenderOption> for autd3::controller::SenderOption {
@@ -23,6 +23,7 @@ impl From<SenderOption> for autd3::controller::SenderOption {
             receive_interval: value.receive_interval.into(),
             timeout: value.timeout.into(),
             parallel: value.parallel,
+            strict: value.strict,
         }
     }
 }
@@ -37,11 +38,12 @@ pub unsafe extern "C" fn AUTDSetDefaultSenderOption(mut cnt: ControllerPtr, opti
 pub unsafe extern "C" fn AUTDSender(
     mut cnt: ControllerPtr,
     option: SenderOption,
-    sleeper: SleeperWrap,
+    timer_strategy: TimerStrategyWrap,
 ) -> SenderPtr {
-    SenderPtr(Box::into_raw(Box::new(
-        cnt.sender(option.into(), Box::<dyn Sleep>::from(sleeper)),
-    )) as *const _ as _)
+    SenderPtr(Box::into_raw(Box::new(cnt.sender(
+        option.into(),
+        Box::<dyn TimerStrategy<Box<dyn Sleep>>>::from(timer_strategy),
+    ))) as *const _ as _)
 }
 
 #[unsafe(no_mangle)]

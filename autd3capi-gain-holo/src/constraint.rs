@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_driver::autd3::core::gain::EmitIntensity;
+use autd3capi_driver::autd3::core::gain::Intensity;
 
 #[repr(u8)]
 pub enum EmissionConstraintTag {
@@ -13,10 +13,10 @@ pub enum EmissionConstraintTag {
 
 #[repr(C)]
 pub union EmissionConstraintValue {
-    null: EmitIntensity,
-    uniform: EmitIntensity,
+    null: Intensity,
+    uniform: Intensity,
     multiply: f32,
-    clamp: [EmitIntensity; 2],
+    clamp: [Intensity; 2],
 }
 
 #[repr(C)]
@@ -48,7 +48,7 @@ impl From<EmissionConstraint> for EmissionConstraintWrap {
             EmissionConstraint::Normalize => EmissionConstraintWrap {
                 tag: EmissionConstraintTag::Normalize,
                 value: EmissionConstraintValue {
-                    null: EmitIntensity::MIN,
+                    null: Intensity::MIN,
                 },
             },
             EmissionConstraint::Uniform(v) => EmissionConstraintWrap {
@@ -76,7 +76,7 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintNormalize() -> EmissionConstraint
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintUniform(
-    intensity: EmitIntensity,
+    intensity: Intensity,
 ) -> EmissionConstraintWrap {
     autd3_gain_holo::EmissionConstraint::Uniform(intensity).into()
 }
@@ -90,8 +90,8 @@ pub unsafe extern "C" fn AUTDGainHoloConstraintMultiply(v: f32) -> EmissionConst
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloConstraintClamp(
-    min_v: EmitIntensity,
-    max_v: EmitIntensity,
+    min_v: Intensity,
+    max_v: Intensity,
 ) -> EmissionConstraintWrap {
     autd3_gain_holo::EmissionConstraint::Clamp(min_v, max_v).into()
 }

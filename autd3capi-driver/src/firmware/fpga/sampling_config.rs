@@ -1,6 +1,6 @@
 use std::num::NonZeroU16;
 
-use autd3_core::{common::Hz, sampling_config::SamplingConfig};
+use autd3::core::{common::Hz, sampling_config::SamplingConfig};
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy)]

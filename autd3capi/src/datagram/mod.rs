@@ -1,6 +1,6 @@
 pub mod clear;
-pub mod debug;
 pub mod force_fan;
+pub mod gpio_out;
 pub mod group;
 pub mod phase_corr;
 pub mod pulse_width_encoder;

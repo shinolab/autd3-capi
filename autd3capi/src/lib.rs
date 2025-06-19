@@ -41,8 +41,7 @@ pub unsafe extern "C" fn AUTDTracingInitWithFile(path: *const c_char) -> ResultS
 mod tests {
     use autd3capi_driver::{
         AUTDStatus, Point3,
-        autd3::controller::{ParallelMode, SpinSleeper},
-        driver::geometry::Quaternion,
+        autd3::{controller::ParallelMode, core::sleep::SpinSleeper, driver::geometry::Quaternion},
     };
 
     use super::*;
@@ -57,11 +56,16 @@ mod tests {
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
                 parallel: ParallelMode::Auto,
+                strict: true,
             };
             let sleeper = autd3capi_driver::SleeperWrap {
                 tag: autd3capi_driver::SleeperTag::Spin,
                 value: SpinSleeper::default().native_accuracy_ns(),
                 spin_strategy: SpinSleeper::default().spin_strategy().into(),
+            };
+            let timer_strategy = autd3capi_driver::TimerStrategyWrap {
+                tag: autd3capi_driver::TimerStrategyTag::FixedSchedule,
+                sleep: sleeper,
             };
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
@@ -69,11 +73,11 @@ mod tests {
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
-                sleeper,
+                timer_strategy,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;
-            let sender = controller::sender::AUTDSender(cnt, option, sleeper);
+            let sender = controller::sender::AUTDSender(cnt, option, timer_strategy);
 
             let g = gain::focus::AUTDGainFocus(Point3::new(0., 0., 150.), Default::default());
             let m = modulation::r#static::AUTDModulationStatic(0xFF);

@@ -1,12 +1,17 @@
-use autd3_core::{
-    datagram::{Datagram, DatagramOption},
-    geometry::Geometry,
-};
-use autd3_driver::{
-    datagram::BoxedDatagram,
-    error::AUTDDriverError,
-    firmware::operation::{BoxedOperation, OperationGenerator},
-    geometry::Device,
+use autd3::{
+    core::{
+        datagram::{Datagram, DeviceFilter, FirmwareLimits},
+        geometry::Geometry,
+    },
+    driver::{
+        error::AUTDDriverError,
+        firmware::{
+            auto::operation::OperationGenerator,
+            driver::{BoxedDatagram, BoxedOperation},
+        },
+        geometry::Device,
+    },
+    firmware::Version,
 };
 
 pub struct DynDatagramTuple {
@@ -29,8 +34,11 @@ impl OperationGenerator for DOperationGeneratorTuple {
     type O1 = BoxedOperation;
     type O2 = BoxedOperation;
 
-    fn generate(&mut self, device: &Device) -> Option<(Self::O1, Self::O2)> {
-        match (self.g1.generate(device), self.g2.generate(device)) {
+    fn generate(&mut self, device: &Device, version: Version) -> Option<(Self::O1, Self::O2)> {
+        match (
+            self.g1.generate(device, version),
+            self.g2.generate(device, version),
+        ) {
             (Some((o1, _)), Some((o2, _))) => Some((o1, o2)),
             _ => None,
         }
@@ -41,21 +49,19 @@ impl Datagram for DynDatagramTuple {
     type G = DOperationGeneratorTuple;
     type Error = AUTDDriverError;
 
-    fn operation_generator(self, geometry: &mut Geometry) -> Result<Self::G, Self::Error> {
+    fn operation_generator(
+        self,
+        geometry: &Geometry,
+        filter: &DeviceFilter,
+        limits: &FirmwareLimits,
+    ) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {
-            g1: self.d1.operation_generator(geometry)?,
-            g2: self.d2.operation_generator(geometry)?,
+            g1: self.d1.operation_generator(geometry, filter, limits)?,
+            g2: self.d2.operation_generator(geometry, filter, limits)?,
         })
     }
 
-    fn option(&self) -> autd3_core::datagram::DatagramOption {
-        DatagramOption {
-            timeout: self.d1.option().timeout.max(self.d2.option().timeout),
-            parallel_threshold: self
-                .d1
-                .option()
-                .parallel_threshold
-                .min(self.d2.option().parallel_threshold),
-        }
+    fn option(&self) -> autd3::core::datagram::DatagramOption {
+        self.d1.option().merge(self.d2.option())
     }
 }
