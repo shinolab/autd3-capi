@@ -1,15 +1,18 @@
 pub mod sender;
 
-use autd3::{Controller, core::link::Link};
-use driver::{
-    autd3_device::AUTD3,
-    firmware::{fpga::FPGAState, version::FirmwareVersion},
-    geometry::{Quaternion, UnitQuaternion},
+use autd3::{
+    Controller,
+    core::{link::Link, sleep::Sleep},
+    driver::{
+        autd3_device::AUTD3,
+        firmware::{driver::TimerStrategy, v10::fpga::FPGAState, version::FirmwareVersion},
+        geometry::{Quaternion, UnitQuaternion},
+    },
 };
 
 use std::ffi::c_char;
 
-use autd3capi_driver::*;
+use autd3capi_driver::{autd3::firmware::Auto, *};
 
 use sender::SenderOption;
 
@@ -30,7 +33,7 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     len: u16,
     link: LinkPtr,
     option: SenderOption,
-    sleeper: SleeperWrap,
+    timer_strategy: TimerStrategyWrap,
 ) -> ResultController {
     let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
@@ -42,7 +45,7 @@ pub unsafe extern "C" fn AUTDControllerOpen(
         }),
         *link,
         option.into(),
-        Box::<dyn autd3::controller::Sleep>::from(sleeper),
+        Box::<dyn TimerStrategy<Box<dyn Sleep>>>::from(timer_strategy),
     )
     .into()
 }
@@ -50,7 +53,7 @@ pub unsafe extern "C" fn AUTDControllerOpen(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> ResultStatus {
-    unsafe { take!(cnt, Controller<Box<dyn Link>>) }
+    unsafe { take!(cnt, Controller<Box<dyn Link>, Auto>) }
         .close()
         .into()
 }

@@ -7,11 +7,9 @@ license = { workspace = true }
 repository = { workspace = true }
 
 [lib]
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib"]
 
 
 [dependencies]
 autd3-link-simulator = { workspace = true, features = ["blocking"] }
 autd3capi-driver = { workspace = true }
-tracing-subscriber = { workspace = true }
-tracing = { workspace = true }

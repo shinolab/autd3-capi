@@ -1,9 +1,8 @@
 use autd3capi_driver::{
-    autd3::core::{datagram::Segment, sampling_config::SamplingConfig},
-    driver::datagram::{FociSTM, WithLoopBehavior, WithSegment},
+    core::{datagram::Segment, sampling_config::SamplingConfig},
+    driver::datagram::{ControlPoints, FociSTM, WithLoopBehavior, WithSegment},
     *,
 };
-use driver::firmware::operation::ControlPoints;
 
 #[unsafe(no_mangle)]
 #[must_use]

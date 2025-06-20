@@ -1,8 +1,11 @@
 use autd3::{
     Controller,
-    controller::{Sender, Sleep},
+    core::{link::Link, sleep::Sleep},
+    driver::firmware::{
+        auto::{Auto, transmission::Sender},
+        driver::TimerStrategy,
+    },
 };
-use autd3_core::link::Link;
 
 use crate::impl_ptr;
 
@@ -10,10 +13,13 @@ use crate::impl_ptr;
 #[repr(C)]
 pub struct ControllerPtr(pub *const libc::c_void);
 
-impl_ptr!(ControllerPtr, Controller<Box<dyn Link>>);
+impl_ptr!(ControllerPtr, Controller<Box<dyn Link>, Auto>);
 
 #[derive(Clone, Copy)]
 #[repr(C)]
 pub struct SenderPtr(pub *const libc::c_void);
 
-impl_ptr!(SenderPtr, Sender<'static, Box<dyn Link>, Box<dyn Sleep>>);
+impl_ptr!(
+    SenderPtr,
+    Sender<'static, Box<dyn Link>, Box<dyn Sleep>, Box<dyn TimerStrategy<Box<dyn Sleep>>>>
+);

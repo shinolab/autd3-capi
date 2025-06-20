@@ -7,31 +7,6 @@ use autd3capi_driver::*;
 use autd3_link_twincat::{local::*, remote::*};
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDLinkTwinCATTracingInit() {
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDLinkTwinCATTracingInitWithFile(path: *const c_char) -> ResultStatus {
-    let path = validate_cstr!(path, AUTDStatus, ResultStatus);
-    std::fs::File::options()
-        .append(true)
-        .create(true)
-        .open(path)
-        .map(|f| {
-            tracing_subscriber::fmt()
-                .with_writer(f)
-                .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-                .with_ansi(false)
-                .init();
-            AUTDStatus::AUTDTrue
-        })
-        .into()
-}
-
-#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDLinkTwinCAT() -> ResultLink {
     TwinCAT::new().into()

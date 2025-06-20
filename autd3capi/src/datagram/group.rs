@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GeometryPtr,
-    driver::{datagram::BoxedDatagram, geometry::Device},
+    driver::{firmware::driver::BoxedDatagram, geometry::Device},
 };
 
 #[unsafe(no_mangle)]

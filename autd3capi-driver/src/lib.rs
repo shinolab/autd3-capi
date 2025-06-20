@@ -17,7 +17,8 @@ pub use result::*;
 pub use sender::*;
 
 pub use autd3;
-pub use autd3_driver as driver;
+pub use autd3::core;
+pub use autd3::driver;
 pub use libc;
 
 #[derive(Clone, Copy)]
@@ -27,7 +28,7 @@ pub struct ConstPtr(pub *const libc::c_void);
 unsafe impl Send for ConstPtr {}
 unsafe impl Sync for ConstPtr {}
 
-pub use autd3_driver::geometry::Point3;
+pub use autd3::driver::geometry::Point3;
 
 #[macro_export]
 macro_rules! vec_from_raw {

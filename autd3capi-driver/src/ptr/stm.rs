@@ -1,7 +1,6 @@
-use autd3_core::derive::SamplingConfig;
-use autd3_driver::{
-    datagram::{BoxedGain, FociSTM, GainSTM},
-    firmware::operation::ControlPoints,
+use autd3::{
+    core::derive::SamplingConfig,
+    driver::datagram::{BoxedGain, ControlPoints, FociSTM, GainSTM},
 };
 
 use crate::impl_ptr;

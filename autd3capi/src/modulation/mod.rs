@@ -2,7 +2,6 @@ use autd3::core::{datagram::Segment, modulation::Modulation};
 use autd3capi_driver::*;
 use driver::datagram::{BoxedModulation, WithLoopBehavior, WithSegment};
 
-pub mod cache;
 pub mod custom;
 pub mod fir;
 pub mod fourier;
@@ -16,14 +15,6 @@ pub mod r#static;
 pub unsafe extern "C" fn AUTDModulationSamplingConfig(m: ModulationPtr) -> SamplingConfigWrap {
     unsafe { take!(m, BoxedModulation) }
         .sampling_config()
-        .into()
-}
-
-#[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDModulationExpectedRadiationPressure(m: ModulationPtr) -> ResultF32 {
-    unsafe { take!(m, BoxedModulation) }
-        .expected_radiation_pressure()
         .into()
 }
 

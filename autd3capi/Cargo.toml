@@ -7,11 +7,9 @@ license = { workspace = true }
 repository = { workspace = true }
 
 [lib]
-crate-type = ["rlib", "cdylib", "staticlib"]
+crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-tracing-subscriber = { workspace = true }
 libc = { workspace = true }
 seq-macro = { workspace = true }
-tracing = { workspace = true }

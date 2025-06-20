@@ -1,6 +1,12 @@
-use autd3_core::datagram::{Datagram, Operation};
-use autd3_driver::{
-    datagram::BoxedDatagram, error::AUTDDriverError, firmware::operation::OperationGenerator,
+use autd3::{
+    core::datagram::Datagram,
+    driver::{
+        error::AUTDDriverError,
+        firmware::{
+            auto::operation::OperationGenerator,
+            driver::{BoxedDatagram, Operation},
+        },
+    },
 };
 
 use crate::{impl_ptr, take};
@@ -23,7 +29,6 @@ where
     AUTDDriverError: From<<G::O1 as Operation>::Error> + From<<G::O2 as Operation>::Error>,
 {
     fn from(d: D) -> Self {
-        use autd3_driver::datagram::IntoBoxedDatagram;
-        Self(Box::into_raw(Box::new(d.into_boxed())) as _)
+        Self(Box::into_raw(Box::new(BoxedDatagram::new(d))) as _)
     }
 }
