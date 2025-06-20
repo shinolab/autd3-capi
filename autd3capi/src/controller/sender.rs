@@ -28,9 +28,26 @@ impl From<SenderOption> for autd3::controller::SenderOption {
     }
 }
 
+impl From<autd3::controller::SenderOption> for SenderOption {
+    fn from(value: autd3::controller::SenderOption) -> Self {
+        SenderOption {
+            send_interval: value.send_interval.into(),
+            receive_interval: value.receive_interval.into(),
+            timeout: value.timeout.into(),
+            parallel: value.parallel,
+            strict: value.strict,
+        }
+    }
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDSetDefaultSenderOption(mut cnt: ControllerPtr, option: SenderOption) {
     cnt.default_sender_option = option.into();
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn AUTDGetDefaultSenderOption(cnt: ControllerPtr) -> SenderOption {
+    cnt.default_sender_option.into()
 }
 
 #[unsafe(no_mangle)]
