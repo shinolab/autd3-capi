@@ -46,11 +46,6 @@ pub unsafe extern "C" fn AUTDSetDefaultSenderOption(mut cnt: ControllerPtr, opti
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDGetDefaultSenderOption(cnt: ControllerPtr) -> SenderOption {
-    cnt.default_sender_option.into()
-}
-
-#[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSender(
     mut cnt: ControllerPtr,
