@@ -15,7 +15,7 @@ repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
 autd3 = { version = "34.0.0-rc.1", default-features = false }
-autd3-core = { version = "34.0.0-rc.1", default-features = false }
+autd3-core = { version = "34.0.0", default-features = false }
 autd3-driver = { version = "34.0.0-rc.1", default-features = false }
 autd3-gain-holo = { version = "34.0.0-rc.1", default-features = false }
 autd3-link-simulator = { version = "34.0.0-rc.1", default-features = false }
