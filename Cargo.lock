@@ -51,15 +51,15 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "autd3"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "861270c9f376c29a556e9fd4099b188d2981a6b0d7f1d700c6d2e08bb8e2fba8"
+checksum = "89d56e217fbe00c32f2698ae569185229bbfe1ae2fb677ce1e7ca1fbef51851d"
 dependencies = [
  "autd3-core 34.0.0",
  "autd3-driver 34.0.0",
  "autd3-firmware-emulator 31.0.1",
  "autd3-firmware-emulator 33.0.0",
- "autd3-firmware-emulator 34.0.0-rc.1",
+ "autd3-firmware-emulator 34.0.0",
  "bit-vec",
  "derive_more",
  "getset",
@@ -264,9 +264,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2eca13895f1ecd0302f39c6441ca7189da85ab1b5ad2db56803a81466ff25c3"
+checksum = "43ccb82f30aec21712d685605565ba217d3396d85723e250b3861975398dc336"
 dependencies = [
  "autd3-core 34.0.0",
  "autd3-driver 34.0.0",
@@ -278,9 +278,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1210a49faca0df24812b44265311817a0c79a9575f10d4d3e49dd134d739eb8a"
+checksum = "8d113c29273d3d3e8c5a627dd8ce7d631c52e021df6d17d990962fafa576e57e"
 dependencies = [
  "autd3-core 34.0.0",
  "derive_more",
@@ -306,9 +306,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-twincat"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7e80692d4f2355c55d27ca1f9021325e80770a857d9214774e989879a0c35d57"
+checksum = "964d730a44301143b36efcfe14785a2d655194f5d592b380010e6b9f53895e59"
 dependencies = [
  "autd3-core 34.0.0",
  "cc",
@@ -320,9 +320,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6bc0e097861e772342a5d6276d36e6b6c54ae6e9aaab597c33e392216212bd20"
+checksum = "7e69aa13e67e9ad1cc98426b4078bdee035ee744d1e3bf93a1b51e73d826579e"
 dependencies = [
  "autd3-core 34.0.0",
  "autd3-derive 34.0.0",
@@ -347,7 +347,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3capi-driver",
  "libc",
@@ -356,7 +356,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-driver"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3",
  "libc",
@@ -364,7 +364,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -372,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -380,7 +380,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "34.0.0-rc.1"
+version = "34.0.0"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-driver",
@@ -1309,9 +1309,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.103"
+version = "2.0.104"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4307e30089d6fd6aff212f2da3a1f9e32f3223b1f010fb09b7c95f90f3ca1e8"
+checksum = "17b6f705963418cdb9927482fa304bc562ece2fdd4f616084c50b7023b435a40"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1574,9 +1574,9 @@ dependencies = [
 
 [[package]]
 name = "wide"
-version = "0.7.32"
+version = "0.7.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41b5576b9a81633f3e8df296ce0063042a73507636cbe956c61133dd7034ab22"
+checksum = "0ce5da8ecb62bcd8ec8b7ea19f69a51275e91299be594ea5cc6ef7819e16cd03"
 dependencies = [
  "bytemuck",
  "safe_arch",
