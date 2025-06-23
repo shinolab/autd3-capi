@@ -19,7 +19,7 @@ autd3-core = { version = "34.0.0-rc.1", default-features = false }
 autd3-driver = { version = "34.0.0-rc.1", default-features = false }
 autd3-gain-holo = { version = "34.0.0-rc.1", default-features = false }
 autd3-link-simulator = { version = "34.0.0-rc.1", default-features = false }
-autd3-link-twincat = { version = "34.0.0-rc.1", default-features = false }
+autd3-link-twincat = { version = "34.0.0", default-features = false }
 autd3-modulation-audio-file = { version = "34.0.0-rc.1", default-features = false }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
