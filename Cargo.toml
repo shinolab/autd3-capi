@@ -7,20 +7,20 @@ exclude = ["tools"]
 resolver = "3"
 
 [workspace.package]
-version = "34.0.0"
+version = "35.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "34.0.0", default-features = false }
-autd3-core = { version = "34.0.0", default-features = false }
-autd3-driver = { version = "34.0.0", default-features = false }
-autd3-gain-holo = { version = "34.0.0", default-features = false }
-autd3-link-simulator = { version = "34.0.0", default-features = false }
-autd3-link-twincat = { version = "34.0.0", default-features = false }
-autd3-modulation-audio-file = { version = "34.0.0", default-features = false }
+autd3 = { version = "35.0.0", default-features = false, features = ["gain", "modulation", "link-audit", "link-nop"] }
+autd3-core = { version = "35.0.0", default-features = false }
+autd3-driver = { version = "35.0.0", default-features = false }
+autd3-gain-holo = { version = "35.0.0", default-features = false }
+autd3-link-simulator = { version = "35.0.0", default-features = false }
+autd3-link-twincat = { version = "35.0.0", default-features = false }
+autd3-modulation-audio-file = { version = "35.0.0", default-features = false }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }

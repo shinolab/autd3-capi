@@ -18,43 +18,8 @@ pub unsafe extern "C" fn AUTDDeviceNumTransducers(dev: DevicePtr) -> u32 {
 }
 
 #[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDDeviceGetSoundSpeed(dev: DevicePtr) -> f32 {
-    dev.sound_speed
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceSetSoundSpeed(mut geo: GeometryPtr, dev_idx: u16, value: f32) {
-    geo[dev_idx as usize].sound_speed = value;
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeviceSetSoundSpeedFromTemp(
-    mut geo: GeometryPtr,
-    dev_idx: u16,
-    temp: f32,
-    k: f32,
-    r: f32,
-    m: f32,
-) {
-    geo[dev_idx as usize].set_sound_speed_from_temp_with(temp, k, r, m);
-}
-
-#[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
     *dev.center()
-}
-
-#[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDDeviceWavelength(dev: DevicePtr) -> f32 {
-    dev.wavelength()
-}
-
-#[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDDeviceWavenumber(dev: DevicePtr) -> f32 {
-    dev.wavenumber()
 }
 
 #[unsafe(no_mangle)]

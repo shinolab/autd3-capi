@@ -2,6 +2,7 @@ pub mod clear;
 pub mod force_fan;
 pub mod gpio_out;
 pub mod group;
+pub mod output_mask;
 pub mod phase_corr;
 pub mod pulse_width_encoder;
 pub mod reads_fpga_state;

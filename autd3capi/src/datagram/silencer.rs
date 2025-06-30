@@ -24,7 +24,7 @@ pub unsafe extern "C" fn AUTDDatagramSilencerFromCompletionSteps(
 pub struct FixedCompletionTime {
     pub intensity: Duration,
     pub phase: Duration,
-    pub strict_mode: bool,
+    pub strict: bool,
 }
 
 impl From<FixedCompletionTime> for autd3::driver::datagram::FixedCompletionTime {
@@ -32,7 +32,7 @@ impl From<FixedCompletionTime> for autd3::driver::datagram::FixedCompletionTime 
         autd3::driver::datagram::FixedCompletionTime {
             intensity: config.intensity.into(),
             phase: config.phase.into(),
-            strict_mode: config.strict_mode,
+            strict: config.strict,
         }
     }
 }

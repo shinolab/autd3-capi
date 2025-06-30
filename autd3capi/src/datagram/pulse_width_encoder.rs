@@ -17,9 +17,7 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder256(
             unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u8) -> u8,
         >(f);
         PulseWidthEncoder::<
-            8,
-            u8,
-            Box<dyn Fn(Intensity) -> PulseWidth<8, u8> + Send + Sync>,
+            PulseWidth<8, u8>,
             Box<dyn Fn(&Device) -> Box<dyn Fn(Intensity) -> PulseWidth<8, u8> + Send + Sync>>,
         >::new(Box::new(move |dev: &Device| {
             let dev_idx = dev.idx() as _;
@@ -32,7 +30,7 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder256(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder256Default() -> DatagramPtr {
-    PulseWidthEncoder::<8, u8, _, _>::default().into()
+    PulseWidthEncoder::<PulseWidth<8, u8>, _>::default().into()
 }
 
 #[unsafe(no_mangle)]
@@ -48,9 +46,7 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder512(
             unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u8) -> u16,
         >(f);
         PulseWidthEncoder::<
-            9,
-            u16,
-            Box<dyn Fn(Intensity) -> PulseWidth<9, u16> + Send + Sync>,
+            PulseWidth<9, u16>,
             Box<dyn Fn(&Device) -> Box<dyn Fn(Intensity) -> PulseWidth<9, u16> + Send + Sync>>,
         >::new(Box::new(move |dev: &Device| {
             let dev_idx = dev.idx() as _;
@@ -63,5 +59,5 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder512(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder512Default() -> DatagramPtr {
-    PulseWidthEncoder::<9, u16, _, _>::default().into()
+    PulseWidthEncoder::<PulseWidth<9, u16>, _>::default().into()
 }

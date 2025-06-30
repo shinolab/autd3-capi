@@ -3,6 +3,7 @@
 pub mod controller;
 pub mod datagram;
 pub mod driver;
+pub mod environment;
 pub mod gain;
 pub mod geometry;
 pub mod link;
