@@ -1,5 +1,6 @@
 mod controller;
 mod datagram;
+mod environment;
 mod gain;
 mod geometry;
 mod link;
@@ -8,6 +9,7 @@ mod stm;
 
 pub use controller::*;
 pub use datagram::*;
+pub use environment::*;
 pub use gain::*;
 pub use geometry::*;
 pub use link::*;
