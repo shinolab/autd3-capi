@@ -1,44 +1,57 @@
 use autd3capi_driver::{
-    TransitionModeWrap,
-    autd3::core::{datagram::GPIOIn, derive::TransitionMode},
-    driver::ethercat::DcSysTime,
+    TransitionModeWrap, autd3::core::datagram::GPIOIn, driver::ethercat::DcSysTime,
 };
 
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeSyncIdx() -> TransitionModeWrap {
-    TransitionMode::SyncIdx.into()
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::SyncIdx,
+        value: autd3capi_driver::TransitionModeValue { null: 0 },
+    }
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeSysTime(sys_time: DcSysTime) -> TransitionModeWrap {
-    TransitionMode::SysTime(sys_time).into()
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::SysTime,
+        value: autd3capi_driver::TransitionModeValue { sys_time },
+    }
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeGPIO(gpio: GPIOIn) -> TransitionModeWrap {
-    TransitionMode::GPIO(gpio).into()
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::Gpio,
+        value: autd3capi_driver::TransitionModeValue { gpio_in: gpio },
+    }
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeExt() -> TransitionModeWrap {
-    TransitionMode::Ext.into()
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::Ext,
+        value: autd3capi_driver::TransitionModeValue { null: 0 },
+    }
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDTransitionModeImmediate() -> TransitionModeWrap {
-    TransitionMode::Immediate.into()
+    TransitionModeWrap {
+        tag: autd3capi_driver::TransitionModeTag::Immediate,
+        value: autd3capi_driver::TransitionModeValue { null: 0 },
+    }
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDTransitionModeNone() -> TransitionModeWrap {
+pub unsafe extern "C" fn AUTDTransitionModeLater() -> TransitionModeWrap {
     TransitionModeWrap {
-        tag: autd3capi_driver::TransitionModeTag::None,
+        tag: autd3capi_driver::TransitionModeTag::Later,
         value: autd3capi_driver::TransitionModeValue { null: 0 },
     }
 }

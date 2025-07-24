@@ -9,7 +9,7 @@ pub struct GainPtr(pub *const libc::c_void);
 
 impl_ptr!(GainPtr);
 
-impl<T: Gain + 'static> From<T> for GainPtr {
+impl<T: Gain<'static> + 'static> From<T> for GainPtr {
     fn from(g: T) -> Self {
         let g: Box<BoxedGain> = Box::new(BoxedGain::new(g));
         Self(Box::into_raw(g) as _)

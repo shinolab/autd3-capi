@@ -5,7 +5,7 @@ use std::num::NonZeroUsize;
 use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
-    autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
+    autd3::core::acoustics::directivity::{Sphere, T4010A1},
     *,
 };
 
@@ -20,7 +20,7 @@ pub struct LMOption {
     pub initial_len: u32,
 }
 
-impl<T: Directivity> From<LMOption> for autd3_gain_holo::LMOption<T> {
+impl From<LMOption> for autd3_gain_holo::LMOption {
     fn from(option: LMOption) -> Self {
         autd3_gain_holo::LMOption {
             constraint: option.constraint.into(),
@@ -29,7 +29,6 @@ impl<T: Directivity> From<LMOption> for autd3_gain_holo::LMOption<T> {
             tau: option.tau,
             k_max: NonZeroUsize::new(option.k_max as _).unwrap(),
             initial: unsafe { vec_from_raw!(option.initial, f32, option.initial_len) },
-            __phantom: std::marker::PhantomData,
         }
     }
 }
@@ -43,12 +42,12 @@ pub unsafe extern "C" fn AUTDGainHoloLMSphere(
     size: u32,
     option: LMOption,
 ) -> GainPtr {
-    let (foci, backend) =
-        unsafe { create_holo!(NalgebraBackend, Sphere, backend, points, amps, size) };
-    LM {
+    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
+    LM::<Sphere, NalgebraBackend> {
         foci,
         backend,
         option: option.into(),
+        directivity: std::marker::PhantomData,
     }
     .into()
 }
@@ -62,12 +61,12 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
     size: u32,
     option: LMOption,
 ) -> GainPtr {
-    let (foci, backend) =
-        unsafe { create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size) };
-    LM {
+    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
+    LM::<T4010A1, NalgebraBackend> {
         foci,
         backend,
         option: option.into(),
+        directivity: std::marker::PhantomData,
     }
     .into()
 }
@@ -75,5 +74,5 @@ pub unsafe extern "C" fn AUTDGainHoloLMT4010A1(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainLMIsDefault(option: LMOption) -> bool {
-    autd3_gain_holo::LMOption::<Sphere>::default() == option.into()
+    autd3_gain_holo::LMOption::default() == option.into()
 }

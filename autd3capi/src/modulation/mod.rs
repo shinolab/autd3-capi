@@ -1,6 +1,8 @@
+use std::num::NonZeroU16;
+
 use autd3::core::{datagram::Segment, modulation::Modulation};
 use autd3capi_driver::*;
-use driver::datagram::{BoxedModulation, WithLoopBehavior, WithSegment};
+use driver::datagram::{BoxedModulation, WithFiniteLoop, WithSegment};
 
 pub mod custom;
 pub mod fir;
@@ -28,24 +30,24 @@ pub unsafe extern "C" fn AUTDModulationIntoDatagramWithSegment(
     WithSegment {
         inner: unsafe { *take!(m, BoxedModulation) },
         segment,
-        transition_mode: transition_mode.into(),
+        transition_mode,
     }
     .into()
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDModulationIntoDatagramWithLoopBehavior(
+pub unsafe extern "C" fn AUTDModulationIntoDatagramWithFiniteLoop(
     m: ModulationPtr,
     segment: Segment,
     transition_mode: TransitionModeWrap,
-    loop_behavior: LoopBehavior,
+    loop_count: u16,
 ) -> DatagramPtr {
-    WithLoopBehavior {
+    WithFiniteLoop {
         inner: unsafe { *take!(m, BoxedModulation) },
         segment,
-        transition_mode: transition_mode.into(),
-        loop_behavior: loop_behavior.into(),
+        transition_mode,
+        loop_count: NonZeroU16::new(loop_count).unwrap(),
     }
     .into()
 }

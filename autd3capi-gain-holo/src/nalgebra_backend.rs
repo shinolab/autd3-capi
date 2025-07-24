@@ -2,33 +2,15 @@
 
 use crate::BackendPtr;
 use autd3_gain_holo::*;
-use autd3capi_driver::{
-    autd3::core::acoustics::directivity::{Sphere, T4010A1},
-    take,
-};
+use autd3capi_driver::take;
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDNalgebraBackendSphere() -> BackendPtr {
-    BackendPtr(Box::into_raw(Box::new(std::sync::Arc::new(
-        NalgebraBackend::<Sphere>::new(),
-    ))) as _)
+pub unsafe extern "C" fn AUTDNalgebraBackend() -> BackendPtr {
+    BackendPtr(Box::into_raw(Box::new(std::sync::Arc::new(NalgebraBackend::new()))) as _)
 }
 
 #[unsafe(no_mangle)]
-#[must_use]
-pub unsafe extern "C" fn AUTDNalgebraBackendT4010A1() -> BackendPtr {
-    BackendPtr(Box::into_raw(Box::new(std::sync::Arc::new(
-        NalgebraBackend::<T4010A1>::new(),
-    ))) as _)
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeleteNalgebraBackendSphere(backend: BackendPtr) {
-    let _ = take!(backend, std::sync::Arc<NalgebraBackend<Sphere>>);
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDDeleteNalgebraBackendT4010A1(backend: BackendPtr) {
-    let _ = take!(backend, std::sync::Arc<NalgebraBackend<T4010A1>>);
+pub unsafe extern "C" fn AUTDDeleteNalgebraBackend(backend: BackendPtr) {
+    let _ = unsafe { take!(backend, std::sync::Arc<NalgebraBackend>) };
 }

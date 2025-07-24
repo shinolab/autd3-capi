@@ -19,7 +19,7 @@ pub unsafe extern "C" fn AUTDGainIntoDatagramWithSegment(
     WithSegment {
         inner: unsafe { *take!(gain, BoxedGain) },
         segment,
-        transition_mode: transition_mode.into(),
+        transition_mode,
     }
     .into()
 }
