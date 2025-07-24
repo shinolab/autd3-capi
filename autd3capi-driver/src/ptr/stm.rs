@@ -21,8 +21,8 @@ pub struct GainSTMPtr(pub *const libc::c_void);
 
 impl_ptr!(GainSTMPtr);
 
-impl From<GainSTM<Vec<BoxedGain>, SamplingConfig>> for GainSTMPtr {
-    fn from(stm: GainSTM<Vec<BoxedGain>, SamplingConfig>) -> Self {
+impl From<GainSTM<Vec<BoxedGain<'static>>, SamplingConfig>> for GainSTMPtr {
+    fn from(stm: GainSTM<Vec<BoxedGain<'static>>, SamplingConfig>) -> Self {
         Self(Box::into_raw(Box::new(stm)) as _)
     }
 }

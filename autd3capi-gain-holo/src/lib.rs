@@ -29,7 +29,7 @@ pub unsafe extern "C" fn AUTDGainHoloPascalToSPL(value: f32) -> f32 {
 
 #[macro_export]
 macro_rules! create_holo {
-    ($backend_type:tt, $direcivity:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {{
+    ($backend_type:tt, $backend:expr, $points:expr, $amps:expr, $size:expr) => {{
         let points = vec_from_raw!($points, Point3, $size);
         let amps = vec_from_raw!($amps, f32, $size);
         let foci = points
@@ -37,14 +37,14 @@ macro_rules! create_holo {
             .zip(amps.into_iter())
             .map(|(p, a)| (p, a * Pa))
             .collect();
-        let backend = ($backend.0 as *const std::sync::Arc<$backend_type<$direcivity>>)
+        let backend = ($backend.0 as *const std::sync::Arc<$backend_type>)
             .as_ref()
             .unwrap()
             .clone();
         (foci, backend)
     }};
 
-    ($direcivity:tt, $points:expr, $amps:expr, $size:expr) => {{
+    ($points:expr, $amps:expr, $size:expr) => {{
         let points = vec_from_raw!($points, Point3, $size);
         let amps = vec_from_raw!($amps, f32, $size);
         points

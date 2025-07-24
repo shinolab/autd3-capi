@@ -51,16 +51,16 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "autd3"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96816918fa37b627359ffcee736df2f25199996eb0b4ff5aa68e176957861959"
+checksum = "b74302dc396c6dbfe14a8c17e7e603cc3b92ed2555d94075aef49cc8a5d770c1"
 dependencies = [
- "autd3-core 35.0.1",
- "autd3-driver 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
+ "autd3-driver 36.0.0-alpha.0",
  "autd3-firmware-emulator 31.0.1",
  "autd3-firmware-emulator 33.0.0",
  "autd3-firmware-emulator 34.0.0",
- "autd3-firmware-emulator 35.0.1",
+ "autd3-firmware-emulator 36.0.0-alpha.0",
  "bit-vec",
  "derive_more",
  "getset",
@@ -137,19 +137,17 @@ dependencies = [
 
 [[package]]
 name = "autd3-core"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e5338d842e0b13d14140d422613c8d11ed2fe60b87ac3e37d50f45f7da5c0b7"
+checksum = "4ef36be4ccf7e41d338c1911f880e21ea4847a8d521a2757994b0b7b16f639f3"
 dependencies = [
- "autd3-derive 35.0.1",
+ "autd3-derive 36.0.0-alpha.0",
  "bit-vec",
  "bitfield-struct 0.11.0",
  "bvh",
  "derive_more",
  "getset",
  "nalgebra",
- "num",
- "num_cpus",
  "paste",
  "smallvec",
  "spin_sleep",
@@ -192,10 +190,11 @@ dependencies = [
 
 [[package]]
 name = "autd3-derive"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85e2a7fffecd8c1d7a2690df1d110108065e251d561863a2c236c275c1b7179e"
+checksum = "f8006e412110546250a632b320560197fe5ac22a5ca1beaf3bf3ec905a1c7efa"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
 ]
@@ -272,20 +271,18 @@ dependencies = [
 
 [[package]]
 name = "autd3-driver"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17af752cda9690d7f0d2367d59603461d6c33246b2612a704015c736d8bf47b2"
+checksum = "e1c391a4668e2869ba84ae8949cf0b29abf8f8632e00fbf2f4597f22f16b89fe"
 dependencies = [
- "autd3-core 35.0.1",
- "autd3-derive 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
+ "autd3-derive 36.0.0-alpha.0",
  "bitfield-struct 0.11.0",
  "bitflags",
  "derive_more",
  "getset",
  "itertools",
  "nalgebra",
- "num",
- "num_cpus",
  "paste",
  "rayon",
  "seq-macro",
@@ -337,12 +334,12 @@ dependencies = [
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37257103a921b777e4a78a5ece83d690b4d13a91e3822ddf09109438264b7596"
+checksum = "59392d011942a54970ba76b0108ead8ab584f4b9e8319698305bb3c7cdfc0b28"
 dependencies = [
- "autd3-core 35.0.1",
- "autd3-driver 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
+ "autd3-driver 36.0.0-alpha.0",
  "bitfield-struct 0.11.0",
  "getset",
  "time",
@@ -351,11 +348,11 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fefbe388b66e830d9d94dfb38f9bde171914ac5d272199def7aa3aecf50c50a3"
+checksum = "d0311eeaf711af7c8338a5d606992a11f779b05d681d3a411fa34276980cbe83"
 dependencies = [
- "autd3-core 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
  "derive_more",
  "nalgebra",
  "rand",
@@ -367,11 +364,11 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-simulator"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48b4bbd0c4ab3ca8cf068eb07dde167678511f47b6daad7860d1a28ed7be2584"
+checksum = "11d0398d6e71ef3786b7a1d23f1274116672558cf713f0690914c00edfa218c5"
 dependencies = [
- "autd3-core 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
  "autd3-protobuf",
  "tokio",
  "tonic",
@@ -379,11 +376,11 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-twincat"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ddb2a192bb909794bc085bc91f5f4f3e9e1773ab8222d0fd64b250d582fd124"
+checksum = "827a6cfd184d8a971b9ffdda42d29d00b984a2aa1d479aa73027fbcf8183b1ac"
 dependencies = [
- "autd3-core 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
  "cc",
  "itertools",
  "libloading",
@@ -393,12 +390,12 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ed0ebd249c1b1a0d68dbe5c0b4d5a0832920c9635a05c9a2cc094b56ce35ed9"
+checksum = "773243def4ddbfaf0680052640c6a397ffef34ec5efdee7518c39cd65be36f1d"
 dependencies = [
- "autd3-core 35.0.1",
- "autd3-derive 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
+ "autd3-derive 36.0.0-alpha.0",
  "csv",
  "hound",
  "thiserror",
@@ -406,12 +403,12 @@ dependencies = [
 
 [[package]]
 name = "autd3-protobuf"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c412013958090e76eea7682deabd9f02547b7de9fd2de093dcf7b47553ab04b0"
+checksum = "b95d18b60a6baae5ca945f90bf508695105fa2fd295c388c908e1cb0fcabd95d"
 dependencies = [
- "autd3-core 35.0.1",
- "autd3-driver 35.0.1",
+ "autd3-core 36.0.0-alpha.0",
+ "autd3-driver 36.0.0-alpha.0",
  "prost",
  "thiserror",
  "tonic",
@@ -420,7 +417,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3capi-driver",
  "libc",
@@ -429,7 +426,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-driver"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3",
  "libc",
@@ -437,7 +434,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -445,7 +442,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -453,7 +450,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
@@ -461,7 +458,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-modulation-audio-file"
-version = "35.0.1"
+version = "36.0.0-alpha.0"
 dependencies = [
  "autd3-modulation-audio-file",
  "autd3capi-driver",
@@ -555,9 +552,9 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
 name = "cc"
-version = "1.2.27"
+version = "1.2.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d487aa071b5f64da6f19a3e848e3578944b726ee5a4854b82172f02aa876bfdc"
+checksum = "deec109607ca693028562ed836a5f1c4b8bd77755c4e132fc5ce11b0b6211ae7"
 dependencies = [
  "shlex",
 ]
@@ -739,9 +736,9 @@ checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
 
 [[package]]
 name = "h2"
-version = "0.4.10"
+version = "0.4.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9421a676d1b147b16b82c9225157dc629087ef8ec4d5e2960f9437a90dac0a5"
+checksum = "17da50a276f1e01e0ba6c029e47b7100754904ee8a278f886546e98575380785"
 dependencies = [
  "atomic-waker",
  "bytes",
@@ -856,9 +853,9 @@ dependencies = [
 
 [[package]]
 name = "hyper-util"
-version = "0.1.14"
+version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc2fdfdbff08affe55bb779f33b053aa1fe5dd5b54c257343c17edfa55711bdb"
+checksum = "8d9b05277c7e8da2c93a568989bb6207bef0112e8d17df7a6eda4a3cf143bc5e"
 dependencies = [
  "bytes",
  "futures-channel",
@@ -869,7 +866,7 @@ dependencies = [
  "hyper",
  "libc",
  "pin-project-lite",
- "socket2",
+ "socket2 0.6.0",
  "tokio",
  "tower-service",
  "tracing",
@@ -883,6 +880,17 @@ checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown",
+]
+
+[[package]]
+name = "io-uring"
+version = "0.7.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d93587f37623a1a17d94ef2bc9ada592f5465fe7732084ab7beefabe5c77c0c4"
+dependencies = [
+ "bitflags",
+ "cfg-if",
+ "libc",
 ]
 
 [[package]]
@@ -1230,9 +1238,9 @@ checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
 
 [[package]]
 name = "rand"
-version = "0.9.1"
+version = "0.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fbfd9d094a40bf3ae768db9361049ace4c0e04a4fd6b359518bd7b73a73dd97"
+checksum = "6db2770f06117d490610c7488547d543617b21bfa07796d7a12f6f1bd53850d1"
 dependencies = [
  "rand_chacha",
  "rand_core",
@@ -1372,6 +1380,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "socket2"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "233504af464074f9d066d7b5416c5f9b894a5862a6506e306f7b816cdd6f1807"
+dependencies = [
+ "libc",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
 name = "spin_sleep"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1449,16 +1467,18 @@ dependencies = [
 
 [[package]]
 name = "tokio"
-version = "1.45.1"
+version = "1.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75ef51a33ef1da925cea3e4eb122833cb377c61439ca401b770f54902b806779"
+checksum = "0cc3a2344dafbe23a245241fe8b09735b521110d30fcefbbd5feb1797ca35d17"
 dependencies = [
  "backtrace",
  "bytes",
+ "io-uring",
  "libc",
  "mio",
  "pin-project-lite",
- "socket2",
+ "slab",
+ "socket2 0.5.10",
  "tokio-macros",
  "windows-sys 0.52.0",
 ]
@@ -1517,7 +1537,7 @@ dependencies = [
  "percent-encoding",
  "pin-project",
  "prost",
- "socket2",
+ "socket2 0.5.10",
  "tokio",
  "tokio-stream",
  "tower",

@@ -82,5 +82,5 @@ pub unsafe extern "C" fn AUTDGainGroup(
             )
         })
         .collect();
-    Group { key_map, gain_map }.into()
+    Group::new(key_map, gain_map).into()
 }

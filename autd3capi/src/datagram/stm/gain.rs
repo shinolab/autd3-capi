@@ -1,6 +1,8 @@
+use std::num::NonZeroU16;
+
 use autd3capi_driver::{
     autd3::core::{datagram::Segment, sampling_config::SamplingConfig},
-    driver::datagram::{BoxedGain, GainSTM, GainSTMOption, WithLoopBehavior, WithSegment},
+    driver::datagram::{BoxedGain, GainSTM, GainSTMOption, WithFiniteLoop, WithSegment},
     *,
 };
 
@@ -32,24 +34,24 @@ pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithSegment(
     WithSegment {
         inner: unsafe { *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>) },
         segment,
-        transition_mode: transition_mode.into(),
+        transition_mode,
     }
     .into()
 }
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithLoopBehavior(
+pub unsafe extern "C" fn AUTDSTMGainIntoDatagramWithFiniteLoop(
     stm: GainSTMPtr,
     segment: Segment,
     transition_mode: TransitionModeWrap,
-    loop_behavior: LoopBehavior,
+    loop_count: u16,
 ) -> DatagramPtr {
-    WithLoopBehavior {
+    WithFiniteLoop {
         inner: unsafe { *take!(stm, GainSTM<Vec<BoxedGain>, SamplingConfig>) },
         segment,
-        transition_mode: transition_mode.into(),
-        loop_behavior: loop_behavior.into(),
+        transition_mode,
+        loop_count: NonZeroU16::new(loop_count).unwrap(),
     }
     .into()
 }

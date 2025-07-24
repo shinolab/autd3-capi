@@ -3,9 +3,10 @@
 use autd3::core::{datagram::Segment, gain::Drive};
 use autd3capi_driver::{
     autd3::link::audit::{Audit, version::V12_1},
+    core::datagram::PulseWidth,
+    driver::autd3_device::AUTD3,
     *,
 };
-use driver::autd3_device::AUTD3;
 
 #[unsafe(no_mangle)]
 #[must_use]
@@ -210,15 +211,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaSoundSpeed(
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopBehavior(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaStmLoopCount(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
-) -> LoopBehavior {
+) -> u16 {
     audit.cast::<Audit<V12_1>>()[idx as usize]
         .fpga()
-        .stm_loop_behavior(segment)
-        .into()
+        .stm_loop_count(segment)
 }
 
 #[unsafe(no_mangle)]
@@ -263,15 +263,14 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationBuffer(
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopBehavior(
+pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationLoopCount(
     audit: LinkPtr,
     segment: Segment,
     idx: u16,
-) -> LoopBehavior {
+) -> u16 {
     audit.cast::<Audit<V12_1>>()[idx as usize]
         .fpga()
-        .modulation_loop_behavior(segment)
-        .into()
+        .modulation_loop_count(segment)
 }
 
 #[unsafe(no_mangle)]
@@ -297,12 +296,11 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
 pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     audit: LinkPtr,
     idx: u16,
-    dst: *mut u16,
+    dst: *mut u64,
 ) {
-    use autd3::core::datagram::PulseWidth;
     unsafe {
         let dst = std::slice::from_raw_parts_mut(
-            dst as *mut PulseWidth<9, u16>,
+            dst as *mut PulseWidth,
             driver::firmware::v12_1::fpga::PWE_BUF_SIZE,
         );
         let fpga = audit.cast::<Audit<V12_1>>()[idx as usize].fpga();
@@ -317,6 +315,6 @@ mod tests {
 
     #[test]
     fn test_pulse_width_size() {
-        assert_eq!(size_of::<u16>(), size_of::<PulseWidth<9, u16>>());
+        assert_eq!(size_of::<u64>(), size_of::<PulseWidth>());
     }
 }

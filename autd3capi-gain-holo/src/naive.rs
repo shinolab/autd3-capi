@@ -3,7 +3,7 @@
 use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
-    autd3::core::acoustics::directivity::{Directivity, Sphere, T4010A1},
+    autd3::core::acoustics::directivity::{Sphere, T4010A1},
     *,
 };
 
@@ -12,11 +12,10 @@ pub struct NaiveOption {
     pub constraint: EmissionConstraintWrap,
 }
 
-impl<T: Directivity> From<NaiveOption> for autd3_gain_holo::NaiveOption<T> {
+impl From<NaiveOption> for autd3_gain_holo::NaiveOption {
     fn from(option: NaiveOption) -> Self {
         autd3_gain_holo::NaiveOption {
             constraint: option.constraint.into(),
-            __phantom: std::marker::PhantomData,
         }
     }
 }
@@ -30,12 +29,12 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
     size: u32,
     option: NaiveOption,
 ) -> GainPtr {
-    let (foci, backend) =
-        unsafe { create_holo!(NalgebraBackend, Sphere, backend, points, amps, size) };
-    Naive {
+    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
+    Naive::<Sphere, NalgebraBackend> {
         foci,
         backend,
         option: option.into(),
+        directivity: std::marker::PhantomData,
     }
     .into()
 }
@@ -49,12 +48,12 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
     size: u32,
     option: NaiveOption,
 ) -> GainPtr {
-    let (foci, backend) =
-        unsafe { create_holo!(NalgebraBackend, T4010A1, backend, points, amps, size) };
-    Naive {
+    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
+    Naive::<T4010A1, NalgebraBackend> {
         foci,
         backend,
         option: option.into(),
+        directivity: std::marker::PhantomData,
     }
     .into()
 }
@@ -62,5 +61,5 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainNaiveIsDefault(option: NaiveOption) -> bool {
-    autd3_gain_holo::NaiveOption::<Sphere>::default() == option.into()
+    autd3_gain_holo::NaiveOption::default() == option.into()
 }

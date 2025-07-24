@@ -1,6 +1,8 @@
+use std::num::NonZeroU16;
+
 use autd3capi_driver::{
     core::{datagram::Segment, sampling_config::SamplingConfig},
-    driver::datagram::{ControlPoints, FociSTM, WithLoopBehavior, WithSegment},
+    driver::datagram::{ControlPoints, FociSTM, WithFiniteLoop, WithSegment},
     *,
 };
 
@@ -42,7 +44,7 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
                 #(N => WithSegment {
                     inner: unsafe { *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>) },
                     segment,
-                    transition_mode: transition_mode.into(),
+                    transition_mode
                 }
                 .into(),)*
             _ => unreachable!(),
@@ -52,20 +54,20 @@ pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithSegment(
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithLoopBehavior(
+pub unsafe extern "C" fn AUTDSTMFociIntoDatagramWithFiniteLoop(
     stm: FociSTMPtr,
     n: u8,
     segment: Segment,
     transition_mode: TransitionModeWrap,
-    loop_behavior: LoopBehavior,
+    loop_count: u16,
 ) -> DatagramPtr {
     seq_macro::seq!(N in 1..=8 {
         match n {
-                #(N => WithLoopBehavior {
+                #(N => WithFiniteLoop {
                     inner: unsafe { *take!(stm, FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>) },
                     segment,
-                    transition_mode: transition_mode.into(),
-                    loop_behavior: loop_behavior.into(),
+                    transition_mode,
+                    loop_count: NonZeroU16::new(loop_count).unwrap(),
                 }
                 .into(),)*
             _ => unreachable!(),

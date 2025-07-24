@@ -22,11 +22,12 @@ impl From<DatagramPtr> for Box<BoxedDatagram> {
     }
 }
 
-impl<E, G: OperationGenerator + 'static, D: Datagram<G = G, Error = E> + 'static> From<D>
-    for DatagramPtr
+impl<E, G: OperationGenerator<'static> + 'static, D: Datagram<'static, G = G, Error = E> + 'static>
+    From<D> for DatagramPtr
 where
     AUTDDriverError: From<E>,
-    AUTDDriverError: From<<G::O1 as Operation>::Error> + From<<G::O2 as Operation>::Error>,
+    AUTDDriverError:
+        From<<G::O1 as Operation<'static>>::Error> + From<<G::O2 as Operation<'static>>::Error>,
 {
     fn from(d: D) -> Self {
         Self(Box::into_raw(Box::new(BoxedDatagram::new(d))) as _)

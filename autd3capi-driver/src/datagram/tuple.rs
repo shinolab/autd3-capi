@@ -27,11 +27,11 @@ impl std::fmt::Debug for DynDatagramTuple {
 }
 
 pub struct DOperationGeneratorTuple {
-    pub g1: <BoxedDatagram as Datagram>::G,
-    pub g2: <BoxedDatagram as Datagram>::G,
+    pub g1: <BoxedDatagram as Datagram<'static>>::G,
+    pub g2: <BoxedDatagram as Datagram<'static>>::G,
 }
 
-impl OperationGenerator for DOperationGeneratorTuple {
+impl OperationGenerator<'static> for DOperationGeneratorTuple {
     type O1 = BoxedOperation;
     type O2 = BoxedOperation;
 
@@ -46,7 +46,7 @@ impl OperationGenerator for DOperationGeneratorTuple {
     }
 }
 
-impl Datagram for DynDatagramTuple {
+impl Datagram<'static> for DynDatagramTuple {
     type G = DOperationGeneratorTuple;
     type Error = AUTDDriverError;
 
