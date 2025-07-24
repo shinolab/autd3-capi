@@ -14,6 +14,9 @@ pub unsafe extern "C" fn AUTDPulseWidthFromDuty(duty: f32) -> ResultPulseWidth {
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDPulseWidthPulseWidth(pulse_width: PulseWidth) -> ResultU16 {
-    pulse_width.pulse_width::<u16>(512).into()
+pub unsafe extern "C" fn AUTDPulseWidthPulseWidth(
+    pulse_width: PulseWidth,
+    period: u32,
+) -> ResultU16 {
+    pulse_width.pulse_width::<u16>(period).into()
 }
