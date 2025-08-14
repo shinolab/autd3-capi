@@ -1,4 +1,4 @@
-use autd3capi_driver::{ResultPulseWidth, ResultU16, autd3::core::datagram::PulseWidth};
+use autd3capi_driver::{ResultPulseWidth, ResultU16, autd3::core::firmware::PulseWidth};
 
 #[unsafe(no_mangle)]
 #[must_use]

@@ -3,7 +3,7 @@ use std::num::NonZeroU16;
 use autd3capi_driver::{Duration, ResultDuration};
 use autd3capi_driver::{
     ResultF32, ResultSamplingConfig, ResultU16, SamplingConfigWrap,
-    autd3::core::{derive::SamplingConfigError, sampling_config::SamplingConfig},
+    autd3::core::{derive::SamplingConfigError, firmware::SamplingConfig},
     driver::common::Hz,
 };
 

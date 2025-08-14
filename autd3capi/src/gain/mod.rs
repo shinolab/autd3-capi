@@ -1,4 +1,4 @@
-use autd3capi_driver::{autd3::core::datagram::Segment, *};
+use autd3capi_driver::{autd3::core::firmware::Segment, *};
 use driver::datagram::{BoxedGain, WithSegment};
 
 pub mod bessel;

@@ -1,5 +1,5 @@
 use autd3capi_driver::{
-    autd3::{core::gain::Drive, gain::Custom},
+    autd3::{core::firmware::Drive, gain::Custom},
     *,
 };
 

@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GPIOOutputTypeWrap, GeometryPtr,
-    autd3::{core::datagram::GPIOOut, driver::geometry::Device},
+    autd3::{core::firmware::GPIOOut, driver::geometry::Device},
     driver::{datagram::GPIOOutputType, datagram::GPIOOutputs},
 };
 

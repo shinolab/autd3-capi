@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GeometryPtr,
-    autd3::{core::gain::Phase, driver::geometry::Device},
+    autd3::{core::firmware::Phase, driver::geometry::Device},
     driver::{datagram::PhaseCorrection, geometry::Transducer},
 };
 

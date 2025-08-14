@@ -1,11 +1,10 @@
 use autd3::{
     core::{
-        datagram::{
-            GPIOIn,
-            internal::{HasFiniteLoop, HasSegment},
+        datagram::internal::{HasFiniteLoop, HasSegment},
+        firmware::{
+            GPIOIn, SamplingConfig,
             transition_mode::{self, TransitionMode, TransitionModeParams},
         },
-        sampling_config::SamplingConfig,
     },
     driver::{
         datagram::{ControlPoints, FociSTM, GainSTM},

@@ -1,7 +1,7 @@
 use std::num::NonZeroU16;
 
 use autd3capi_driver::{
-    autd3::core::{datagram::Segment, sampling_config::SamplingConfig},
+    autd3::core::firmware::{SamplingConfig, Segment},
     driver::datagram::{BoxedGain, GainSTM, GainSTMOption, WithFiniteLoop, WithSegment},
     *,
 };

@@ -1,6 +1,6 @@
 use std::num::NonZeroU16;
 
-use autd3::core::{datagram::Segment, modulation::Modulation};
+use autd3::core::{firmware::Segment, modulation::Modulation};
 use autd3capi_driver::*;
 use driver::datagram::{BoxedModulation, WithFiniteLoop, WithSegment};
 

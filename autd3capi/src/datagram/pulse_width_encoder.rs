@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GeometryPtr,
-    autd3::{core::gain::Intensity, driver::geometry::Device, prelude::PulseWidth},
+    autd3::{core::firmware::Intensity, driver::geometry::Device, prelude::PulseWidth},
     driver::datagram::PulseWidthEncoder,
 };
 
