@@ -1,7 +1,8 @@
 use autd3::{
     core::{
-        datagram::{Datagram, DeviceFilter, FirmwareLimits},
+        datagram::{Datagram, DeviceMask},
         environment::Environment,
+        firmware::FirmwareLimits,
         geometry::Geometry,
     },
     driver::{
@@ -54,7 +55,7 @@ impl Datagram<'static> for DynDatagramTuple {
         self,
         geometry: &Geometry,
         env: &Environment,
-        filter: &DeviceFilter,
+        filter: &DeviceMask,
         limits: &FirmwareLimits,
     ) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {

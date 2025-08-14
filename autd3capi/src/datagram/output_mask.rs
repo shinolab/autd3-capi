@@ -1,7 +1,7 @@
 use autd3capi_driver::{
     ConstPtr, DatagramPtr, GeometryPtr,
     autd3::driver::geometry::Device,
-    core::datagram::Segment,
+    core::firmware::Segment,
     driver::{datagram::OutputMask, geometry::Transducer},
 };
 

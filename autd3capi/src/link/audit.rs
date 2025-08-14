@@ -1,9 +1,9 @@
 #![allow(clippy::missing_safety_doc)]
 
-use autd3::core::{datagram::Segment, gain::Drive};
+use autd3::core::firmware::{Drive, Segment};
 use autd3capi_driver::{
     autd3::link::audit::{Audit, version::V12_1},
-    core::datagram::PulseWidth,
+    core::firmware::PulseWidth,
     driver::autd3_device::AUTD3,
     *,
 };
@@ -283,7 +283,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
 ) {
     unsafe {
         let dst = std::slice::from_raw_parts_mut(drive, AUTD3::NUM_TRANS_IN_UNIT);
-        let mut phase_buf = vec![core::gain::Phase::ZERO; AUTD3::NUM_TRANS_IN_UNIT];
+        let mut phase_buf = vec![core::firmware::Phase::ZERO; AUTD3::NUM_TRANS_IN_UNIT];
         let mut mask_buf = vec![true; AUTD3::NUM_TRANS_IN_UNIT];
         audit.cast::<Audit<V12_1>>()[idx as usize]
             .fpga()
@@ -311,7 +311,7 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use autd3::core::datagram::PulseWidth;
+    use autd3::core::firmware::PulseWidth;
 
     #[test]
     fn test_pulse_width_size() {

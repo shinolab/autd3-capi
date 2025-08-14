@@ -1,7 +1,7 @@
 #![allow(clippy::missing_safety_doc)]
 
 use autd3_gain_holo::*;
-use autd3capi_driver::autd3::core::gain::Intensity;
+use autd3capi_driver::autd3::core::firmware::Intensity;
 
 #[repr(u8)]
 pub enum EmissionConstraintTag {

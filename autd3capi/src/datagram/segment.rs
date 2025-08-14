@@ -1,6 +1,6 @@
 use autd3capi_driver::{
     DatagramPtr, TransitionModeWrap,
-    autd3::core::datagram::Segment,
+    autd3::core::firmware::Segment,
     driver::datagram::{
         SwapSegmentFociSTM, SwapSegmentGain, SwapSegmentGainSTM, SwapSegmentModulation,
     },

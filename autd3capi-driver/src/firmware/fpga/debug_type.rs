@@ -44,7 +44,10 @@ impl Default for GPIOOutputTypeWrap {
 }
 
 impl GPIOOutputTypeWrap {
-    pub fn convert(self, dev: &Device) -> Option<autd3::driver::datagram::GPIOOutputType> {
+    pub fn convert<'a>(
+        self,
+        dev: &'a Device,
+    ) -> Option<autd3::driver::datagram::GPIOOutputType<'a>> {
         match self.ty {
             GPIOOutputTypeTag::None => None,
             GPIOOutputTypeTag::BaseSignal => {

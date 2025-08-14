@@ -1,4 +1,4 @@
-use autd3capi_driver::{core::gain::Phase, driver::common::rad};
+use autd3capi_driver::{core::firmware::Phase, driver::common::rad};
 
 #[unsafe(no_mangle)]
 #[must_use]
