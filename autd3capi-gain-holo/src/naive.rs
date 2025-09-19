@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
+use crate::{EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     autd3::core::acoustics::directivity::{Sphere, T4010A1},
@@ -23,16 +23,13 @@ impl From<NaiveOption> for autd3_gain_holo::NaiveOption {
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
-    backend: BackendPtr,
     points: *const Point3,
     amps: *const f32,
     size: u32,
     option: NaiveOption,
 ) -> GainPtr {
-    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
-    Naive::<Sphere, NalgebraBackend> {
-        foci,
-        backend,
+    Naive::<Sphere> {
+        foci: unsafe { create_holo!(points, amps, size) },
         option: option.into(),
         directivity: std::marker::PhantomData,
     }
@@ -42,16 +39,13 @@ pub unsafe extern "C" fn AUTDGainHoloNaiveSphere(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloNaiveT4010A1(
-    backend: BackendPtr,
     points: *const Point3,
     amps: *const f32,
     size: u32,
     option: NaiveOption,
 ) -> GainPtr {
-    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
-    Naive::<T4010A1, NalgebraBackend> {
-        foci,
-        backend,
+    Naive::<T4010A1> {
+        foci: unsafe { create_holo!(points, amps, size) },
         option: option.into(),
         directivity: std::marker::PhantomData,
     }

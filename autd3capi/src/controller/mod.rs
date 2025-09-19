@@ -80,7 +80,7 @@ pub unsafe extern "C" fn AUTDControllerFPGAState(mut cnt: ControllerPtr) -> Resu
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDControllerFPGAStateGet(p: FPGAStateListPtr, idx: u32) -> i16 {
-    p[idx as usize].map_or(-1, |v| v.state() as i16)
+    p[idx as usize].map_or(-1, |v| v.bits() as i16)
 }
 
 #[unsafe(no_mangle)]

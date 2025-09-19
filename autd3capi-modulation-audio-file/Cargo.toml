@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-autd3-modulation-audio-file = { workspace = true }
+autd3-modulation-audio-file = { workspace = true, features = ["wav", "csv"] }

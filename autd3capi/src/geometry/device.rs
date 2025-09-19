@@ -19,7 +19,7 @@ pub unsafe extern "C" fn AUTDDeviceNumTransducers(dev: DevicePtr) -> u32 {
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
-    *dev.center()
+    dev.center()
 }
 
 #[unsafe(no_mangle)]

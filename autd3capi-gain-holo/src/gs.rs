@@ -1,6 +1,6 @@
 use std::num::NonZeroUsize;
 
-use crate::{BackendPtr, EmissionConstraintWrap, create_holo};
+use crate::{EmissionConstraintWrap, create_holo};
 use autd3_gain_holo::*;
 use autd3capi_driver::{
     autd3::core::acoustics::directivity::{Sphere, T4010A1},
@@ -25,16 +25,13 @@ impl From<GSOption> for autd3_gain_holo::GSOption {
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGSSphere(
-    backend: BackendPtr,
     points: *const Point3,
     amps: *const f32,
     size: u32,
     option: GSOption,
 ) -> GainPtr {
-    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
-    GS::<Sphere, NalgebraBackend> {
-        foci,
-        backend,
+    GS::<Sphere> {
+        foci: unsafe { create_holo!(points, amps, size) },
         option: option.into(),
         directivity: std::marker::PhantomData,
     }
@@ -44,16 +41,13 @@ pub unsafe extern "C" fn AUTDGainHoloGSSphere(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainHoloGST4010A1(
-    backend: BackendPtr,
     points: *const Point3,
     amps: *const f32,
     size: u32,
     option: GSOption,
 ) -> GainPtr {
-    let (foci, backend) = unsafe { create_holo!(NalgebraBackend, backend, points, amps, size) };
-    GS::<T4010A1, NalgebraBackend> {
-        foci,
-        backend,
+    GS::<T4010A1> {
+        foci: unsafe { create_holo!(points, amps, size) },
         option: option.into(),
         directivity: std::marker::PhantomData,
     }

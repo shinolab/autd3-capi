@@ -4,7 +4,7 @@ pub mod device;
 pub mod rotation;
 pub mod transducer;
 
-use autd3capi_driver::*;
+use autd3capi_driver::{core::derive::Geometry, *};
 use driver::{
     autd3_device::AUTD3,
     geometry::{Quaternion, UnitQuaternion},
@@ -13,7 +13,9 @@ use driver::{
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGeometry(cnt: ControllerPtr) -> GeometryPtr {
-    GeometryPtr(cnt.geometry() as *const _ as _)
+    use std::ops::Deref;
+    let geometry: &Geometry = cnt.deref();
+    GeometryPtr(geometry.as_ptr() as _)
 }
 
 #[unsafe(no_mangle)]
