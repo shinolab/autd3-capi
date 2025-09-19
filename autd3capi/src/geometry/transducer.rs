@@ -10,5 +10,5 @@ pub unsafe extern "C" fn AUTDTransducer(dev: DevicePtr, idx: u8) -> TransducerPt
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDTransducerPosition(tr: TransducerPtr) -> Point3 {
-    *tr.position()
+    tr.position()
 }

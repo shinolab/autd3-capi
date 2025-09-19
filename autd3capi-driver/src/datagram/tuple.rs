@@ -21,12 +21,6 @@ pub struct DynDatagramTuple {
     pub d2: BoxedDatagram,
 }
 
-impl std::fmt::Debug for DynDatagramTuple {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({:?}, {:?})", self.d1, self.d2)
-    }
-}
-
 pub struct DOperationGeneratorTuple {
     pub g1: <BoxedDatagram as Datagram<'static>>::G,
     pub g2: <BoxedDatagram as Datagram<'static>>::G,

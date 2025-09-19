@@ -1,6 +1,6 @@
 #![allow(clippy::missing_safety_doc)]
 
-use std::{convert::Infallible, ffi::c_char};
+use std::ffi::c_char;
 
 use autd3capi_driver::*;
 
@@ -19,12 +19,16 @@ pub unsafe extern "C" fn AUTDModulationAudioFileCsv(
     path: *const c_char,
     sampling_config: SamplingConfigWrap,
     delimiter: u8,
+    has_headers: bool,
 ) -> ResultModulation {
     let path = validate_cstr!(path, ModulationPtr, ResultModulation);
-    Result::<_, Infallible>::Ok(Csv {
-        path: path.to_owned(),
+    Csv::new(
+        path,
         sampling_config,
-        option: CsvOption { delimiter },
-    })
+        CsvOption {
+            delimiter,
+            has_headers,
+        },
+    )
     .into()
 }

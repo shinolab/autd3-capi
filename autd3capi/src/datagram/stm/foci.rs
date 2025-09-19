@@ -20,7 +20,7 @@ pub unsafe extern "C" fn AUTDSTMFoci(
                     #(N => {
                         let points = points.0 as *const ControlPoints<N>;
                         FociSTM::<N, Vec<_>, SamplingConfig> {
-                            foci: (0..size as usize).map(|i| (points.add(i).read())).collect(),
+                            foci: (0..size as usize).map(|i| points.add(i).read()).collect(),
                             config: config.into(),
                         }
                         .into()
