@@ -162,9 +162,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-modulation-audio-file"
-version = "36.0.0-alpha.2"
+version = "36.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1a6a4f276f0214d9bca60444f50fbca980043bd8867c929dcb974c69b957031"
+checksum = "c6dea6ab697b68201a62027507e8c71b9d90a224fcd76901b171382f006a3e9f"
 dependencies = [
  "autd3-core",
  "csv",
