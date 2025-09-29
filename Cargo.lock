@@ -136,9 +136,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-link-simulator"
-version = "36.0.0-alpha.2"
+version = "36.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ebb3b655d0ed94ff8cadfc65cf340c42a4bf56684d38b9fdd4061ffb78e8bfc"
+checksum = "9af8cf575aaa5f136584c2b1baa4c30a25be632ed1d0f3aad9608a66d9c2bfb6"
 dependencies = [
  "autd3-core",
  "autd3-protobuf",
@@ -174,9 +174,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-protobuf"
-version = "36.0.0-alpha.2"
+version = "36.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88dff9d0b10d07af7993edd6c61ab5e580ad7c4e94ebeb849211af45345b6ae8"
+checksum = "2200284ccbee4d0f22cae12ef6dc1158c996e8f4cab0df436a92c4e2fb5f4c48"
 dependencies = [
  "autd3-core",
  "autd3-driver",
