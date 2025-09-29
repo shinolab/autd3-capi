@@ -124,9 +124,9 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "36.0.0-alpha.2"
+version = "36.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "329f32269b0adca49fb94f2e3dbd83c355948bf52ab64b929648319b4a772e5f"
+checksum = "0986dd23c9da0c8a85bf4a1295970e5f01dcfb16468275e6761b601e8e63dfa4"
 dependencies = [
  "autd3-core",
  "nalgebra",
