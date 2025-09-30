@@ -1,0 +1,15 @@
+[package]
+name = "autd3capi-link-remote"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+
+[lib]
+crate-type = ["cdylib"]
+
+
+[dependencies]
+autd3-link-remote = { workspace = true, features = ["blocking"] }
+autd3capi-driver = { workspace = true }
