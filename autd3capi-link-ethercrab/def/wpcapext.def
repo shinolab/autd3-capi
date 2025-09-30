@@ -1,0 +1,4 @@
+LIBRARY wpcapext
+
+EXPORTS
+pcap_setmintocopy

@@ -315,6 +315,7 @@ version = "36.0.1"
 dependencies = [
  "autd3-link-ethercrab",
  "autd3capi-driver",
+ "cc",
  "ethercrab",
  "tracing-subscriber",
 ]
