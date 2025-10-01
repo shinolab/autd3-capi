@@ -91,9 +91,9 @@ impl TryFrom<EtherCrabOption> for EtherCrabOptionFull {
                 main_device_config: MainDeviceConfig {
                     dc_static_sync_iterations: value.main_device_config_dc_static_sync_iterations,
                     retry_behaviour: match value.main_device_config_retry_behaviour {
-                        0 => ethercrab::RetryBehaviour::None,
-                        u64::MAX => ethercrab::RetryBehaviour::Forever,
-                        v => ethercrab::RetryBehaviour::Count(v as _),
+                        0 => RetryBehaviour::None,
+                        u64::MAX => RetryBehaviour::Forever,
+                        v => RetryBehaviour::Count(v as _),
                     },
                 },
                 dc_configuration: DcConfiguration {
@@ -165,28 +165,9 @@ pub unsafe extern "C" fn AUTDLinkEtherCrab(
 #[must_use]
 #[allow(unused_variables)]
 pub unsafe extern "C" fn AUTDLinkEtherCrabIsDefault(option: EtherCrabOption) -> bool {
-    option.try_into().is_ok_and(|option: EtherCrabOptionFull| {
-        let default = EtherCrabOptionFull::default();
-        option.ifname == default.ifname
-            && option.buf_size == default.buf_size
-            && option.timeouts.state_transition == default.timeouts.state_transition
-            && option.timeouts.pdu == default.timeouts.pdu
-            && option.timeouts.eeprom == default.timeouts.eeprom
-            && option.timeouts.wait_loop_delay == default.timeouts.wait_loop_delay
-            && option.timeouts.mailbox_echo == default.timeouts.mailbox_echo
-            && option.timeouts.mailbox_response == default.timeouts.mailbox_response
-            && option.main_device_config == default.main_device_config
-            && option.dc_configuration.start_delay == default.dc_configuration.start_delay
-            && option.dc_configuration.sync0_period == default.dc_configuration.sync0_period
-            && option.dc_configuration.sync0_shift == default.dc_configuration.sync0_shift
-            && option.state_check_period == default.state_check_period
-            && option.sync_tolerance == default.sync_tolerance
-            && option.sync_timeout == default.sync_timeout
-            && option.tx_rx_thread_builder == default.tx_rx_thread_builder
-            && option.tx_rx_thread_affinity == default.tx_rx_thread_affinity
-            && option.main_thread_builder == default.main_thread_builder
-            && option.main_thread_affinity == default.main_thread_affinity
-    })
+    option
+        .try_into()
+        .is_ok_and(|option: EtherCrabOptionFull| option == EtherCrabOptionFull::default())
 }
 
 #[unsafe(no_mangle)]
