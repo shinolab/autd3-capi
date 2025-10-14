@@ -14,31 +14,6 @@ use autd3_link_ethercrab::{
 
 use crate::thread_builder::ThreadPriorityPtr;
 
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDLinkEtherCrabTracingInit() {
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
-}
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C" fn AUTDLinkEtherCrabTracingInitWithFile(path: *const c_char) -> ResultStatus {
-    let path = validate_cstr!(path, AUTDStatus, ResultStatus);
-    std::fs::File::options()
-        .append(true)
-        .create(true)
-        .open(path)
-        .map(|f| {
-            tracing_subscriber::fmt()
-                .with_writer(f)
-                .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-                .with_ansi(false)
-                .init();
-            AUTDStatus::AUTDTrue
-        })
-        .into()
-}
-
 #[repr(C)]
 pub struct EtherCrabOption {
     pub ifname: *const c_char,
@@ -180,7 +155,7 @@ pub unsafe extern "C" fn AUTDLinkEtherCrabStatusGetMsg(src: Status, dst: *mut c_
         }
         let c_string = CString::new(msg).unwrap();
         let c_str: &CStr = c_string.as_c_str();
-        libc::strcpy(dst, c_str.as_ptr());
+        autd3capi_driver::strcpy(dst, c_str.as_ptr());
         0
     }
 }

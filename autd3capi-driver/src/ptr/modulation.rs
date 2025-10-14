@@ -4,7 +4,7 @@ use autd3::{core::modulation::Modulation, driver::datagram::BoxedModulation};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct ModulationPtr(pub *const libc::c_void);
+pub struct ModulationPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(ModulationPtr);
 

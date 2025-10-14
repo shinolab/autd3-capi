@@ -10,7 +10,6 @@ repository = { workspace = true }
 [dependencies]
 autd3 = { workspace = true }
 autd3-core = { workspace = true }
-libc = { workspace = true }
 
 [features]
 unity = ["autd3/left_handed", "autd3/use_meter"]

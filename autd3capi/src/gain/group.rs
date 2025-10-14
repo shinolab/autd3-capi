@@ -10,7 +10,7 @@ use driver::{
 type M = HashMap<usize, Vec<i32>>;
 
 #[repr(C)]
-pub struct GroupGainMapPtr(pub *const libc::c_void);
+pub struct GroupGainMapPtr(pub *const std::ffi::c_void);
 
 #[unsafe(no_mangle)]
 #[must_use]

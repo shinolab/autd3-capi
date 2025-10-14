@@ -2,17 +2,14 @@ use autd3::{
     core::datagram::Datagram,
     driver::{
         error::AUTDDriverError,
-        firmware::{
-            auto::operation::OperationGenerator,
-            driver::{BoxedDatagram, Operation},
-        },
+        firmware::operation::{BoxedDatagram, Operation, OperationGenerator},
     },
 };
 
 use crate::{impl_ptr, take};
 
 #[repr(C)]
-pub struct DatagramPtr(pub *const libc::c_void);
+pub struct DatagramPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(DatagramPtr);
 

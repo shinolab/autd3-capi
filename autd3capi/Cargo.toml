@@ -11,5 +11,3 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-libc = { workspace = true }
-seq-macro = { workspace = true }

@@ -9,7 +9,6 @@ repository = { workspace = true }
 [lib]
 crate-type = ["cdylib"]
 
-
 [dependencies]
-autd3-link-remote = { workspace = true, features = ["blocking"] }
+autd3-link-remote = { workspace = true }
 autd3capi-driver = { workspace = true }

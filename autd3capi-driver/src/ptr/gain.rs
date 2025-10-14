@@ -5,7 +5,7 @@ use crate::{ConstPtr, impl_ptr, impl_result};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct GainPtr(pub *const libc::c_void);
+pub struct GainPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(GainPtr);
 

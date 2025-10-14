@@ -1,10 +1,8 @@
-use autd3capi_driver::*;
-
 use autd3_link_ethercrab::thread_priority::{ThreadPriority, ThreadPriorityValue};
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct ThreadPriorityPtr(pub *const libc::c_void);
+pub struct ThreadPriorityPtr(pub *const std::ffi::c_void);
 
 impl From<ThreadPriority> for ThreadPriorityPtr {
     fn from(v: ThreadPriority) -> Self {
