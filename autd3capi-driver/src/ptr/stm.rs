@@ -6,7 +6,7 @@ use autd3::{
 use crate::impl_ptr;
 
 #[repr(C)]
-pub struct FociSTMPtr(pub *const libc::c_void);
+pub struct FociSTMPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(FociSTMPtr);
 
@@ -17,7 +17,7 @@ impl<const N: usize> From<FociSTM<N, Vec<ControlPoints<N>>, SamplingConfig>> for
 }
 
 #[repr(C)]
-pub struct GainSTMPtr(pub *const libc::c_void);
+pub struct GainSTMPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(GainSTMPtr);
 

@@ -1,43 +1,29 @@
 [workspace]
 
-members = [
-    "autd3capi",
-    "autd3capi-driver",
-    "autd3capi-gain-holo",
-    "autd3capi-link-simulator",
-    "autd3capi-link-ethercrab",
-    "autd3capi-link-remote",
-    "autd3capi-link-twincat",
-    "autd3capi-modulation-audio-file",
-]
+members = ["autd3capi", "autd3capi-driver", "autd3capi-gain-holo", "autd3capi-link-simulator", "autd3capi-link-remote", "autd3capi-link-twincat"]
 
 exclude = ["tools"]
 
 resolver = "3"
 
 [workspace.package]
-version = "36.0.2"
+version = "37.0.0-alpha.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "36.0.2", default-features = false, features = ["gain", "modulation", "link-audit", "link-nop"] }
-autd3-core = { version = "36.0.2", default-features = false }
-autd3-driver = { version = "36.0.2", default-features = false }
-autd3-gain-holo = { version = "36.0.2", default-features = false }
-autd3-link-ethercrab = { version = "36.0.2", default-features = false }
-autd3-link-remote = { version = "36.0.2", default-features = false }
-autd3-link-simulator = { version = "36.0.2", default-features = false }
-autd3-link-twincat = { version = "36.0.2", default-features = false }
-autd3-modulation-audio-file = { version = "36.0.2", default-features = false }
+autd3 = { version = "37.0.0-alpha.0", default-features = false, features = ["gain", "modulation", "link-audit", "link-nop"] }
+autd3-core = { version = "37.0.0-alpha.0", default-features = false }
+autd3-driver = { version = "37.0.0-alpha.0", default-features = false }
+autd3-gain-holo = { version = "37.0.0-alpha.0", default-features = false }
+autd3-link-remote = { version = "37.0.0-alpha.0", default-features = false }
+autd3-link-simulator = { version = "37.0.0-alpha.0", default-features = false }
+autd3-link-twincat = { version = "37.0.0-alpha.0", default-features = false }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }
-libc = { version = "=0.2.175", default-features = false }
-seq-macro = { version = "=0.3.6", default-features = false }
-tracing-subscriber = { version = "=0.3.20", default-features = false }
 
 [profile.release]
 strip = true

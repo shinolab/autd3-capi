@@ -2,18 +2,13 @@ use autd3::{
     core::{
         datagram::{Datagram, DeviceMask},
         environment::Environment,
-        firmware::FirmwareLimits,
         geometry::Geometry,
     },
     driver::{
         error::AUTDDriverError,
-        firmware::{
-            auto::operation::OperationGenerator,
-            driver::{BoxedDatagram, BoxedOperation},
-        },
+        firmware::operation::{BoxedDatagram, BoxedOperation, OperationGenerator},
         geometry::Device,
     },
-    firmware::Version,
 };
 
 pub struct DynDatagramTuple {
@@ -30,11 +25,8 @@ impl OperationGenerator<'static> for DOperationGeneratorTuple {
     type O1 = BoxedOperation;
     type O2 = BoxedOperation;
 
-    fn generate(&mut self, device: &Device, version: Version) -> Option<(Self::O1, Self::O2)> {
-        match (
-            self.g1.generate(device, version),
-            self.g2.generate(device, version),
-        ) {
+    fn generate(&mut self, device: &Device) -> Option<(Self::O1, Self::O2)> {
+        match (self.g1.generate(device), self.g2.generate(device)) {
             (Some((o1, _)), Some((o2, _))) => Some((o1, o2)),
             _ => None,
         }
@@ -50,11 +42,10 @@ impl Datagram<'static> for DynDatagramTuple {
         geometry: &Geometry,
         env: &Environment,
         filter: &DeviceMask,
-        limits: &FirmwareLimits,
     ) -> Result<Self::G, Self::Error> {
         Ok(DOperationGeneratorTuple {
-            g1: self.d1.operation_generator(geometry, env, filter, limits)?,
-            g2: self.d2.operation_generator(geometry, env, filter, limits)?,
+            g1: self.d1.operation_generator(geometry, env, filter)?,
+            g2: self.d2.operation_generator(geometry, env, filter)?,
         })
     }
 

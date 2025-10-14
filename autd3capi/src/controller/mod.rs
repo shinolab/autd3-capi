@@ -2,17 +2,17 @@ pub mod sender;
 
 use autd3::{
     Controller,
-    core::{link::Link, sleep::Sleep},
+    core::{link::Link, sleep::Sleeper},
     driver::{
         autd3_device::AUTD3,
-        firmware::{driver::TimerStrategy, v10::fpga::FPGAState, version::FirmwareVersion},
+        firmware::version::FirmwareVersion,
         geometry::{Quaternion, UnitQuaternion},
     },
 };
 
 use std::ffi::c_char;
 
-use autd3capi_driver::{autd3::firmware::Auto, *};
+use autd3capi_driver::{driver::firmware::fpga::FPGAState, *};
 
 use sender::SenderOption;
 
@@ -33,19 +33,19 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     len: u16,
     link: LinkPtr,
     option: SenderOption,
-    timer_strategy: TimerStrategyWrap,
+    sleeper: SleeperTag,
 ) -> ResultController {
     let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
     let link = unsafe { take!(link, Box<dyn Link>) };
-    Controller::open_with_option(
+    Controller::open_with(
         pos.into_iter().zip(rot).map(|(pos, rot)| AUTD3 {
             pos,
             rot: UnitQuaternion::from_quaternion(rot),
         }),
         *link,
         option.into(),
-        Box::<dyn TimerStrategy<Box<dyn Sleep>>>::from(timer_strategy),
+        Box::<dyn Sleeper>::from(sleeper),
     )
     .into()
 }
@@ -53,13 +53,13 @@ pub unsafe extern "C" fn AUTDControllerOpen(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDControllerClose(cnt: ControllerPtr) -> ResultStatus {
-    unsafe { take!(cnt, Controller<Box<dyn Link>, Auto>) }
+    unsafe { take!(cnt, Controller<Box<dyn Link>>) }
         .close()
         .into()
 }
 
 #[repr(C)]
-pub struct FPGAStateListPtr(pub *const libc::c_void);
+pub struct FPGAStateListPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(FPGAStateListPtr, Vec<Option<FPGAState>>);
 
@@ -89,7 +89,7 @@ pub unsafe extern "C" fn AUTDControllerFPGAStateDelete(p: FPGAStateListPtr) {
 }
 
 #[repr(C)]
-pub struct FirmwareVersionListPtr(pub *const libc::c_void);
+pub struct FirmwareVersionListPtr(pub *const std::ffi::c_void);
 
 impl_ptr!(FirmwareVersionListPtr, Vec<FirmwareVersion>);
 
@@ -118,7 +118,7 @@ pub unsafe extern "C" fn AUTDControllerFirmwareVersionGet(
 ) {
     unsafe {
         let info_str = std::ffi::CString::new(p_info_list[idx as usize].to_string()).unwrap();
-        libc::strcpy(info, info_str.as_ptr());
+        autd3capi_driver::strcpy(info, info_str.as_ptr());
     }
 }
 
@@ -133,6 +133,6 @@ pub unsafe extern "C" fn AUTDControllerFirmwareVersionListPointerDelete(
 pub unsafe extern "C" fn AUTDFirmwareLatest(latest: *mut c_char) {
     unsafe {
         let info_str = std::ffi::CString::new(FirmwareVersion::latest()).unwrap();
-        libc::strcpy(latest, info_str.as_ptr());
+        autd3capi_driver::strcpy(latest, info_str.as_ptr());
     }
 }

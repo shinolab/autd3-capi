@@ -3,7 +3,7 @@ use autd3::core::link::Link;
 use crate::{ConstPtr, impl_result};
 
 #[repr(C)]
-pub struct LinkPtr(pub *const libc::c_void);
+pub struct LinkPtr(pub *const std::ffi::c_void);
 
 impl<L: Link + 'static> From<L> for LinkPtr {
     fn from(v: L) -> Self {

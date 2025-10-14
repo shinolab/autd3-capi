@@ -52,10 +52,7 @@ pub unsafe extern "C" fn AUTDGeometryReconfigure(
 
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{
-        Point3,
-        autd3::{controller::ParallelMode, core::sleep::SpinSleeper, driver::geometry::Quaternion},
-    };
+    use autd3capi_driver::{Point3, autd3::driver::geometry::Quaternion};
 
     use crate::{controller, link};
 
@@ -70,25 +67,15 @@ mod tests {
                 send_interval: std::time::Duration::from_millis(1).into(),
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
-                parallel: ParallelMode::Auto,
-                strict: true,
             };
-            let sleeper = autd3capi_driver::SleeperWrap {
-                tag: autd3capi_driver::SleeperTag::Spin,
-                value: SpinSleeper::default().native_accuracy_ns(),
-                spin_strategy: SpinSleeper::default().spin_strategy().into(),
-            };
-            let timer_strategy = autd3capi_driver::TimerStrategyWrap {
-                tag: autd3capi_driver::TimerStrategyTag::FixedSchedule,
-                sleep: sleeper,
-            };
+            let sleeper = autd3capi_driver::SleeperTag::Std;
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
                 rot.as_ptr(),
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
-                timer_strategy,
+                sleeper,
             );
             assert!(!cnt.result.0.is_null());
             let cnt = cnt.result;

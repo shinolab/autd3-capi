@@ -19,11 +19,10 @@ pub use sender::*;
 pub use autd3;
 pub use autd3::core;
 pub use autd3::driver;
-pub use libc;
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct ConstPtr(pub *const libc::c_void);
+pub struct ConstPtr(pub *const std::ffi::c_void);
 
 unsafe impl Send for ConstPtr {}
 unsafe impl Sync for ConstPtr {}
@@ -45,4 +44,16 @@ macro_rules! take {
     ($ptr:expr, $type:ty) => {
         Box::from_raw($ptr.0 as *mut $type)
     };
+}
+
+pub unsafe fn strcpy(dst: *mut std::ffi::c_char, src: *const std::ffi::c_char) {
+    unsafe {
+        let mut dst = dst;
+        let mut src = src;
+        while *src != 0 {
+            *dst = *src;
+            dst = dst.add(1);
+            src = src.add(1);
+        }
+    }
 }

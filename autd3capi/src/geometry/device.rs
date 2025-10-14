@@ -24,7 +24,7 @@ pub unsafe extern "C" fn AUTDDeviceCenter(dev: DevicePtr) -> Point3 {
 
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn AUTDDeviceRotation(dev: DevicePtr) -> Quaternion {
-    *dev.rotation().quaternion()
+    dev.rotation().quaternion()
 }
 
 #[unsafe(no_mangle)]
