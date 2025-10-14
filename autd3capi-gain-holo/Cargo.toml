@@ -11,4 +11,4 @@ crate-type = ["rlib", "cdylib"]
 
 [dependencies]
 autd3capi-driver = { workspace = true }
-autd3-gain-holo = { workspace = true, features = ["greedy", "gs", "gspat", "naive"] }
+autd3-gain-holo = { workspace = true }
