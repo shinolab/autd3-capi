@@ -4,9 +4,9 @@ version = 4
 
 [[package]]
 name = "autd3"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f989a2b7760407d6281f454836920050b6268adef0a19cb25e36a0734c66458a"
+checksum = "1e69663bbb21efe928497c8eeba3bc280bb0fa79e2cfe092dcb7a2a66d2b97f1"
 dependencies = [
  "autd3-core",
  "autd3-driver",
@@ -15,33 +15,33 @@ dependencies = [
 
 [[package]]
 name = "autd3-core"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19fd28f773672fbee5fcc63f9ff1ffb3d122e0302b313964690a23652c76e616"
+checksum = "51b644544e4dcf0a28ea51721fbfc2006d7740556d15a5fa588bf0f14ee8a76e"
 dependencies = [
  "autd3-derive",
 ]
 
 [[package]]
 name = "autd3-derive"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "664a53c5d1b41d99c5aadf8dcb95a9ff6443c17d5a460fa48c2a1e144b0c8194"
+checksum = "a73780d18200af8b810a95791b60d8c86a418794f1085cd0dcf7bd0bc9199618"
 
 [[package]]
 name = "autd3-driver"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "645536bf20162c9133f537a895548e511839c6e5ad9c9d9fca1021e0aae23bdf"
+checksum = "da80126b2137f4ff237b499e2b62e083ae707ccde4cefbddf102f042e89bf0bd"
 dependencies = [
  "autd3-core",
 ]
 
 [[package]]
 name = "autd3-firmware-emulator"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54cc3438f04c47fb7898a743598dfbcf88dab172e53612af95ef688c8354aa59"
+checksum = "6ed422f1f9562af72478488c2307aefdda9bc2b60d0c62cbfe84cde3437e498c"
 dependencies = [
  "autd3-core",
  "autd3-driver",
@@ -49,50 +49,50 @@ dependencies = [
 
 [[package]]
 name = "autd3-gain-holo"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "804813bb51305be3574d9087e47f3f849725e16c92eb5451b28ee190cbb4daba"
+checksum = "751ca1d352a935eecf52a794ba3a84e37ff2761fe0510817459b75a8f4d7acb4"
 dependencies = [
  "autd3-core",
 ]
 
 [[package]]
 name = "autd3-link-remote"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41ea3e7170d8eb49972578185c6a55af918616d33f22ef0c5b3c74fc8031425c"
+checksum = "38e8eb2674ee8826bc69f00bc0644815fef8b70bcfa91d1335492c19e025b3c6"
 dependencies = [
  "autd3-core",
 ]
 
 [[package]]
 name = "autd3-link-simulator"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a26b34d8020e61b8e09a35dd745af5d7df960212058f70cf95ca91accba8e9d6"
+checksum = "6aac9a4be598a066bc5023d354f4db785bbf99b32df55502b39e5cb807270729"
 dependencies = [
  "autd3-core",
 ]
 
 [[package]]
 name = "autd3-link-twincat"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "134b6c231e2c4463e27a6f33073d384b368dd882e121aa185e61aa1a71ce9d0f"
+checksum = "e95f0c0ca7b2dff7ddc01e2fcbfb1820bcc24fcfd28d1e6ba13802d8a1350e40"
 dependencies = [
  "autd3-core",
 ]
 
 [[package]]
 name = "autd3capi"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3capi-driver",
 ]
 
 [[package]]
 name = "autd3capi-driver"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3",
  "autd3-core",
@@ -100,7 +100,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-gain-holo"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3-gain-holo",
  "autd3capi-driver",
@@ -108,7 +108,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-remote"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3-link-remote",
  "autd3capi-driver",
@@ -116,7 +116,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-simulator"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3-link-simulator",
  "autd3capi-driver",
@@ -124,7 +124,7 @@ dependencies = [
 
 [[package]]
 name = "autd3capi-link-twincat"
-version = "37.0.0-alpha.1"
+version = "37.0.0-alpha.2"
 dependencies = [
  "autd3-link-twincat",
  "autd3capi-driver",
