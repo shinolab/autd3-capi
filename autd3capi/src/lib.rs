@@ -11,13 +11,14 @@ pub mod modulation;
 pub mod result;
 
 #[cfg(test)]
-mod tests {
-    use autd3capi_driver::{AUTDStatus, Point3, autd3::driver::geometry::Quaternion};
+pub(crate) mod tests {
+    use autd3capi_driver::{
+        AUTDStatus, ControllerPtr, Point3, autd3::driver::geometry::Quaternion,
+    };
 
     use super::*;
 
-    #[test]
-    fn simple() {
+    pub fn create_controller() -> ControllerPtr {
         unsafe {
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
@@ -26,18 +27,29 @@ mod tests {
                 receive_interval: std::time::Duration::from_millis(1).into(),
                 timeout: None.into(),
             };
-            let sleeper = autd3capi_driver::SleeperTag::Std;
             let cnt = controller::AUTDControllerOpen(
                 pos.as_ptr(),
                 rot.as_ptr(),
                 1,
                 link::nop::AUTDLinkNop(),
                 option,
-                sleeper,
             );
             assert!(!cnt.result.0.is_null());
-            let cnt = cnt.result;
-            let sender = controller::sender::AUTDSender(cnt, option, sleeper);
+            cnt.result
+        }
+    }
+
+    #[test]
+    fn simple() {
+        unsafe {
+            let option = controller::sender::SenderOption {
+                send_interval: std::time::Duration::from_millis(1).into(),
+                receive_interval: std::time::Duration::from_millis(1).into(),
+                timeout: None.into(),
+            };
+
+            let cnt = create_controller();
+            let sender = controller::sender::AUTDSender(cnt, option);
 
             let g = gain::focus::AUTDGainFocus(Point3::new(0., 0., 150.), Default::default());
             let m = modulation::r#static::AUTDModulationStatic(0xFF);

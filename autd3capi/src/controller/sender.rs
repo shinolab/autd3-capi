@@ -1,7 +1,9 @@
 use autd3capi_driver::{
-    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr, SleeperTag,
-    autd3::{self, prelude::BoxedDatagram},
-    core::sleep::Sleeper,
+    ControllerPtr, DatagramPtr, Duration, OptionDuration, ResultStatus, SenderPtr,
+    autd3::{
+        self,
+        prelude::{BoxedDatagram, StdSleeper},
+    },
 };
 
 #[derive(Clone, Copy)]
@@ -40,14 +42,8 @@ pub unsafe extern "C" fn AUTDSetDefaultSenderOption(mut cnt: ControllerPtr, opti
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSender(
-    mut cnt: ControllerPtr,
-    option: SenderOption,
-    sleeper: SleeperTag,
-) -> SenderPtr {
-    SenderPtr(Box::into_raw(Box::new(
-        cnt.sender(option.into(), Box::<dyn Sleeper>::from(sleeper)),
-    )) as *const _ as _)
+pub unsafe extern "C" fn AUTDSender(mut cnt: ControllerPtr, option: SenderOption) -> SenderPtr {
+    SenderPtr(Box::into_raw(Box::new(cnt.sender(option.into(), StdSleeper))) as *const _ as _)
 }
 
 #[unsafe(no_mangle)]

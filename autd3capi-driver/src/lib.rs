@@ -6,7 +6,6 @@ mod duration;
 mod firmware;
 mod ptr;
 mod result;
-mod sender;
 
 pub use autd3_device::*;
 pub use datagram::*;
@@ -14,7 +13,6 @@ pub use duration::*;
 pub use firmware::*;
 pub use ptr::*;
 pub use result::*;
-pub use sender::*;
 
 pub use autd3;
 pub use autd3::core;

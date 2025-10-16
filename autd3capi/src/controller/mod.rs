@@ -2,7 +2,7 @@ pub mod sender;
 
 use autd3::{
     Controller,
-    core::{link::Link, sleep::Sleeper},
+    core::link::Link,
     driver::{
         autd3_device::AUTD3,
         firmware::version::FirmwareVersion,
@@ -12,7 +12,7 @@ use autd3::{
 
 use std::ffi::c_char;
 
-use autd3capi_driver::{driver::firmware::fpga::FPGAState, *};
+use autd3capi_driver::{autd3::prelude::StdSleeper, driver::firmware::fpga::FPGAState, *};
 
 use sender::SenderOption;
 
@@ -33,7 +33,6 @@ pub unsafe extern "C" fn AUTDControllerOpen(
     len: u16,
     link: LinkPtr,
     option: SenderOption,
-    sleeper: SleeperTag,
 ) -> ResultController {
     let pos = vec_from_raw!(pos, Point3, len);
     let rot = vec_from_raw!(rot, Quaternion, len);
@@ -45,7 +44,7 @@ pub unsafe extern "C" fn AUTDControllerOpen(
         }),
         *link,
         option.into(),
-        Box::<dyn Sleeper>::from(sleeper),
+        StdSleeper,
     )
     .into()
 }
