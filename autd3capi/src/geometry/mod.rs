@@ -52,33 +52,12 @@ pub unsafe extern "C" fn AUTDGeometryReconfigure(
 
 #[cfg(test)]
 mod tests {
-    use autd3capi_driver::{Point3, autd3::driver::geometry::Quaternion};
-
-    use crate::{controller, link};
-
     use super::*;
 
     #[test]
     fn geometry() {
         unsafe {
-            let pos = [Point3::origin()];
-            let rot = [Quaternion::new(1., 0., 0., 0.)];
-            let option = controller::sender::SenderOption {
-                send_interval: std::time::Duration::from_millis(1).into(),
-                receive_interval: std::time::Duration::from_millis(1).into(),
-                timeout: None.into(),
-            };
-            let sleeper = autd3capi_driver::SleeperTag::Std;
-            let cnt = controller::AUTDControllerOpen(
-                pos.as_ptr(),
-                rot.as_ptr(),
-                1,
-                link::nop::AUTDLinkNop(),
-                option,
-                sleeper,
-            );
-            assert!(!cnt.result.0.is_null());
-            let cnt = cnt.result;
+            let cnt = crate::tests::create_controller();
 
             let geo = AUTDGeometry(cnt);
             assert_eq!(AUTDGeometryNumDevices(geo), 1);
