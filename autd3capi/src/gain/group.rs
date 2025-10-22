@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use autd3::gain::Group;
-use autd3capi_driver::{driver::autd3_device::AUTD3, *};
+use autd3capi_driver::{core::devices::AUTD3, *};
 use driver::{
     datagram::BoxedGain,
     geometry::{Device, Transducer},

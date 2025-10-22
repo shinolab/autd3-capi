@@ -2,7 +2,9 @@
 
 use autd3::core::firmware::{Drive, Segment};
 use autd3capi_driver::{
-    autd3::link::audit::Audit, core::firmware::PulseWidth, driver::autd3_device::AUTD3, *,
+    autd3::link::audit::Audit,
+    core::{devices::AUTD3, firmware::PulseWidth},
+    *,
 };
 
 #[unsafe(no_mangle)]
