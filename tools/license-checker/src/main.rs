@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use cargo_license::{GetDependenciesOpt, get_dependencies_from_cargo_lock};
+use cargo_license::{get_dependencies_from_cargo_lock, GetDependenciesOpt};
 use cargo_metadata::MetadataCommand;
 
 const WHITE_LIST: &[&str] = &[
@@ -11,13 +11,11 @@ const WHITE_LIST: &[&str] = &[
     "autd3-firmware-emulator",
     "autd3-gain-holo",
     "autd3-link-remote",
-    "autd3-link-simulator",
     "autd3-link-twincat",
     "autd3capi",
     "autd3capi-driver",
     "autd3capi-gain-holo",
     "autd3capi-link-remote",
-    "autd3capi-link-simulator",
     "autd3capi-link-twincat",
 ];
 

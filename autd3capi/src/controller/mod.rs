@@ -2,9 +2,8 @@ pub mod sender;
 
 use autd3::{
     Controller,
-    core::link::Link,
+    core::{devices::AUTD3, link::Link},
     driver::{
-        autd3_device::AUTD3,
         firmware::version::FirmwareVersion,
         geometry::{Quaternion, UnitQuaternion},
     },

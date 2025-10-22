@@ -4,11 +4,8 @@ pub mod device;
 pub mod rotation;
 pub mod transducer;
 
-use autd3capi_driver::*;
-use driver::{
-    autd3_device::AUTD3,
-    geometry::{Quaternion, UnitQuaternion},
-};
+use autd3capi_driver::{core::devices::AUTD3, *};
+use driver::geometry::{Quaternion, UnitQuaternion};
 
 #[unsafe(no_mangle)]
 #[must_use]
