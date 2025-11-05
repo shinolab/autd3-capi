@@ -62,8 +62,16 @@ pub unsafe extern "C" fn AUTDGainHoloGreedyT4010A1(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainGreedyIsDefault(option: GreedyOption) -> bool {
-    let option = autd3_gain_holo::GreedyOption::from(option);
-    autd3_gain_holo::GreedyOption::default().constraint == option.constraint
-        && autd3_gain_holo::GreedyOption::default().phase_quantization_levels
-            == option.phase_quantization_levels
+    let autd3_gain_holo::GreedyOption {
+        constraint,
+        phase_quantization_levels,
+        objective_func: _,
+    } = autd3_gain_holo::GreedyOption::from(option);
+
+    let autd3_gain_holo::GreedyOption {
+        constraint: def_constraint,
+        phase_quantization_levels: def_phase_quantization_levels,
+        objective_func: _,
+    } = autd3_gain_holo::GreedyOption::default();
+    constraint == def_constraint && phase_quantization_levels == def_phase_quantization_levels
 }
