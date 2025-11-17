@@ -2,18 +2,14 @@ use std::num::NonZeroU16;
 
 use autd3capi_driver::{Duration, ResultDuration};
 use autd3capi_driver::{
-    ResultF32, ResultSamplingConfig, ResultU16, SamplingConfigWrap,
-    autd3::core::{derive::SamplingConfigError, firmware::SamplingConfig},
+    ResultF32, ResultU16, SamplingConfigWrap, autd3::core::firmware::SamplingConfig,
     driver::common::Hz,
 };
 
 #[unsafe(no_mangle)]
 #[must_use]
-pub unsafe extern "C" fn AUTDSamplingConfigFromDivide(div: u16) -> ResultSamplingConfig {
-    Result::<_, SamplingConfigError>::Ok(SamplingConfig::new(unsafe {
-        NonZeroU16::new_unchecked(div)
-    }))
-    .into()
+pub unsafe extern "C" fn AUTDSamplingConfigFromDivide(div: u16) -> SamplingConfigWrap {
+    SamplingConfig::new(unsafe { NonZeroU16::new_unchecked(div) }).into()
 }
 
 #[unsafe(no_mangle)]
