@@ -17,7 +17,8 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder(
             unsafe extern "C" fn(ConstPtr, GeometryPtr, u16, u8) -> PulseWidth,
         >(f);
         PulseWidthEncoder::<
-            Box<dyn Fn(&Device) -> Box<dyn Fn(Intensity) -> PulseWidth + Send + Sync>>,
+            Box<dyn Fn(&Device) -> Box<dyn Fn(Intensity) -> PulseWidth + Send>>,
+            Box<dyn Fn(Intensity) -> PulseWidth + Send>,
         >::new(Box::new(move |dev: &Device| {
             let dev_idx = dev.idx() as _;
             Box::new(move |i| f(context, geometry, dev_idx, i.0))
@@ -29,5 +30,5 @@ pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoder(
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDDatagramPulseWidthEncoderDefault() -> DatagramPtr {
-    PulseWidthEncoder::<_>::default().into()
+    PulseWidthEncoder::<_, _>::default().into()
 }

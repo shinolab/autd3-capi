@@ -1,5 +1,7 @@
 use autd3::{
-    Controller, core::link::Link, driver::firmware::transmission::Sender, prelude::StdSleeper,
+    Controller,
+    core::{link::Link, sleep::StdSleeper},
+    driver::firmware::transmission::Sender,
 };
 
 use crate::impl_ptr;

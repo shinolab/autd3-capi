@@ -244,13 +244,11 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaModulationBuffer(
     segment: Segment,
     idx: u16,
     data: *mut u8,
-    size: u32,
 ) {
     unsafe {
-        let dst = std::slice::from_raw_parts_mut(data, size as _);
         audit.cast::<Audit>()[idx as usize]
             .fpga()
-            .modulation_buffer_inplace(segment, dst);
+            .modulation_buffer_inplace(segment, data);
     }
 }
 
@@ -275,12 +273,17 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaDrivesAt(
     drive: *mut Drive,
 ) {
     unsafe {
-        let dst = std::slice::from_raw_parts_mut(drive, AUTD3::NUM_TRANS_IN_UNIT);
         let mut phase_buf = vec![core::firmware::Phase::ZERO; AUTD3::NUM_TRANS_IN_UNIT];
         let mut mask_buf = vec![true; AUTD3::NUM_TRANS_IN_UNIT];
         audit.cast::<Audit>()[idx as usize]
             .fpga()
-            .drives_at_inplace(segment, stm_idx as _, &mut phase_buf, &mut mask_buf, dst);
+            .drives_at_inplace(
+                segment,
+                stm_idx as _,
+                phase_buf.as_mut_ptr(),
+                mask_buf.as_mut_ptr(),
+                drive,
+            );
     }
 }
 
@@ -292,10 +295,8 @@ pub unsafe extern "C" fn AUTDLinkAuditFpgaPulseWidthEncoderTable(
     dst: *mut u64,
 ) {
     unsafe {
-        let dst =
-            std::slice::from_raw_parts_mut(dst as *mut PulseWidth, core::firmware::PWE_BUF_SIZE);
         let fpga = audit.cast::<Audit>()[idx as usize].fpga();
-        fpga.pulse_width_encoder_table_inplace(dst);
+        fpga.pulse_width_encoder_table_inplace(dst as *mut PulseWidth);
     }
 }
 

@@ -7,19 +7,19 @@ exclude = ["tools"]
 resolver = "3"
 
 [workspace.package]
-version = "37.0.1"
+version = "38.0.0"
 authors = ["shun suzuki <suzuki@hapis.k.u-tokyo.ac.jp>"]
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/shinolab/autd3-capi"
 
 [workspace.dependencies]
-autd3 = { version = "37.0.1", default-features = false, features = ["gain", "modulation", "link-audit", "link-nop"] }
-autd3-core = { version = "37.0.1", default-features = false }
-autd3-driver = { version = "37.0.1", default-features = false }
-autd3-gain-holo = { version = "37.0.1", default-features = false, features = ["greedy", "gs", "gspat", "naive"] }
-autd3-link-remote = { version = "37.0.1", default-features = false, features = ["link"] }
-autd3-link-twincat = { version = "37.0.1", default-features = false, features = ["local"] }
+autd3 = { version = "38.0.0", default-features = false, features = ["gain", "modulation", "link-audit", "link-nop"] }
+autd3-core = { version = "38.0.0", default-features = false }
+autd3-driver = { version = "38.0.0", default-features = false }
+autd3-gain-holo = { version = "38.0.0", default-features = false, features = ["greedy", "gs", "gspat", "naive"] }
+autd3-link-remote = { version = "38.0.0", default-features = false, features = ["link"] }
+autd3-link-twincat = { version = "38.0.0", default-features = false, features = ["local"] }
 autd3capi = { path = "./autd3capi" }
 autd3capi-driver = { path = "./autd3capi-driver" }
 autd3capi-gain-holo = { path = "./autd3capi-gain-holo" }

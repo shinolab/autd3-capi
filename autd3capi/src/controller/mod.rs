@@ -2,7 +2,7 @@ pub mod sender;
 
 use autd3::{
     Controller,
-    core::{devices::AUTD3, link::Link},
+    core::{devices::AUTD3, link::Link, sleep::StdSleeper},
     driver::{
         firmware::version::FirmwareVersion,
         geometry::{Quaternion, UnitQuaternion},
@@ -11,7 +11,7 @@ use autd3::{
 
 use std::ffi::c_char;
 
-use autd3capi_driver::{autd3::prelude::StdSleeper, driver::firmware::fpga::FPGAState, *};
+use autd3capi_driver::{driver::firmware::fpga::FPGAState, *};
 
 use sender::SenderOption;
 
