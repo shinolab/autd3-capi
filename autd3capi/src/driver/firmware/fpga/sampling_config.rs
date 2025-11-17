@@ -10,10 +10,10 @@ use autd3capi_driver::{
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDSamplingConfigFromDivide(div: u16) -> ResultSamplingConfig {
-    match NonZeroU16::new(div) {
-        Some(div) => Result::<_, SamplingConfigError>::Ok(SamplingConfig::new(div)).into(),
-        None => Result::<SamplingConfig, _>::Err(SamplingConfigError::DivideInvalid).into(),
-    }
+    Result::<_, SamplingConfigError>::Ok(SamplingConfig::new(unsafe {
+        NonZeroU16::new_unchecked(div)
+    }))
+    .into()
 }
 
 #[unsafe(no_mangle)]

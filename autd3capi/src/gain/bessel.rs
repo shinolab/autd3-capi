@@ -10,13 +10,13 @@ use autd3capi_driver::{
 #[unsafe(no_mangle)]
 #[must_use]
 pub unsafe extern "C" fn AUTDGainBessel(
-    pos: Point3,
+    apex: Point3,
     dir: Vector3,
     theta: Angle,
     option: BesselOption,
 ) -> GainPtr {
     Bessel {
-        pos,
+        apex,
         dir: UnitVector3::new_normalize(dir),
         theta,
         option,

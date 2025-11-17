@@ -23,8 +23,8 @@ pub(crate) mod tests {
             let pos = [Point3::origin()];
             let rot = [Quaternion::new(1., 0., 0., 0.)];
             let option = controller::sender::SenderOption {
-                send_interval: std::time::Duration::from_millis(1).into(),
-                receive_interval: std::time::Duration::from_millis(1).into(),
+                send_interval: Some(std::time::Duration::from_millis(1)).into(),
+                receive_interval: Some(std::time::Duration::from_millis(1)).into(),
                 timeout: None.into(),
             };
             let cnt = controller::AUTDControllerOpen(
@@ -43,8 +43,8 @@ pub(crate) mod tests {
     fn simple() {
         unsafe {
             let option = controller::sender::SenderOption {
-                send_interval: std::time::Duration::from_millis(1).into(),
-                receive_interval: std::time::Duration::from_millis(1).into(),
+                send_interval: Some(std::time::Duration::from_millis(1)).into(),
+                receive_interval: Some(std::time::Duration::from_millis(1)).into(),
                 timeout: None.into(),
             };
 

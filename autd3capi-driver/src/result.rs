@@ -1,4 +1,4 @@
-use autd3::{driver::error::AUTDDriverError, prelude::PulseWidth};
+use autd3::driver::error::AUTDDriverError;
 
 use crate::{
     CapiResult, ConstPtr, Duration, SamplingConfigTag, SamplingConfigValue, SamplingConfigWrap,
@@ -137,17 +137,3 @@ impl CapiResult for Duration {
 }
 
 impl_result!(ResultDuration, Duration);
-
-#[repr(C)]
-pub struct ResultPulseWidth {
-    pub result: PulseWidth,
-    pub err_len: u32,
-    pub err: ConstPtr,
-}
-
-impl CapiResult for PulseWidth {
-    // const NULL: Self = PulseWidth::new(0);
-    const NULL: Self = unsafe { std::mem::zeroed() };
-}
-
-impl_result!(ResultPulseWidth, PulseWidth);
