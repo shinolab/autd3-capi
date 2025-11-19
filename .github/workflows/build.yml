@@ -13,7 +13,7 @@ concurrency:
 jobs:
   changed-files:
     name: changed-files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       src: ${{ steps.changed-files-yaml.outputs.src_any_changed }}
     steps:
@@ -54,7 +54,7 @@ jobs:
   all-tests-passed:
     if: ${{ always() }}
     name: all-tests-passed
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs: test
     steps:
       - if: ${{ needs.test.result == 'failure' || needs.test.result == 'cancelled' }}
@@ -62,11 +62,11 @@ jobs:
 
   auto-merge:
     needs:
-      - test
+      - all-tests-passed
     permissions:
       pull-requests: write
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     if: ${{ always() && !cancelled() && !failure() && github.actor == 'dependabot[bot]' }}
     steps:
       - run: gh pr merge --rebase --auto "$PR_URL"
